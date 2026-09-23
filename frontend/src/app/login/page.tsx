@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -8,7 +8,6 @@ import { ApiError } from "@/lib/api";
 import { Logo, LogoJCA } from "@/components/Logo";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   const { entrar } = useAuth();
@@ -47,33 +46,30 @@ export default function LoginPage() {
           }}
         />
 
-        {/* Logo no topo */}
+        {/* Topo vazio para espaçamento */}
+        <div className="relative"></div>
+
+        {/* Mensagem Central com Logo Grande */}
         <div className="relative">
-          <div className="flex items-center gap-3">
+          <div className="mb-8 flex items-center gap-4">
             <Image 
               src="/logo.png" 
               alt="Logo Catarinense" 
-              width={44} 
-              height={44} 
-              className="rounded object-contain shrink-0" 
+              width={72} 
+              height={72} 
+              className="rounded-lg object-contain shrink-0 bg-white p-1" 
               priority 
             />
             <div>
-              <p className="text-lg font-bold text-white">Catarinense</p>
-              <p className="text-[10px] font-bold text-white/50 tracking-widest uppercase mt-0.5">Limpeza Fina</p>
+              <p className="text-3xl font-bold text-white tracking-tight">Catarinense</p>
+              <p className="text-sm font-bold text-white/60 tracking-[0.2em] uppercase mt-1">Limpeza Fina</p>
             </div>
           </div>
-        </div>
-
-        {/* Mensagem Central */}
-        <div className="relative">
-          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand shadow-lg shadow-brand/30">
-            <ShieldCheck className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="mb-4 text-4xl font-bold leading-tight text-white">
+          
+          <h2 className="mb-4 text-3xl font-bold leading-tight text-white/90">
             Controle total da sua frota
           </h2>
-          <p className="text-lg leading-relaxed text-white/60">
+          <p className="text-lg leading-relaxed text-white/60 max-w-md">
             Registre, comprove e aprove cada etapa da limpeza fina dos ônibus com evidências fotográficas.
           </p>
 
@@ -100,7 +96,7 @@ export default function LoginPage() {
       {/* Painel Direito — Formulário */}
       <div className="flex flex-1 flex-col items-center justify-center bg-surface px-6 py-12">
         {/* Logo visível apenas no mobile */}
-        <div className="mb-10 lg:hidden">
+        <div className="mb-10 lg:hidden scale-110">
           <Logo />
         </div>
 

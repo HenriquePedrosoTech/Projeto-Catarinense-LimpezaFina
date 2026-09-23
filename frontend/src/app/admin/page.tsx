@@ -61,7 +61,16 @@ export default function AdminDashboardPage() {
   if (!usuario) return null;
 
   return (
-    <div className="mx-auto max-w-5xl">`n      <ConfirmDialog `n        aberto={confirmDelete.aberto}`n        titulo="Excluir Limpeza"`n        mensagem={`Tem certeza que deseja excluir o registro do Ùnibus ${confirmDelete.prefixo}?`}`n        tipo="danger"`n        textoConfirmar="Excluir"`n        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}`n        onConfirmar={executarExclusao}`n      />
+    <div className="mx-auto max-w-5xl">
+      <ConfirmDialog 
+        aberto={confirmDelete.aberto}
+        titulo="Excluir Limpeza"
+        mensagem={`Tem certeza que deseja excluir o registro do Ùnibus ${confirmDelete.prefixo}?`}
+        tipo="danger"
+        textoConfirmar="Excluir"
+        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}
+        onConfirmar={executarExclusao}
+      />
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight text-ink">Dashboard de Limpezas</h1>
         <p className="text-ink/60">Acompanhe e avalie as execu√ß√µes de limpeza fina da frota.</p>
@@ -174,6 +183,8 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+
 
 
 

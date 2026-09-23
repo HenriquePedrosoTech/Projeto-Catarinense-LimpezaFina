@@ -18,14 +18,14 @@ builder.Services.AddControllers();
 
 // ---------- CORS (libera o frontend Next.js) ----------
 const string CorsPolicyFrontend = "FrontendPolicy";
-var origensPermitidas = builder.Configuration.GetSection("Frontend:OrigensPermitidas").Get<string[]>()
+
     ?? new[] { "http://localhost:3000" };
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyFrontend, policy =>
     {
-        policy.WithOrigins(origensPermitidas)
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 // ---------- CORS (libera o frontend Next.js) ----------
 const string CorsPolicyFrontend = "FrontendPolicy";
 
-    ?? new[] { "http://localhost:3000" };
+    
 
 builder.Services.AddCors(options =>
 {
@@ -148,3 +148,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

@@ -40,6 +40,16 @@ public class Usuario : EntidadeBase
         Email = email?.Trim();
     }
 
+    
+    public void Atualizar(string nome, string? email, string? senhaHash = null)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new DomainException("O nome e obrigatorio.");
+        Nome = nome.Trim();
+        Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
+        if (!string.IsNullOrWhiteSpace(senhaHash))
+            SenhaHash = senhaHash;
+    }
     public void Desativar() => Ativo = false;
 
     public void Ativar() => Ativo = true;
@@ -67,3 +77,4 @@ public class Usuario : EntidadeBase
         BloqueadoAte = null;
     }
 }
+

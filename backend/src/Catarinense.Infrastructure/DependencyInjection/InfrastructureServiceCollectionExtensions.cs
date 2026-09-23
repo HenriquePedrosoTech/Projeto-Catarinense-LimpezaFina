@@ -61,6 +61,7 @@ public static class InfrastructureServiceCollectionExtensions
 
         // Cadastro / consulta de dados mestres (usuários, ônibus, etapas padrão)
         services.AddScoped<ICadastrarUsuarioUseCase, Catarinense.Application.UseCases.CadastrarUsuarioUseCase>();
+        services.AddScoped<IEditarUsuarioUseCase, Catarinense.Application.UseCases.EditarUsuarioUseCase>();
         services.AddScoped<IExcluirUsuarioUseCase, Catarinense.Application.UseCases.ExcluirUsuarioUseCase>();
         services.AddScoped<ICadastrarOnibusUseCase, Catarinense.Application.UseCases.CadastrarOnibusUseCase>();
         services.AddScoped<IExcluirOnibusUseCase, Catarinense.Application.UseCases.ExcluirOnibusUseCase>();
@@ -73,3 +74,4 @@ public static class InfrastructureServiceCollectionExtensions
         return services;
     }
 }
+

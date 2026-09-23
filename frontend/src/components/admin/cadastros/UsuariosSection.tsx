@@ -19,6 +19,7 @@ export function UsuariosSection({ token }: { token: string }) {
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [excluindoId, setExcluindoId] = useState<string | null>(null);
+  const [editandoUsuario, setEditandoUsuario] = useState<UsuarioResumo | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{aberto: boolean, id: string, nomeUsuario: string}>({aberto: false, id: "", nomeUsuario: ""});
   const [alertInfo, setAlertInfo] = useState<{aberto: boolean, mensagem: string}>({aberto: false, mensagem: ""});
 
@@ -48,6 +49,11 @@ export function UsuariosSection({ token }: { token: string }) {
 
   async function handleExcluir(id: string, nomeUsuario: string) {
     setConfirmDelete({ aberto: true, id, nomeUsuario });
+  }
+
+  async function handleEditSuccess(usuarioAtualizado: UsuarioResumo) {
+    setLista(lista.map(u => u.id === usuarioAtualizado.id ? usuarioAtualizado : u));
+    setAlertInfo({ aberto: true, mensagem: "Usuário atualizado com sucesso!" });
   }
 
   async function executarExclusao() {

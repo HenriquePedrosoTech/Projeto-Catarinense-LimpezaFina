@@ -197,6 +197,9 @@ export const api = {
       body: JSON.stringify({ matricula, nome, senha, perfil, email: email || null }),
     }),
 
+  editarUsuario: (token: string, usuarioId: string, dados: any) =>
+    request<UsuarioResumo>(`/api/usuarios/${usuarioId}`, { method: "PUT", token, body: JSON.stringify(dados) }),
+
   excluirUsuario: (token: string, usuarioId: string) =>
     request<void>(`/api/usuarios/${usuarioId}`, { method: "DELETE", token }),
 };

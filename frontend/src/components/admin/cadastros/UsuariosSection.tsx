@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ConfirmDialog, AlertDialog } from "@/components/ui/Dialogs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Users, Trash2, ShieldCheck, User as UserIcon } from "lucide-react";
+import { Users, Trash2, ShieldCheck, User as UserIcon, Edit2 } from "lucide-react";
+import { UsuarioEditModal } from "./UsuarioEditModal";
 import type { UsuarioResumo } from "@/lib/types";
 
 export function UsuariosSection({ token }: { token: string }) {
@@ -170,6 +171,13 @@ export function UsuariosSection({ token }: { token: string }) {
                       </div>
                     </div>
                     <button
+                      onClick={() => setEditandoUsuario(u)}
+                      className="p-1 text-ink/40 hover:text-brand hover:bg-brand/10 rounded transition-colors mr-2"
+                      title="Editar Usuário"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
                       onClick={() => handleExcluir(u.id, u.nome)}
                       disabled={excluindoId === u.id}
                       className="text-ink/30 hover:text-danger disabled:opacity-50"
@@ -188,6 +196,13 @@ export function UsuariosSection({ token }: { token: string }) {
           </CardContent>
         </Card>
       </div>
+      <UsuarioEditModal
+        aberto={!!editandoUsuario}
+        usuario={editandoUsuario}
+        token={token}
+        onClose={() => setEditandoUsuario(null)}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 }

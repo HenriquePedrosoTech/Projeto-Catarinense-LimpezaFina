@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Catarinense.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Catarinense.Domain\Catarinense.Domain.csproj" />
+  </ItemGroup>
+
+  <!--
+    Regra de arquitetura: este projeto só pode referenciar o Domain.
+    Não deve depender de Infrastructure, API, EF Core, ASP.NET Core, etc.
+  -->
+
+</Project>

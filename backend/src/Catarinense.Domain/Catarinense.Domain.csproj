@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Catarinense.Domain</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    Regra de arquitetura: este projeto NÃO deve referenciar nenhum outro projeto
+    da solução (Application, Infrastructure, API) nem pacotes de terceiros como
+    EF Core. O Domain é o núcleo e não pode depender de detalhes de implementação.
+  -->
+
+</Project>

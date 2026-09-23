@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Catarinense.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Catarinense.Domain\Catarinense.Domain.csproj" />
+    <ProjectReference Include="..\Catarinense.Application\Catarinense.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- EF Core + provider MySQL (Pomelo) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+
+    <!-- Necessário para services.Configure<T>(IConfigurationSection) usado no DependencyInjection -->
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0" />
+
+    <!-- JWT -->
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.2.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
+
+    <!-- Hash de senha -->
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+  </ItemGroup>
+
+  <!--
+    Regra de arquitetura: este projeto pode referenciar Domain e Application,
+    e é o único autorizado a depender de bibliotecas de infraestrutura
+    (EF Core, MySQL, JWT, SMTP). API e Application nunca devem referenciar
+    esses pacotes diretamente.
+  -->
+
+</Project>

@@ -1,0 +1,10 @@
+bin/
+obj/
+*.user
+wwwroot/uploads/
+
+# Segredos reais (JWT, senha do banco, SMTP) NUNCA devem ir pro Git.
+# Só o appsettings.Example.json (com placeholders) é versionado.
+src/Catarinense.API/appsettings.json
+appsettings.Development.json
+appsettings.Production.json

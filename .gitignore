@@ -1,0 +1,26 @@
+# Node / Frontend
+node_modules/
+.next/
+out/
+build/
+.env*.local
+.vercel
+
+# .NET / Backend
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+
+# Secrets
+backend/src/Catarinense.API/appsettings.Development.json
+backend/src/Catarinense.API/appsettings.Production.json
+appsettings.*.json
+.env
+
+# MacOS
+.DS_Store

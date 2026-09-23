@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { ApiError } from "@/lib/api";
 import { Logo, LogoJCA } from "@/components/Logo";
@@ -49,16 +50,17 @@ export default function LoginPage() {
         {/* Logo no topo */}
         <div className="relative">
           <div className="flex items-center gap-3">
-            <svg width="36" height="36" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-              <rect width="28" height="28" rx="6" fill="#C41230" />
-              <path
-                d="M6 19.5V8.5H14.5C17 8.5 19 10.3 19 13C19 14.6 18.2 15.9 17 16.7L19.5 19.5H16.3L14.3 17.2H9.2V19.5H6ZM9.2 14.6H14.2C15.2 14.6 15.9 13.9 15.9 13C15.9 12.1 15.2 11.4 14.2 11.4H9.2V14.6Z"
-                fill="white"
-              />
-            </svg>
+            <Image 
+              src="/logo.png" 
+              alt="Logo Catarinense" 
+              width={44} 
+              height={44} 
+              className="rounded object-contain shrink-0" 
+              priority 
+            />
             <div>
               <p className="text-lg font-bold text-white">Catarinense</p>
-              <p className="text-xs font-medium text-white/50 tracking-widest uppercase">Limpeza Fina</p>
+              <p className="text-[10px] font-bold text-white/50 tracking-widest uppercase mt-0.5">Limpeza Fina</p>
             </div>
           </div>
         </div>

@@ -65,7 +65,7 @@ export default function AdminDashboardPage() {
       <ConfirmDialog 
         aberto={confirmDelete.aberto}
         titulo="Excluir Limpeza"
-        mensagem={`Tem certeza que deseja excluir o registro do ônibus ${confirmDelete.prefixo}?`}
+        mensagem={`Tem certeza que deseja excluir o registro do ï¿½nibus ${confirmDelete.prefixo}?`}
         tipo="danger"
         textoConfirmar="Excluir"
         onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}

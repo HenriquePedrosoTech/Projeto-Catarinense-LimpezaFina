@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useRef, useState, useEffect } from "react";
 import type { EtapaResumo } from "@/lib/types";
@@ -195,8 +195,8 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
       )}
 
       <Lightbox 
-        urlAberta={urlAberta} 
-        aoFechar={fechar} 
+        url={urlAberta} 
+        onClose={fechar} 
       />
 
       {/* Modal de Escolha de Foto */}

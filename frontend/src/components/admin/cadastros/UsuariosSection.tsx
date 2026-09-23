@@ -64,7 +64,23 @@ export function UsuariosSection({ token }: { token: string }) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">`n      <ConfirmDialog `n        aberto={confirmDelete.aberto}`n        titulo="Excluir Usu�rio"`n        mensagem={`Tem certeza que deseja excluir o usu�rio "${confirmDelete.nomeUsuario}"?`}`n        tipo="danger"`n        textoConfirmar="Excluir"`n        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}`n        onConfirmar={executarExclusao}`n      />`n      <AlertDialog `n        aberto={alertInfo.aberto}`n        titulo="Aten��o"`n        mensagem={alertInfo.mensagem}`n        tipo="danger"`n        onClose={() => setAlertInfo({ ...alertInfo, aberto: false })}`n      />
+    <div className="grid gap-6 lg:grid-cols-3">
+      <ConfirmDialog 
+        aberto={confirmDelete.aberto}
+        titulo="Excluir Usu�rio"
+        mensagem={`Tem certeza que deseja excluir o usu�rio "${confirmDelete.nomeUsuario}"?`}
+        tipo="danger"
+        textoConfirmar="Excluir"
+        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}
+        onConfirmar={executarExclusao}
+      />
+      <AlertDialog 
+        aberto={alertInfo.aberto}
+        titulo="Aten��o"
+        mensagem={alertInfo.mensagem}
+        tipo="danger"
+        onClose={() => setAlertInfo({ ...alertInfo, aberto: false })}
+      />
       {/* Coluna de Cadastro */}
       <div className="lg:col-span-1">
         <Card>

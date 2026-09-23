@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { EtapaResumo } from "@/lib/types";
 import { resolverUrlFoto } from "@/lib/fotos";
 import { Lightbox, useLightbox } from "./Lightbox";
-import { Camera, Check, Loader2, ImagePlus, Info } from "lucide-react";
+import { Camera, Check, Loader2, ImagePlus, Info, Upload } from "lucide-react";
 
 interface Props {
   etapa: EtapaResumo;
@@ -14,15 +14,19 @@ interface Props {
 }
 
 export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputCameraRef = useRef<HTMLInputElement>(null);
+  const inputGaleriaRef = useRef<HTMLInputElement>(null);
+  
   const [enviando, setEnviando] = useState(false);
   const [removendo, setRemovendo] = useState<string | null>(null);
   const [mostrarDesc, setMostrarDesc] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [mostrarOpcoesFoto, setMostrarOpcoesFoto] = useState(false);
   const { urlAberta, abrir, fechar } = useLightbox();
 
   async function handleArquivo(e: React.ChangeEvent<HTMLInputElement>) {
     const arquivo = e.target.files?.[0];
+    setMostrarOpcoesFoto(false);
     if (!arquivo) return;
 
     setErro(null);
@@ -33,7 +37,8 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
       setErro(err instanceof Error ? err.message : "Falha ao enviar a foto.");
     } finally {
       setEnviando(false);
-      if (inputRef.current) inputRef.current.value = "";
+      if (inputCameraRef.current) inputCameraRef.current.value = "";
+      if (inputGaleriaRef.current) inputGaleriaRef.current.value = "";
     }
   }
 
@@ -69,132 +74,164 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
             <div className="flex items-center gap-2">
               <p className="font-semibold text-ink">{etapa.nome}</p>
               {etapa.descricao && (
-                <button 
+                <button
+                  type="button"
                   onClick={() => setMostrarDesc(!mostrarDesc)}
-                  className="text-brand hover:bg-brand/10 p-1 rounded-full transition"
-                  title="Ver Procedimento Operacional"
+                  className="text-ink/40 hover:text-brand transition-colors"
                 >
                   <Info className="h-4 w-4" />
                 </button>
               )}
             </div>
+            {etapa.linkVideo && (
+              <a
+                href={etapa.linkVideo}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-0.5 text-xs font-semibold text-brand hover:underline"
+              >
+                Ver instrução
+              </a>
+            )}
           </div>
+        </div>
+
+        <div className="flex shrink-0 items-center">
+          {enviando && <Loader2 className="h-5 w-5 animate-spin text-brand" />}
+          
+          {!etapa.concluida && !desabilitado && !enviando && (
+            <div className="relative">
+              <input
+                ref={inputCameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <input
+                ref={inputGaleriaRef}
+                type="file"
+                accept="image/*"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarOpcoesFoto(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-ink/40 hover:bg-brand/10 hover:text-brand transition-colors"
+              >
+                <Camera className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+
+          {etapa.concluida && !desabilitado && !enviando && (
+            <div className="relative">
+               <input
+                ref={inputCameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <input
+                ref={inputGaleriaRef}
+                type="file"
+                accept="image/*"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarOpcoesFoto(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand hover:bg-brand hover:text-white transition-colors"
+              >
+                <ImagePlus className="h-5 w-5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
+      {erro && (
+        <p className="mt-3 text-sm font-medium text-danger">{erro}</p>
+      )}
+
       {mostrarDesc && etapa.descricao && (
-        <div className="mt-3 pl-13 text-sm text-ink/70 bg-surface/50 p-3 rounded-md border border-line">
-          <strong>P.O.P (Procedimento Padrão):</strong>
-          <p className="mt-1 whitespace-pre-line">{etapa.descricao}</p>
-          {etapa.linkVideo && (
-            <a 
-              href={etapa.linkVideo} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="mt-3 inline-flex items-center gap-1.5 font-medium text-brand hover:underline"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
-              Assistir Vídeo / Link
-            </a>
-          )}
+        <div className="mt-3 rounded-lg bg-surface/50 p-3 text-sm text-ink/70">
+          {etapa.descricao}
         </div>
       )}
 
-      <div className="mt-4 pl-13 flex flex-col gap-3">
-        {etapa.fotos.length > 0 && (
-          <div className="flex gap-3 overflow-x-auto pt-4 pr-4 pb-2 -mt-4">
-            {etapa.fotos.map((url) => {
-              const urlCompleta = resolverUrlFoto(url);
-              return (
-                <div key={url} className="relative shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={urlCompleta}
-                    alt={`Evidência - ${etapa.nome}`}
-                    onClick={() => abrir(urlCompleta)}
-                    className={`h-24 w-24 cursor-zoom-in rounded-lg border border-line object-cover transition-all hover:opacity-80 shadow-sm ${removendo === url ? "opacity-50 blur-sm" : ""}`}
-                  />
-                  {!desabilitado && onRemoverFoto && (
-                    <button
-                      onClick={() => handleRemover(url)}
-                      disabled={removendo !== null}
-                      className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-danger text-white border-2 border-white shadow-md hover:bg-danger/90 transition-transform active:scale-90"
-                      title="Remover foto"
-                    >
-                      <span className="text-lg font-bold leading-none pb-0.5">×</span>
-                    </button>
+      {etapa.fotos.length > 0 && (
+        <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+          {etapa.fotos.map((fotoUrl) => (
+            <div key={fotoUrl} className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-surface border border-line">
+              <img
+                src={resolverUrlFoto(fotoUrl)}
+                alt="Foto da etapa"
+                className="h-full w-full cursor-pointer object-cover"
+                onClick={() => abrir(fotoUrl)}
+              />
+              {onRemoverFoto && !desabilitado && (
+                <button
+                  type="button"
+                  onClick={() => handleRemover(fotoUrl)}
+                  disabled={removendo === fotoUrl}
+                  className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-ink/70 text-white opacity-100 transition-all hover:bg-danger md:opacity-0 md:group-hover:opacity-100"
+                >
+                  {removendo === fotoUrl ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <span className="text-sm font-bold">X</span>
                   )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {!etapa.concluida && !desabilitado && (
-          <div>
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleArquivo}
-              className="hidden"
-              id={`foto-${etapa.etapaPadraoId}`}
-            />
-            <label
-              htmlFor={`foto-${etapa.etapaPadraoId}`}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-all active:scale-[0.98] ${
-                enviando 
-                  ? "bg-surface text-ink/40 pointer-events-none" 
-                  : "bg-brand text-white hover:bg-brand/90 hover:shadow-md"
-              }`}
-            >
-              {enviando ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> Enviando...
-                </>
-              ) : (
-                <>
-                  <Camera className="h-5 w-5" /> Tirar foto
-                </>
+                </button>
               )}
-            </label>
-            {erro && <p className="mt-2 text-sm font-medium text-danger">{erro}</p>}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
+      )}
 
-        {etapa.concluida && !desabilitado && (
-          <div>
-             <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleArquivo}
-              className="hidden"
-              id={`foto-add-${etapa.etapaPadraoId}`}
-            />
-            <label
-              htmlFor={`foto-add-${etapa.etapaPadraoId}`}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-xs font-semibold transition-colors active:scale-[0.98] ${
-                enviando 
-                  ? "bg-surface text-ink/40 pointer-events-none" 
-                  : "bg-surface text-ink/60 hover:bg-line"
-              }`}
-            >
-              {enviando ? (
-                <>
-                  <Loader2 className="h-3 w-3 animate-spin" /> Enviando...
-                </>
-              ) : (
-                <>
-                  <ImagePlus className="h-4 w-4" /> Adicionar mais fotos
-                </>
-              )}
-            </label>
-          </div>
-        )}
-      </div>
+      <Lightbox 
+        urlAberta={urlAberta} 
+        aoFechar={fechar} 
+      />
 
-      <Lightbox url={urlAberta} onClose={fechar} />
+      {/* Modal de Escolha de Foto */}
+      {mostrarOpcoesFoto && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 backdrop-blur-sm sm:items-center animate-in fade-in">
+          <div className="w-full bg-white rounded-t-3xl sm:rounded-2xl sm:max-w-sm overflow-hidden p-6 animate-in slide-in-from-bottom-10 sm:zoom-in-95">
+            <h3 className="text-lg font-bold text-ink mb-4 text-center">Como deseja enviar a foto?</h3>
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={() => { inputCameraRef.current?.click(); }}
+                className="flex items-center gap-3 w-full p-4 rounded-xl bg-surface hover:bg-brand/10 hover:text-brand transition-colors text-ink font-semibold"
+              >
+                <Camera className="h-5 w-5" />
+                Tirar Foto
+              </button>
+              <button
+                type="button"
+                onClick={() => { inputGaleriaRef.current?.click(); }}
+                className="flex items-center gap-3 w-full p-4 rounded-xl bg-surface hover:bg-brand/10 hover:text-brand transition-colors text-ink font-semibold"
+              >
+                <Upload className="h-5 w-5" />
+                Escolher da Galeria
+              </button>
+              <button
+                type="button"
+                onClick={() => setMostrarOpcoesFoto(false)}
+                className="mt-2 w-full p-4 rounded-xl bg-ink/5 text-ink/60 hover:bg-ink/10 font-bold transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { api, ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog, AlertDialog } from "@/components/ui/Dialogs";
 import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Bus, UploadCloud, Trash2, CheckCircle2, AlertTriangle } from "lucide-react";
@@ -16,6 +17,8 @@ export function OnibusSection({ token }: { token: string }) {
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [excluindoId, setExcluindoId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{aberto: boolean, id: string, prefixo: string}>({aberto: false, id: "", prefixo: ""});
+  const [alertInfo, setAlertInfo] = useState<{aberto: boolean, mensagem: string}>({aberto: false, mensagem: ""});
 
   const listaFiltrada = lista.filter(o => o.prefixo.toLowerCase().includes(busca.toLowerCase()));
 
@@ -65,13 +68,17 @@ export function OnibusSection({ token }: { token: string }) {
   }
 
   async function handleExcluir(id: string, prefixo: string) {
-    if (!confirm(`Excluir o ônibus ${prefixo}?`)) return;
+    setConfirmDelete({ aberto: true, id, prefixo });
+  }
+
+  async function executarExclusao() {
+    const { id } = confirmDelete;
     setExcluindoId(id);
     try {
       await api.excluirOnibus(token, id);
-      setLista((atual) => atual.filter((o) => o.id !== id));
+      setLista((atual) => atual.filter((u) => u.id !== id));
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Falha ao excluir.");
+      setAlertInfo({ aberto: true, mensagem: err instanceof ApiError ? err.message : "Falha ao excluir." });
     } finally {
       setExcluindoId(null);
     }
@@ -213,4 +220,5 @@ export function OnibusSection({ token }: { token: string }) {
     </div>
   );
 }
+
 

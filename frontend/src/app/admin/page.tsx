@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ConfirmDialog } from "@/components/ui/Dialogs";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Trash2, Bus, Clock, CheckCircle, XCircle } from "lucide-react";
@@ -25,6 +26,7 @@ export default function AdminDashboardPage() {
   const [limpezas, setLimpezas] = useState<LimpezaFinaResumo[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [excluindoId, setExcluindoId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{aberto: boolean, id: string, prefixo: string}>({aberto: false, id: "", prefixo: ""});
 
   useEffect(() => {
     if (!usuario) return;
@@ -37,8 +39,13 @@ export default function AdminDashboardPage() {
 
   async function handleExcluir(e: React.MouseEvent, id: string, prefixo: string) {
     e.preventDefault();
-    if (!usuario || !confirm(`Excluir o registro de limpeza do ônibus ${prefixo}?`)) return;
+    if (!usuario) return;
+    setConfirmDelete({ aberto: true, id, prefixo });
+  }
 
+  async function executarExclusao() {
+    if (!usuario) return;
+    const { id } = confirmDelete;
     setErro(null);
     setExcluindoId(id);
     try {
@@ -54,7 +61,7 @@ export default function AdminDashboardPage() {
   if (!usuario) return null;
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl">`n      <ConfirmDialog `n        aberto={confirmDelete.aberto}`n        titulo="Excluir Limpeza"`n        mensagem={`Tem certeza que deseja excluir o registro do �nibus ${confirmDelete.prefixo}?`}`n        tipo="danger"`n        textoConfirmar="Excluir"`n        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}`n        onConfirmar={executarExclusao}`n      />
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight text-ink">Dashboard de Limpezas</h1>
         <p className="text-ink/60">Acompanhe e avalie as execuções de limpeza fina da frota.</p>
@@ -167,4 +174,6 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+
 

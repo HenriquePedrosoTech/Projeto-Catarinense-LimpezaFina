@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { api, ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog, AlertDialog } from "@/components/ui/Dialogs";
 import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { ListChecks, Trash2, Edit2, Info } from "lucide-react";
@@ -17,6 +18,8 @@ export function EtapasSection({ token }: { token: string }) {
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [excluindoId, setExcluindoId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{aberto: boolean, id: string, nomeEtapa: string}>({aberto: false, id: "", nomeEtapa: ""});
+  const [alertInfo, setAlertInfo] = useState<{aberto: boolean, mensagem: string}>({aberto: false, mensagem: ""});
   
   const [etapaEditando, setEtapaEditando] = useState<EtapaPadraoResumo | null>(null);
 
@@ -50,13 +53,17 @@ export function EtapasSection({ token }: { token: string }) {
   }
 
   async function handleExcluir(id: string, nomeEtapa: string) {
-    if (!confirm(`Excluir a etapa "${nomeEtapa}"?`)) return;
+    setConfirmDelete({ aberto: true, id, nomeEtapa });
+  }
+
+  async function executarExclusao() {
+    const { id } = confirmDelete;
     setExcluindoId(id);
     try {
       await api.excluirEtapaPadrao(token, id);
-      setLista((atual) => atual.filter((e) => e.id !== id));
+      setLista((atual) => atual.filter((u) => u.id !== id));
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Falha ao excluir.");
+      setAlertInfo({ aberto: true, mensagem: err instanceof ApiError ? err.message : "Falha ao excluir." });
     } finally {
       setExcluindoId(null);
     }

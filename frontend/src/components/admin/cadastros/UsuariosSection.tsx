@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { api, ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { ConfirmDialog, AlertDialog } from "@/components/ui/Dialogs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Users, Trash2, ShieldCheck, User as UserIcon } from "lucide-react";
 import type { UsuarioResumo } from "@/lib/types";
@@ -18,6 +19,8 @@ export function UsuariosSection({ token }: { token: string }) {
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [excluindoId, setExcluindoId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{aberto: boolean, id: string, nomeUsuario: string}>({aberto: false, id: "", nomeUsuario: ""});
+  const [alertInfo, setAlertInfo] = useState<{aberto: boolean, mensagem: string}>({aberto: false, mensagem: ""});
 
   const carregar = () => {
     api.listarUsuarios(token).then(setLista).catch(() => {});
@@ -44,20 +47,24 @@ export function UsuariosSection({ token }: { token: string }) {
   }
 
   async function handleExcluir(id: string, nomeUsuario: string) {
-    if (!confirm(`Excluir o usuÃ¡rio "${nomeUsuario}"?`)) return;
+    setConfirmDelete({ aberto: true, id, nomeUsuario });
+  }
+
+  async function executarExclusao() {
+    const { id } = confirmDelete;
     setExcluindoId(id);
     try {
       await api.excluirUsuario(token, id);
       setLista((atual) => atual.filter((u) => u.id !== id));
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Falha ao excluir.");
+      setAlertInfo({ aberto: true, mensagem: err instanceof ApiError ? err.message : "Falha ao excluir." });
     } finally {
       setExcluindoId(null);
     }
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid gap-6 lg:grid-cols-3">`n      <ConfirmDialog `n        aberto={confirmDelete.aberto}`n        titulo="Excluir Usuário"`n        mensagem={`Tem certeza que deseja excluir o usuário "${confirmDelete.nomeUsuario}"?`}`n        tipo="danger"`n        textoConfirmar="Excluir"`n        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}`n        onConfirmar={executarExclusao}`n      />`n      <AlertDialog `n        aberto={alertInfo.aberto}`n        titulo="Atenção"`n        mensagem={alertInfo.mensagem}`n        tipo="danger"`n        onClose={() => setAlertInfo({ ...alertInfo, aberto: false })}`n      />
       {/* Coluna de Cadastro */}
       <div className="lg:col-span-1">
         <Card>
@@ -162,4 +169,6 @@ export function UsuariosSection({ token }: { token: string }) {
     </div>
   );
 }
+
+
 

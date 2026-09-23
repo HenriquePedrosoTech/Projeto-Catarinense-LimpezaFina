@@ -113,7 +113,7 @@ public class LimpezasFinasController : ControllerBase
     [HttpPost("{id:guid}/finalizar")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> Finalizar(Guid id)
     {
-        var resultado = await _finalizarUseCase.ExecutarAsync(new FinalizarLimpezaFinaRequest(id));
+        var resultado = await _finalizarUseCase.ExecutarAsync(new FinalizarLimpezaFinaRequest(id, _configuration["Frontend:UrlBaseDetalhesLimpeza"] ?? "https://catarinense-limpezafina.vercel.app/admin/limpeza"));
         return Ok(resultado);
     }
 
@@ -209,3 +209,4 @@ public class LimpezasFinasController : ControllerBase
 
 public record IniciarLimpezaFinaBody(string PrefixoOnibus);
 public record DefinirNumeroOSBody(string NumeroOS);
+

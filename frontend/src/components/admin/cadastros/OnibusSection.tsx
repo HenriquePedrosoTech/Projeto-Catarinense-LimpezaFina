@@ -86,6 +86,22 @@ export function OnibusSection({ token }: { token: string }) {
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
+      <ConfirmDialog 
+        aberto={confirmDelete.aberto}
+        titulo="Excluir Onibus"
+        mensagem={`Tem certeza que deseja excluir o onibus ${confirmDelete.prefixo}?`}
+        tipo="danger"
+        textoConfirmar="Excluir"
+        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}
+        onConfirmar={executarExclusao}
+      />
+      <AlertDialog 
+        aberto={alertInfo.aberto}
+        titulo="Atencao"
+        mensagem={alertInfo.mensagem}
+        tipo="danger"
+        onClose={() => setAlertInfo({ ...alertInfo, aberto: false })}
+      />
       {/* Coluna Esquerda: Cadastro e Importação */}
       <div className="space-y-6">
         <Card>

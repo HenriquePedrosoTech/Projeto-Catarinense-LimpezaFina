@@ -71,6 +71,22 @@ export function EtapasSection({ token }: { token: string }) {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      <ConfirmDialog 
+        aberto={confirmDelete.aberto}
+        titulo="Excluir Etapa Padrao"
+        mensagem={`Tem certeza que deseja excluir a etapa "${confirmDelete.nomeEtapa}"?`}
+        tipo="danger"
+        textoConfirmar="Excluir"
+        onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}
+        onConfirmar={executarExclusao}
+      />
+      <AlertDialog 
+        aberto={alertInfo.aberto}
+        titulo="Atencao"
+        mensagem={alertInfo.mensagem}
+        tipo="danger"
+        onClose={() => setAlertInfo({ ...alertInfo, aberto: false })}
+      />
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">

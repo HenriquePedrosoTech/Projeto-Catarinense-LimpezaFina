@@ -68,7 +68,7 @@ export function UsuariosSection({ token }: { token: string }) {
       <ConfirmDialog 
         aberto={confirmDelete.aberto}
         titulo="Excluir Usu�rio"
-        mensagem={`Tem certeza que deseja excluir o usu�rio "${confirmDelete.nomeUsuario}"?`}
+        mensagem={`Tem certeza que deseja excluir o usuario "${confirmDelete.nomeUsuario}"?`}
         tipo="danger"
         textoConfirmar="Excluir"
         onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}

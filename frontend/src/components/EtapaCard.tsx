@@ -202,7 +202,7 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
       {/* Modal de Escolha de Foto */}
       {mostrarOpcoesFoto && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 backdrop-blur-sm sm:items-center animate-in fade-in">
-          <div className="w-full bg-white rounded-t-3xl sm:rounded-2xl sm:max-w-sm overflow-hidden p-6 animate-in slide-in-from-bottom-10 sm:zoom-in-95">
+          <div className="w-full bg-white rounded-t-3xl sm:rounded-2xl sm:max-w-sm overflow-hidden p-6 pb-12 sm:pb-6 animate-in slide-in-from-bottom-10 sm:zoom-in-95">
             <h3 className="text-lg font-bold text-ink mb-4 text-center">Como deseja enviar a foto?</h3>
             <div className="flex flex-col gap-3">
               <button

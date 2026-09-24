@@ -1,4 +1,4 @@
-﻿using Catarinense.Application.Common;
+using Catarinense.Application.Common;
 using Catarinense.Application.DTOs;
 using Catarinense.Application.Exceptions;
 using Catarinense.Application.Interfaces;
@@ -37,7 +37,7 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
     public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(FinalizarLimpezaFinaRequest request)
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(request.LimpezaFinaId)
-            ?? throw new NotFoundException("Registro de limpeza fina não encontrado.");
+            ?? throw new NotFoundException("Registro de limpeza fina n�o encontrado.");
 
         var etapas = await _etapaPadraoRepository.ListarAsync();
         var etapaCortina = etapas.FirstOrDefault(e => e.Nome.ToUpper().Contains("CORTINA"));
@@ -75,22 +75,23 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
                     : $"{urlBaseDetalhes.TrimEnd('/')}/{limpeza.Id}";
 
                 var corpoHtml = $@"
-                    <h2>Limpeza Fina Concluída</h2>
-                    <p>O operador <strong>{nomeOperador}</strong> finalizou a limpeza fina do ônibus <strong>{prefixo}</strong>.</p>
+                    <h2>Limpeza Fina Conclu�da</h2>
+                    <p>O operador <strong>{nomeOperador}</strong> finalizou a limpeza fina do �nibus <strong>{prefixo}</strong>.</p>
                     <p>Acesse o painel para revisar as fotos e aprovar/reprovar a limpeza.</p>
                     {(string.IsNullOrEmpty(link) ? "" : $"<p><a href='{link}'>Clique aqui para ver os detalhes</a></p>")}
                 ";
 
                 await _emailService.EnviarAsync(new EmailMensagem(
                     emailsAdmins,
-                    $"Aviso: Limpeza Fina Concluída - Ônibus {prefixo}",
+                    $"Aviso: Limpeza Fina Conclu�da - �nibus {prefixo}",
                     corpoHtml
                 ));
             }
         }
-        catch
+        catch (System.Exception ex)
         {
-            // Falhas de notificação não devem impedir a finalização da limpeza
+            System.Console.WriteLine("ERRO AO ENVIAR EMAIL: " + ex.Message);
+            System.Console.WriteLine(ex.StackTrace);
         }
     }
 }

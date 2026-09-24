@@ -11,6 +11,10 @@
     <ProjectReference Include="..\Catarinense.Domain\Catarinense.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+  </ItemGroup>
+
   <!--
     Regra de arquitetura: este projeto só pode referenciar o Domain.
     Não deve depender de Infrastructure, API, EF Core, ASP.NET Core, etc.

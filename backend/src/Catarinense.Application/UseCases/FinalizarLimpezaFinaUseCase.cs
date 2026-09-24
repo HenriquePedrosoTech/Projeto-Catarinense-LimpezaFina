@@ -8,6 +8,7 @@ using Catarinense.Domain.Enums;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Catarinense.Application.UseCases;
 
@@ -18,7 +19,7 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
     private readonly DetalhesDtoBuilder _detalhesDtoBuilder;
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IOnibusRepository _onibusRepository;
-    private readonly IEmailService _emailService;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     public FinalizarLimpezaFinaUseCase(
         ILimpezaFinaRepository limpezaFinaRepository, 
@@ -26,14 +27,14 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
         DetalhesDtoBuilder detalhesDtoBuilder,
         IUsuarioRepository usuarioRepository,
         IOnibusRepository onibusRepository,
-        IEmailService emailService)
+        IServiceScopeFactory scopeFactory)
     {
         _limpezaFinaRepository = limpezaFinaRepository;
         _etapaPadraoRepository = etapaPadraoRepository;
         _detalhesDtoBuilder = detalhesDtoBuilder;
         _usuarioRepository = usuarioRepository;
         _onibusRepository = onibusRepository;
-        _emailService = emailService;
+        _scopeFactory = scopeFactory;
     }
 
     public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(FinalizarLimpezaFinaRequest request)
@@ -80,10 +81,13 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
                 corpoHtml
             );
 
-            // 2. Despacha o SMTP em background e NÃO faz await
+            // 2. Cria um novo escopo para rodar o serviço em background com segurança
             _ = Task.Run(async () => {
+                using var scope = _scopeFactory.CreateScope();
+                var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                
                 try {
-                    await _emailService.EnviarAsync(msg);
+                    await emailService.EnviarAsync(msg);
                     Console.WriteLine("EMAIL ENVIADO COM SUCESSO BACKGROUND!");
                 } catch(Exception ex) {
                     Console.WriteLine("ERRO AO ENVIAR EMAIL NO BACKGROUND: " + ex.Message);

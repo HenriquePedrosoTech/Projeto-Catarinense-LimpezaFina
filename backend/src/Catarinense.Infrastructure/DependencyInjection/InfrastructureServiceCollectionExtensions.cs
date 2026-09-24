@@ -71,7 +71,10 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IExcluirEtapaPadraoUseCase, Catarinense.Application.UseCases.ExcluirEtapaPadraoUseCase>();
         services.AddScoped<IConsultarDadosMestresUseCase, Catarinense.Application.UseCases.ConsultarDadosMestresUseCase>();
 
+        services.AddHostedService<KeepAliveDbService>();
+
         return services;
     }
 }
+
 

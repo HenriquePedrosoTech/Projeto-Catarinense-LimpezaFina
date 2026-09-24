@@ -73,8 +73,8 @@ export function UsuariosSection({ token }: { token: string }) {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <ConfirmDialog 
-        aberto={confirmDelete.aberto}
-        titulo="Excluir Usu�rio"
+        titulo="Excluir Usuário"
+        mensagem={`Tem certeza que deseja excluir o usuario "${confirmDelete.nomeUsuario}"?`}
         mensagem={`Tem certeza que deseja excluir o usuario "${confirmDelete.nomeUsuario}"?`}
         tipo="danger"
         textoConfirmar="Excluir"
@@ -83,7 +83,7 @@ export function UsuariosSection({ token }: { token: string }) {
       />
       <AlertDialog 
         aberto={alertInfo.aberto}
-        titulo="Aten��o"
+        titulo="Atenção"
         mensagem={alertInfo.mensagem}
         tipo="danger"
         onClose={() => setAlertInfo({ ...alertInfo, aberto: false })}

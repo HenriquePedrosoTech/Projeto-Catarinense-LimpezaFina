@@ -82,7 +82,7 @@ export function EtapasSection({ token }: { token: string }) {
       />
       <AlertDialog 
         aberto={alertInfo.aberto}
-        titulo="Atencao"
+        titulo="Atenção"
         mensagem={alertInfo.mensagem}
         tipo="danger"
         onClose={() => setAlertInfo({ ...alertInfo, aberto: false })}

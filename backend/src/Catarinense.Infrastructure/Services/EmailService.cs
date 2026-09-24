@@ -1,16 +1,12 @@
-using System.Net;
-using System.Net.Mail;
-using Catarinense.Application.Interfaces;
+﻿using Catarinense.Application.Interfaces;
 using Catarinense.Infrastructure.Options;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Options;
+using MimeKit;
 
 namespace Catarinense.Infrastructure.Services;
 
-/// <summary>
-/// Envia e-mail via SMTP usando System.Net.Mail (nativo do .NET, sem dependência extra).
-/// Se a empresa preferir um provedor tipo SendGrid/SES no futuro, basta trocar esta
-/// classe — o resto do sistema não muda, pois depende só de IEmailService.
-/// </summary>
 public class EmailService : IEmailService
 {
     private readonly SmtpOptions _opcoes;
@@ -22,23 +18,44 @@ public class EmailService : IEmailService
 
     public async Task EnviarAsync(EmailMensagem mensagem)
     {
-        using var cliente = new SmtpClient(_opcoes.Host, _opcoes.Porta)
-        {
-            Credentials = new NetworkCredential(_opcoes.Usuario, _opcoes.Senha),
-            EnableSsl = _opcoes.UsarSsl
-        };
-
-        using var email = new MailMessage
-        {
-            From = new MailAddress(_opcoes.RemetenteEmail, _opcoes.RemetenteNome),
-            Subject = mensagem.Assunto,
-            Body = mensagem.CorpoHtml,
-            IsBodyHtml = true
-        };
-
+        var mimeMessage = new MimeMessage();
+        mimeMessage.From.Add(new MailboxAddress(_opcoes.RemetenteNome, _opcoes.RemetenteEmail));
+        
         foreach (var destinatario in mensagem.Destinatarios)
-            email.To.Add(destinatario);
+        {
+            mimeMessage.To.Add(MailboxAddress.Parse(destinatario));
+        }
 
-        await cliente.SendMailAsync(email);
+        mimeMessage.Subject = mensagem.Assunto;
+
+        var bodyBuilder = new BodyBuilder
+        {
+            HtmlBody = mensagem.CorpoHtml
+        };
+        mimeMessage.Body = bodyBuilder.ToMessageBody();
+
+        using var client = new SmtpClient();
+        
+        // Timeout menor para não pendurar
+        client.Timeout = 10000;
+
+        // SecureSocketOptions.StartTls é o padrão correto para porta 587
+        var secureOption = _opcoes.UsarSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.None;
+
+        // Se a porta for 465 explícita e pedir SSL, o MailKit entende Auto, mas SslOnConnect é mais seguro para porta 465
+        if (_opcoes.Porta == 465 && _opcoes.UsarSsl)
+        {
+            secureOption = SecureSocketOptions.SslOnConnect;
+        }
+
+        await client.ConnectAsync(_opcoes.Host, _opcoes.Porta, secureOption);
+
+        if (!string.IsNullOrEmpty(_opcoes.Usuario))
+        {
+            await client.AuthenticateAsync(_opcoes.Usuario, _opcoes.Senha);
+        }
+
+        await client.SendAsync(mimeMessage);
+        await client.DisconnectAsync(true);
     }
 }

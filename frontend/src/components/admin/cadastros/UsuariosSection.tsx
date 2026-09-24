@@ -72,9 +72,9 @@ export function UsuariosSection({ token }: { token: string }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
-      <ConfirmDialog 
+      <ConfirmDialog
+        aberto={confirmDelete.aberto}
         titulo="Excluir Usuário"
-        mensagem={`Tem certeza que deseja excluir o usuario "${confirmDelete.nomeUsuario}"?`}
         mensagem={`Tem certeza que deseja excluir o usuario "${confirmDelete.nomeUsuario}"?`}
         tipo="danger"
         textoConfirmar="Excluir"

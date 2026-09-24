@@ -52,7 +52,17 @@ public static class InfrastructureServiceCollectionExtensions
             services.AddScoped<IEmailService, EmailService>();
         }
 
-        services.AddScoped<IArmazenamentoArquivoService, ArmazenamentoArquivoLocalService>();
+        
+        var firebaseBucket = configuration["Firebase:StorageBucket"];
+        if (!string.IsNullOrWhiteSpace(firebaseBucket))
+        {
+            services.AddScoped<IArmazenamentoArquivoService, FirebaseStorageService>();
+        }
+        else
+        {
+            services.AddScoped<IArmazenamentoArquivoService, ArmazenamentoArquivoLocalService>();
+        }
+
 
         // Casos de uso (Application)
         services.AddScoped<IAutenticarUsuarioUseCase, Catarinense.Application.UseCases.AutenticarUsuarioUseCase>();

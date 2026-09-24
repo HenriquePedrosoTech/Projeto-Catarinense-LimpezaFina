@@ -22,7 +22,7 @@ public class ArmazenamentoArquivoLocalService : IArmazenamentoArquivoService
         _opcoes = opcoes.Value;
     }
 
-    public async Task<string> SalvarFotoAsync(Stream conteudo, string nomeArquivoOriginal, string contentType)
+    public async Task<string> SalvarFotoAsync(Stream conteudo, string nomeArquivoOriginal, string contentType, string prefixo = "")
     {
         var extensao = Path.GetExtension(nomeArquivoOriginal);
         if (string.IsNullOrWhiteSpace(extensao) || !ExtensoesPermitidas.Contains(extensao))

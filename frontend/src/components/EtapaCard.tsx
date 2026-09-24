@@ -118,7 +118,13 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
               />
               <button
                 type="button"
-                onClick={() => setMostrarOpcoesFoto(true)}
+                onClick={() => {
+                    if (window.innerWidth >= 640) {
+                      inputGaleriaRef.current?.click();
+                    } else {
+                      setMostrarOpcoesFoto(true);
+                    }
+                  }}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-ink/40 hover:bg-brand/10 hover:text-brand transition-colors"
               >
                 <Camera className="h-5 w-5" />
@@ -145,7 +151,13 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
               />
               <button
                 type="button"
-                onClick={() => setMostrarOpcoesFoto(true)}
+                onClick={() => {
+                    if (window.innerWidth >= 640) {
+                      inputGaleriaRef.current?.click();
+                    } else {
+                      setMostrarOpcoesFoto(true);
+                    }
+                  }}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand hover:bg-brand hover:text-white transition-colors"
               >
                 <ImagePlus className="h-5 w-5" />

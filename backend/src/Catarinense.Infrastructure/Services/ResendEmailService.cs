@@ -22,7 +22,7 @@ public class ResendEmailService : IEmailService
         // O Resend exige que o domínio do remetente seja validado na plataforma deles.
         // Se usar o domínio @jcatlm.com.br, ele precisa estar validado lá.
         // Senão, para testes, o Resend usa o "onboarding@resend.dev" enviando só pro seu email cadastrado.
-        _remetenteEmail = configuration["Smtp:RemetenteEmail"] ?? "onboarding@resend.dev";
+        _remetenteEmail = "onboarding@resend.dev";
     }
 
     public async Task EnviarAsync(EmailMensagem mensagem)

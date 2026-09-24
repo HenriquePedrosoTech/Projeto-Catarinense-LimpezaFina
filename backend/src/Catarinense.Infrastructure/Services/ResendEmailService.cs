@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Catarinense.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Catarinense.Infrastructure.Services;
 
@@ -13,16 +14,14 @@ public class ResendEmailService : IEmailService
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
     private readonly string _remetenteEmail;
+    private readonly ILogger<ResendEmailService> _logger;
 
-    public ResendEmailService(HttpClient httpClient, IConfiguration configuration)
+    public ResendEmailService(HttpClient httpClient, IConfiguration configuration, ILogger<ResendEmailService> logger)
     {
         _httpClient = httpClient;
         _apiKey = configuration["Resend:ApiKey"] ?? "";
-        
-        // O Resend exige que o domínio do remetente seja validado na plataforma deles.
-        // Se usar o domínio @jcatlm.com.br, ele precisa estar validado lá.
-        // Senão, para testes, o Resend usa o "onboarding@resend.dev" enviando só pro seu email cadastrado.
         _remetenteEmail = "onboarding@resend.dev";
+        _logger = logger;
     }
 
     public async Task EnviarAsync(EmailMensagem mensagem)
@@ -37,9 +36,23 @@ public class ResendEmailService : IEmailService
             html = mensagem.CorpoHtml
         };
 
-        var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+        var json = JsonSerializer.Serialize(payload);
+        _logger.LogInformation("Enviando para Resend: {Json}", json);
+
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync("https://api.resend.com/emails", content);
-        response.EnsureSuccessStatusCode();
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            var erro = await response.Content.ReadAsStringAsync();
+            _logger.LogError("Resend API retornou erro {Status}: {Erro}", response.StatusCode, erro);
+            response.EnsureSuccessStatusCode();
+        }
+        else
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Resend respondeu SUCESSO: {Result}", result);
+        }
     }
 }

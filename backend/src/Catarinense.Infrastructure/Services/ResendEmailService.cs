@@ -20,7 +20,12 @@ public class ResendEmailService : IEmailService
     {
         _httpClient = httpClient;
         _apiKey = configuration["Resend:ApiKey"] ?? "";
-        _remetenteEmail = "onboarding@resend.dev";
+        
+        var dominioVerificado = configuration["Resend:DominioVerificado"] == "true";
+        _remetenteEmail = dominioVerificado 
+            ? (configuration["Smtp:RemetenteEmail"] ?? "sistema@seu-dominio.com") 
+            : "onboarding@resend.dev";
+            
         _logger = logger;
     }
 

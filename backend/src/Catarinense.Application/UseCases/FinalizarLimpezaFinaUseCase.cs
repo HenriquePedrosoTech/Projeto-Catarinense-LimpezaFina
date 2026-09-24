@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Catarinense.Application.UseCases;
 
@@ -20,6 +21,7 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IOnibusRepository _onibusRepository;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger<FinalizarLimpezaFinaUseCase> _logger;
 
     public FinalizarLimpezaFinaUseCase(
         ILimpezaFinaRepository limpezaFinaRepository, 
@@ -27,7 +29,8 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
         DetalhesDtoBuilder detalhesDtoBuilder,
         IUsuarioRepository usuarioRepository,
         IOnibusRepository onibusRepository,
-        IServiceScopeFactory scopeFactory)
+        IServiceScopeFactory scopeFactory,
+        ILogger<FinalizarLimpezaFinaUseCase> logger)
     {
         _limpezaFinaRepository = limpezaFinaRepository;
         _etapaPadraoRepository = etapaPadraoRepository;
@@ -35,6 +38,7 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
         _usuarioRepository = usuarioRepository;
         _onibusRepository = onibusRepository;
         _scopeFactory = scopeFactory;
+        _logger = logger;
     }
 
     public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(FinalizarLimpezaFinaRequest request)
@@ -50,12 +54,13 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
         _limpezaFinaRepository.Atualizar(limpeza);
         await _limpezaFinaRepository.SalvarAlteracoesAsync();
 
-        // 1. Busca os dados de forma sincrona (para evitar conflito no DbContext)
         var usuarios = await _usuarioRepository.ListarAsync();
         var emailsAdmins = usuarios
             .Where(u => u.Perfil == PerfilUsuario.Administrador && u.Ativo && !string.IsNullOrWhiteSpace(u.Email))
             .Select(u => u.Email!)
             .ToList();
+
+        _logger.LogInformation("Encontrados {Count} admins com e-mail cadastrado.", emailsAdmins.Count);
 
         if (emailsAdmins.Any())
         {
@@ -81,19 +86,26 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
                 corpoHtml
             );
 
-            // 2. Cria um novo escopo para rodar o serviço em background com segurança
+            _logger.LogInformation("Iniciando envio de email em background para: {Emails}", string.Join(", ", emailsAdmins));
+
             _ = Task.Run(async () => {
                 using var scope = _scopeFactory.CreateScope();
                 var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                var loggerBg = scope.ServiceProvider.GetRequiredService<ILogger<FinalizarLimpezaFinaUseCase>>();
                 
                 try {
                     await emailService.EnviarAsync(msg);
-                    Console.WriteLine("EMAIL ENVIADO COM SUCESSO BACKGROUND!");
+                    loggerBg.LogInformation("============================================");
+                    loggerBg.LogInformation("EMAIL ENVIADO COM SUCESSO BACKGROUND!");
+                    loggerBg.LogInformation("============================================");
                 } catch(Exception ex) {
-                    Console.WriteLine("ERRO AO ENVIAR EMAIL NO BACKGROUND: " + ex.Message);
-                    Console.WriteLine(ex.StackTrace);
+                    loggerBg.LogError(ex, "ERRO CRITICO AO ENVIAR EMAIL NO BACKGROUND!");
                 }
             });
+        }
+        else
+        {
+            _logger.LogWarning("Nenhum email disparado pois a lista de administradores ativos com e-mail é vazia!");
         }
 
         return await _detalhesDtoBuilder.ConstruirAsync(limpeza);

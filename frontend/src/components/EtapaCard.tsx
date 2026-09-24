@@ -207,7 +207,7 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
             <div className="flex flex-col gap-3">
               <button
                 type="button"
-                onClick={() => { inputCameraRef.current?.click(); }}
+                onClick={() => { inputCameraRef.current?.click(); setMostrarOpcoesFoto(false); }}
                 className="flex items-center gap-3 w-full p-4 rounded-xl bg-surface hover:bg-brand/10 hover:text-brand transition-colors text-ink font-semibold"
               >
                 <Camera className="h-5 w-5" />
@@ -215,7 +215,7 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: 
               </button>
               <button
                 type="button"
-                onClick={() => { inputGaleriaRef.current?.click(); }}
+                onClick={() => { inputGaleriaRef.current?.click(); setMostrarOpcoesFoto(false); }}
                 className="flex items-center gap-3 w-full p-4 rounded-xl bg-surface hover:bg-brand/10 hover:text-brand transition-colors text-ink font-semibold"
               >
                 <Upload className="h-5 w-5" />

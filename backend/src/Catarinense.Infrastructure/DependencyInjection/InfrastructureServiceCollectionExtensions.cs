@@ -41,7 +41,17 @@ public static class InfrastructureServiceCollectionExtensions
         // Serviços de infraestrutura
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-        services.AddScoped<IEmailService, EmailService>();
+        
+        var resendApiKey = configuration["Resend:ApiKey"];
+        if (!string.IsNullOrWhiteSpace(resendApiKey))
+        {
+            services.AddHttpClient<IEmailService, ResendEmailService>();
+        }
+        else
+        {
+            services.AddScoped<IEmailService, EmailService>();
+        }
+
         services.AddScoped<IArmazenamentoArquivoService, ArmazenamentoArquivoLocalService>();
 
         // Casos de uso (Application)

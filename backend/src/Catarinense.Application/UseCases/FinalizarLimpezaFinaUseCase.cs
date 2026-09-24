@@ -93,6 +93,8 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
                 var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
                 var loggerBg = scope.ServiceProvider.GetRequiredService<ILogger<FinalizarLimpezaFinaUseCase>>();
                 
+                loggerBg.LogInformation("--> BACKGROUND TASK INICIADA! Tentando conectar no SMTP...");
+
                 try {
                     await emailService.EnviarAsync(msg);
                     loggerBg.LogInformation("============================================");

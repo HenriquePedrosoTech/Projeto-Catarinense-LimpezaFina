@@ -19,7 +19,8 @@ public class TrocarSenhaUsuarioUseCase : ITrocarSenhaUsuarioUseCase
         var usuario = await _usuarioRepository.ObterPorIdAsync(usuarioId)
             ?? throw new NotFoundException("Usuario nao encontrado.");
 
-        usuario.TrocarSenha(request.NovaSenha);
+        var senhaHash = BCrypt.Net.BCrypt.HashPassword(request.NovaSenha);
+        usuario.TrocarSenha(senhaHash);
 
         _usuarioRepository.Atualizar(usuario);
         await _usuarioRepository.SalvarAlteracoesAsync();

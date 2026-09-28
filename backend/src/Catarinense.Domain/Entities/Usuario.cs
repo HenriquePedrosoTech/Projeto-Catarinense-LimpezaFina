@@ -3,6 +3,9 @@ using Catarinense.Domain.Exceptions;
 
 namespace Catarinense.Domain.Entities;
 
+/// <summary>
+/// Representa um colaborador que pode operar (executar limpeza) ou administrar (validar/notificar) o sistema.
+/// </summary>
 public class Usuario : EntidadeBase
 {
     public string Matricula { get; private set; } = string.Empty;
@@ -15,70 +18,64 @@ public class Usuario : EntidadeBase
     public int TentativasFalhasLogin { get; private set; }
     public DateTime? BloqueadoAte { get; private set; }
 
-    protected Usuario() { }
+    private const int MaximoTentativasFalhas = 5;
+    private static readonly TimeSpan DuracaoBloqueio = TimeSpan.FromMinutes(15);
+
+    protected Usuario() { } // uso por ORM
 
     public Usuario(string matricula, string nome, string senhaHash, PerfilUsuario perfil, string? email = null)
     {
         if (string.IsNullOrWhiteSpace(matricula))
-            throw new DomainException("A matrcula Ǹ obrigatria.");
+            throw new DomainException("A matrícula é obrigatória.");
 
         if (string.IsNullOrWhiteSpace(nome))
-            throw new DomainException("O nome Ǹ obrigatrio.");
+            throw new DomainException("O nome é obrigatório.");
 
         if (string.IsNullOrWhiteSpace(senhaHash))
-            throw new DomainException("A senha Ǹ obrigatria.");
+            throw new DomainException("A senha é obrigatória.");
 
         Matricula = matricula.Trim();
         Nome = nome.Trim();
         SenhaHash = senhaHash;
         Perfil = perfil;
-        Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
+        Email = email?.Trim();
     }
 
-    public void TrocarSenha(string novaSenha)
-    {
-        SenhaHash = BCrypt.Net.BCrypt.HashPassword(novaSenha);
-        PrecisaTrocarSenha = false;
-    }
-
-    public void Renomear(string nome)
+    
+    public void Atualizar(string nome, string? email, string? senhaHash = null)
     {
         if (string.IsNullOrWhiteSpace(nome))
-            throw new DomainException("O nome Ǹ obrigatrio.");
-
+            throw new DomainException("O nome e obrigatorio.");
         Nome = nome.Trim();
-    }
-
-    public void AtualizarEmail(string? email)
-    {
         Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
+        if (!string.IsNullOrWhiteSpace(senhaHash))
+            SenhaHash = senhaHash;
     }
-
-    public void AlterarPerfil(PerfilUsuario novoPerfil)
-    {
-        Perfil = novoPerfil;
-    }
-
     public void Desativar() => Ativo = false;
+
     public void Ativar() => Ativo = true;
 
-    public void RegistrarFalhaLogin(int maxTentativas, int minutosBloqueio)
+    public bool EhAdministrador() => Perfil == PerfilUsuario.Administrador;
+
+    /// <summary>Verdadeiro enquanto o bloqueio temporário por tentativas erradas ainda estiver valendo.</summary>
+    public bool EstaBloqueado() => BloqueadoAte is not null && BloqueadoAte > DateTime.UtcNow;
+
+    /// <summary>Chamado quando a senha informada no login está errada. Bloqueia temporariamente após 5 erros seguidos.</summary>
+    public void RegistrarTentativaFalha()
     {
         TentativasFalhasLogin++;
-        if (TentativasFalhasLogin >= maxTentativas)
+        if (TentativasFalhasLogin >= MaximoTentativasFalhas)
         {
-            BloqueadoAte = DateTime.UtcNow.AddMinutes(minutosBloqueio);
+            BloqueadoAte = DateTime.UtcNow.Add(DuracaoBloqueio);
+            TentativasFalhasLogin = 0;
         }
     }
 
-    public void ResetarFalhasLogin()
+    /// <summary>Chamado em todo login bem-sucedido, para zerar o contador de tentativas erradas.</summary>
+    public void RegistrarLoginComSucesso()
     {
         TentativasFalhasLogin = 0;
         BloqueadoAte = null;
     }
-
-    public bool EstaBloqueado()
-    {
-        return BloqueadoAte.HasValue && BloqueadoAte.Value > DateTime.UtcNow;
-    }
 }
+

@@ -2,6 +2,10 @@ using Catarinense.Domain.Exceptions;
 
 namespace Catarinense.Domain.Entities;
 
+/// <summary>
+/// Representa a execução de uma EtapaPadrao dentro de um registro específico de LimpezaFina,
+/// contendo as fotos de evidência daquela etapa.
+/// </summary>
 public class LimpezaEtapaExecucao : EntidadeBase
 {
     public Guid LimpezaFinaId { get; private set; }
@@ -11,35 +15,25 @@ public class LimpezaEtapaExecucao : EntidadeBase
     private readonly List<FotoEtapa> _fotos = new();
     public IReadOnlyCollection<FotoEtapa> Fotos => _fotos.AsReadOnly();
 
-    private readonly List<EtapaItemExecucao> _itens = new();
-    public IReadOnlyCollection<EtapaItemExecucao> Itens => _itens.AsReadOnly();
-
-    public EtapaPadrao? EtapaPadrao { get; private set; }
-
     protected LimpezaEtapaExecucao() { }
 
     public LimpezaEtapaExecucao(Guid limpezaFinaId, Guid etapaPadraoId)
     {
         if (limpezaFinaId == Guid.Empty)
-            throw new DomainException("Registro de limpeza fina invalido.");
+            throw new DomainException("Registro de limpeza fina inválido.");
 
         if (etapaPadraoId == Guid.Empty)
-            throw new DomainException("Etapa padrao invalida.");
+            throw new DomainException("Etapa padrão inválida.");
 
         LimpezaFinaId = limpezaFinaId;
         EtapaPadraoId = etapaPadraoId;
-    }
-
-    public void InicializarItem(Guid etapaItemPadraoId)
-    {
-        _itens.Add(new EtapaItemExecucao(Id, etapaItemPadraoId));
     }
 
     public void AdicionarFoto(string urlArquivo)
     {
         var foto = new FotoEtapa(Id, urlArquivo);
         _fotos.Add(foto);
-        VerificarConclusao();
+        ConcluidaEm = DateTime.UtcNow;
     }
 
     public void RemoverFoto(string urlArquivo)
@@ -48,29 +42,10 @@ public class LimpezaEtapaExecucao : EntidadeBase
         if (foto is not null)
         {
             _fotos.Remove(foto);
-            VerificarConclusao();
+            if (_fotos.Count == 0)
+                ConcluidaEm = null;
         }
     }
 
-    public void VerificarConclusao()
-    {
-        if (EstaConcluida())
-        {
-            ConcluidaEm = DateTime.UtcNow;
-        }
-        else
-        {
-            ConcluidaEm = null;
-        }
-    }
-
-    public bool EstaConcluida() 
-    {
-        if (_itens.Count > 0)
-        {
-            return _itens.All(i => i.Concluida);
-        }
-        
-        return _fotos.Count > 0;
-    }
+    public bool EstaConcluida() => _fotos.Count > 0;
 }

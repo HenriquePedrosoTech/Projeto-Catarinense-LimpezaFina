@@ -9,6 +9,14 @@ public class EnviarFotoEtapaForm
     public IFormFile Arquivo { get; set; } = default!;
 }
 
+public class EnviarItemExecucaoForm
+{
+    public string Status { get; set; } = default!;
+    public string Funcionalidade { get; set; } = default!;
+    public string? RelatoProblema { get; set; }
+    public IFormFile? Arquivo { get; set; }
+}
+
 public record ReprovarLimpezaBody(string Motivo);
 
 public record NotificarLimpezaBody(IReadOnlyList<string> DestinatariosEmail);

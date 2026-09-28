@@ -87,6 +87,28 @@ public class LimpezasFinasController : ControllerBase
         return Ok(resultado);
     }
 
+    [HttpPost("{id:guid}/etapas/{etapaPadraoId:guid}/itens/{itemId:guid}")]
+    [RequestSizeLimit(20_000_000)] // 20MB
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> EnviarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId, [FromForm] EnviarItemExecucaoForm form)
+    {
+        Stream? stream = null;
+        string? filename = null;
+        string? contentType = null;
+        
+        if (form.Arquivo is not null && form.Arquivo.Length > 0)
+        {
+            stream = form.Arquivo.OpenReadStream();
+            filename = form.Arquivo.FileName;
+            contentType = form.Arquivo.ContentType;
+        }
+
+        var useCase = HttpContext.RequestServices.GetRequiredService<IRegistrarItemExecucaoUseCase>();
+        var request = new RegistrarItemExecucaoRequest(id, etapaPadraoId, itemId, form.Status, form.Funcionalidade, form.RelatoProblema, stream!, filename!, contentType!);
+        var resultado = await useCase.ExecutarAsync(request);
+        return Ok(resultado);
+    }
+
     [HttpDelete("{id:guid}/etapas/{etapaPadraoId:guid}/foto")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> RemoverFotoEtapa(
         Guid id, Guid etapaPadraoId, [FromQuery] string urlArquivo)

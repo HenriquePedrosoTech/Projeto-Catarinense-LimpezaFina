@@ -3,11 +3,6 @@ using Catarinense.Domain.Exceptions;
 
 namespace Catarinense.Domain.Entities;
 
-/// <summary>
-/// Aggregate root que representa um registro de limpeza fina de um ônibus.
-/// Concentra as regras de negócio: quais etapas precisam ser concluídas,
-/// quando pode ser finalizado, aprovado ou reprovado.
-/// </summary>
 public class LimpezaFina : EntidadeBase
 {
     public Guid OnibusId { get; private set; }
@@ -27,17 +22,7 @@ public class LimpezaFina : EntidadeBase
 
     protected LimpezaFina() { }
 
-    /// <summary>
-    /// Cria um novo registro de limpeza fina, já instanciando a execução de cada
-    /// etapa padrão ativa (checklist obrigatório definido pelo administrador).
-    ///
-    /// O número da O.S. é OPCIONAL na abertura: como a O.S. é aberta no Protheus
-    /// (sistema externo sem integração automática por enquanto), o operador só
-    /// informa o prefixo do ônibus. O administrador preenche o número da O.S.
-    /// depois, ao revisar o registro (ver <see cref="DefinirNumeroOS"/>) — e não
-    /// é possível aprovar sem ela estar preenchida.
-    /// </summary>
-    public LimpezaFina(Guid onibusId, Guid operadorId, IEnumerable<Guid> etapasPadraoAtivasIds, string? numeroOS = null)
+    public LimpezaFina(Guid onibusId, Guid operadorId, IEnumerable<EtapaPadrao> etapasPadraoAtivas, string? numeroOS = null)
     {
         if (onibusId == Guid.Empty)
             throw new DomainException("O ônibus é obrigatório.");
@@ -45,8 +30,8 @@ public class LimpezaFina : EntidadeBase
         if (operadorId == Guid.Empty)
             throw new DomainException("O operador responsável é obrigatório.");
 
-        var etapasIds = etapasPadraoAtivasIds?.ToList() ?? new List<Guid>();
-        if (etapasIds.Count == 0)
+        var etapas = etapasPadraoAtivas?.ToList() ?? new List<EtapaPadrao>();
+        if (etapas.Count == 0)
             throw new DomainException("Não há etapas de checklist cadastradas. Cadastre as etapas padrão antes de iniciar uma limpeza.");
 
         OnibusId = onibusId;
@@ -55,10 +40,20 @@ public class LimpezaFina : EntidadeBase
         Status = StatusLimpeza.EmAndamento;
         IniciadaEm = DateTime.UtcNow;
 
-        foreach (var etapaId in etapasIds)
-            _etapas.Add(new LimpezaEtapaExecucao(Id, etapaId));
+        foreach (var etapa in etapas)
+            _etapas.Add(new LimpezaEtapaExecucao(Id, etapa.Id, etapa.Itens.Select(i => i.Id)));
     }
 
+    public void RegistrarItemExecucao(Guid etapaPadraoId, Guid etapaItemPadraoId, StatusItemChecklist status, StatusFuncionalidade funcionalidade, string? relatoProblema, string? fotoUrl)
+    {
+        GarantirEmAndamento();
+
+        var execucao = _etapas.FirstOrDefault(e => e.EtapaPadraoId == etapaPadraoId)
+            ?? throw new DomainException("Esta etapa não faz parte do checklist deste registro.");
+
+        execucao.RegistrarItemExecucao(etapaItemPadraoId, status, funcionalidade, relatoProblema, fotoUrl);
+    }
+    
     public void RegistrarFotoDaEtapa(Guid etapaPadraoId, string urlArquivo)
     {
         GarantirEmAndamento();
@@ -85,7 +80,7 @@ public class LimpezaFina : EntidadeBase
 
         var etapasPendentes = _etapas.Where(e => !e.EstaConcluida() && !(e.EtapaPadraoId == etapaCortinaId && !CortinasRetiradas)).ToList();
         if (etapasPendentes.Count > 0)
-            throw new DomainException($"Existem {etapasPendentes.Count} etapa(s) sem foto de evidência. Finalize todas as etapas antes de concluir o registro.");
+            throw new DomainException($"Existem {etapasPendentes.Count} etapa(s) incompletas. Finalize todas as etapas antes de concluir o registro.");
 
         Status = StatusLimpeza.Concluida;
         FinalizadaEm = DateTime.UtcNow;
@@ -97,12 +92,6 @@ public class LimpezaFina : EntidadeBase
         CortinasRetiradas = retiradas;
     }
 
-    /// <summary>
-    /// Preenche/atualiza o número da O.S. (normalmente feito pelo administrador,
-    /// depois de consultar o Protheus). Só pode ser alterado enquanto a notificação
-    /// por e-mail ainda não foi enviada — depois disso, o dado já saiu pra fora do
-    /// sistema e não deveria mudar mais.
-    /// </summary>
     public void DefinirNumeroOS(string numeroOS)
     {
         if (string.IsNullOrWhiteSpace(numeroOS))

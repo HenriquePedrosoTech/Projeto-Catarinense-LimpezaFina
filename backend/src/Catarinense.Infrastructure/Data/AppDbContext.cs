@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<LimpezaFina> LimpezasFinas => Set<LimpezaFina>();
     public DbSet<LimpezaEtapaExecucao> LimpezaEtapaExecucoes => Set<LimpezaEtapaExecucao>();
     public DbSet<FotoEtapa> FotosEtapa => Set<FotoEtapa>();
+    public DbSet<EtapaItemPadrao> EtapasItensPadrao => Set<EtapaItemPadrao>();
+    public DbSet<EtapaItemExecucao> EtapasItensExecucao => Set<EtapaItemExecucao>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

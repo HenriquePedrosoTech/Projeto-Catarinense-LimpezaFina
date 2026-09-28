@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ interface AuthContextValue {
   carregando: boolean;
   entrar: (matricula: string, senha: string) => Promise<Usuario>;
   sair: () => void;
+  atualizarUsuario: (novoUsuario: Usuario) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -52,8 +53,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsuario(null);
   }
 
+  function atualizarUsuario(novoUsuario: Usuario) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(novoUsuario));
+    setUsuario(novoUsuario);
+  }
+
   return (
-    <AuthContext.Provider value={{ usuario, carregando, entrar, sair }}>
+    <AuthContext.Provider value={{ usuario, carregando, entrar, sair, atualizarUsuario }}>
       {children}
     </AuthContext.Provider>
   );
@@ -65,7 +71,7 @@ export function useAuth() {
   return contexto;
 }
 
-export function useRequireAuth(perfilExigido?: "Administrador" | "Operador") {
+export function useRequireAuth(perfilExigido?: "Administrador" | "Operador", allowTrocarSenha = false) {
   const { usuario, carregando } = useAuth();
   const router = useRouter();
 
@@ -75,10 +81,21 @@ export function useRequireAuth(perfilExigido?: "Administrador" | "Operador") {
       router.replace("/login");
       return;
     }
+    
+    if (usuario.precisaTrocarSenha && !allowTrocarSenha) {
+      router.replace("/trocar-senha");
+      return;
+    }
+
+    if (!usuario.precisaTrocarSenha && allowTrocarSenha) {
+      router.replace(usuario.perfil === "Administrador" ? "/admin" : "/operador");
+      return;
+    }
+
     if (perfilExigido && usuario.perfil !== perfilExigido) {
       router.replace(usuario.perfil === "Administrador" ? "/admin" : "/operador");
     }
-  }, [usuario, carregando, perfilExigido, router]);
+  }, [usuario, carregando, perfilExigido, router, allowTrocarSenha]);
 
   return { usuario, carregando };
 }

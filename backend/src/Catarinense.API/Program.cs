@@ -144,6 +144,7 @@ app.UseCors(CorsPolicyFrontend);
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<TrocarSenhaObrigatoriaMiddleware>();
 
 app.MapControllers();
 

@@ -1,4 +1,4 @@
-﻿using Catarinense.Application.DTOs;
+using Catarinense.Application.DTOs;
 using Catarinense.Application.Exceptions;
 using Catarinense.Application.Interfaces.UseCases;
 using Catarinense.Domain.Interfaces;
@@ -24,6 +24,14 @@ public class EditarEtapaPadraoUseCase : IEditarEtapaPadraoUseCase
         _etapaPadraoRepository.Atualizar(etapa);
         await _etapaPadraoRepository.SalvarAlteracoesAsync();
 
-        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo);
+        return new EtapaPadraoResumoDto(
+            etapa.Id, 
+            etapa.Nome, 
+            etapa.Descricao, 
+            etapa.LinkVideo, 
+            etapa.Ordem, 
+            etapa.Ativo,
+            etapa.Itens.Select(i => new EtapaItemPadraoResumoDto(i.Id, i.Texto, i.EnquadramentoFoto, i.Ordem, i.Ativo)).ToList()
+        );
     }
 }

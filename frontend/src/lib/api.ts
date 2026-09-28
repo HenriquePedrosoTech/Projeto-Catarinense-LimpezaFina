@@ -70,7 +70,16 @@ export const api = {
       body: JSON.stringify({ numeroOS }),
     }),
 
-  enviarFotoEtapa: (token: string, limpezaId: string, etapaPadraoId: string, arquivo: File) => {
+  trocarSenha: (token: string, novaSenha: string) => request<void>("/api/auth/trocar-senha", { method: "POST", token, body: JSON.stringify({ novaSenha }) }),
+    enviarItemExecucao: (token: string, limpezaId: string, etapaPadraoId: string, itemId: string, status: string, funcionalidade: string, relatoProblema: string | null, arquivo: File | null) => {
+      const form = new FormData();
+      form.append("status", status);
+      form.append("funcionalidade", funcionalidade);
+      if (relatoProblema) form.append("relatoProblema", relatoProblema);
+      if (arquivo) form.append("arquivo", arquivo);
+      return request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/itens/${itemId}`, { method: "POST", token, body: form });
+    },
+    enviarFotoEtapa: (token: string, limpezaId: string, etapaPadraoId: string, arquivo: File) => {
     const form = new FormData();
     form.append("arquivo", arquivo);
     return request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/foto`, {
@@ -203,3 +212,4 @@ export const api = {
   excluirUsuario: (token: string, usuarioId: string) =>
     request<void>(`/api/usuarios/${usuarioId}`, { method: "DELETE", token }),
 };
+

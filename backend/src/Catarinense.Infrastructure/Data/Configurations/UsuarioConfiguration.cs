@@ -23,6 +23,7 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.SenhaHash).HasMaxLength(200).IsRequired();
         builder.Property(u => u.Perfil).HasConversion<string>().HasMaxLength(30);
         builder.Property(u => u.Ativo);
+        builder.Property(u => u.PrecisaTrocarSenha).HasDefaultValue(true);
         builder.Property(u => u.TentativasFalhasLogin);
         builder.Property(u => u.BloqueadoAte);
         builder.Property(u => u.CriadoEm);

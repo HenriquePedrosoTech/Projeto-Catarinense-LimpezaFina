@@ -52,6 +52,19 @@ export default function ChecklistLimpezaPage() {
     }
   }
 
+  async function handleEnviarItemExecucao(etapaPadraoId: string, itemId: string, status: string, funcionalidade: string, relato: string | null, arquivo: File | null) {
+    if (!usuario) return;
+    try {
+      const atualizado = await api.enviarItemExecucao(usuario.token, id, etapaPadraoId, itemId, status, funcionalidade, relato, arquivo);
+      setLimpeza(atualizado);
+    } catch (err) {
+      setAlerta({
+        titulo: "Erro ao cadastrar item",
+        mensagem: "Ocorreu um erro ao salvar este item. Tente novamente."
+      });
+    }
+  }
+
   async function handleRemoverFoto(etapaPadraoId: string, url: string) {
     if (!usuario) return;
     try {
@@ -198,7 +211,7 @@ export default function ChecklistLimpezaPage() {
                 etapa={etapa}
                 desabilitado={!emAndamento}
                 onEnviarFoto={(arquivo) => handleEnviarFoto(etapa.etapaPadraoId, arquivo)}
-                onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)}
+                onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)} onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
               />
             ))}
           </div>
@@ -233,3 +246,4 @@ export default function ChecklistLimpezaPage() {
     </div>
   );
 }
+

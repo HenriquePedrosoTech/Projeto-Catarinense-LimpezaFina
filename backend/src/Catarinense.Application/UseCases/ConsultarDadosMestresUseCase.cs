@@ -35,6 +35,14 @@ public class ConsultarDadosMestresUseCase : IConsultarDadosMestresUseCase
     public async Task<IReadOnlyList<EtapaPadraoResumoDto>> ListarEtapasPadraoAsync()
     {
         var etapas = await _etapaPadraoRepository.ListarAsync();
-        return etapas.OrderBy(e => e.Ordem).Select(e => new EtapaPadraoResumoDto(e.Id, e.Nome, e.Descricao, e.LinkVideo, e.Ordem, e.Ativo)).ToList();
+        return etapas.OrderBy(e => e.Ordem).Select(e => new EtapaPadraoResumoDto(
+            e.Id, 
+            e.Nome, 
+            e.Descricao, 
+            e.LinkVideo, 
+            e.Ordem, 
+            e.Ativo,
+            e.Itens?.Select(i => new EtapaItemPadraoResumoDto(i.Id, i.Texto, i.EnquadramentoFoto, i.Ordem, i.Ativo)).ToList()
+        )).ToList();
     }
 }

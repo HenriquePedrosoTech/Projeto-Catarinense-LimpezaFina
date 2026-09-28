@@ -1,11 +1,8 @@
 using Catarinense.Domain.Exceptions;
+using Catarinense.Domain.Enums;
 
 namespace Catarinense.Domain.Entities;
 
-/// <summary>
-/// Representa a execução de uma EtapaPadrao dentro de um registro específico de LimpezaFina,
-/// contendo as fotos de evidência daquela etapa.
-/// </summary>
 public class LimpezaEtapaExecucao : EntidadeBase
 {
     public Guid LimpezaFinaId { get; private set; }
@@ -15,9 +12,12 @@ public class LimpezaEtapaExecucao : EntidadeBase
     private readonly List<FotoEtapa> _fotos = new();
     public IReadOnlyCollection<FotoEtapa> Fotos => _fotos.AsReadOnly();
 
+    private readonly List<EtapaItemExecucao> _itens = new();
+    public IReadOnlyCollection<EtapaItemExecucao> Itens => _itens.AsReadOnly();
+
     protected LimpezaEtapaExecucao() { }
 
-    public LimpezaEtapaExecucao(Guid limpezaFinaId, Guid etapaPadraoId)
+    public LimpezaEtapaExecucao(Guid limpezaFinaId, Guid etapaPadraoId, IEnumerable<Guid>? itensPadraoIds = null)
     {
         if (limpezaFinaId == Guid.Empty)
             throw new DomainException("Registro de limpeza fina inválido.");
@@ -27,6 +27,14 @@ public class LimpezaEtapaExecucao : EntidadeBase
 
         LimpezaFinaId = limpezaFinaId;
         EtapaPadraoId = etapaPadraoId;
+        
+        if (itensPadraoIds != null)
+        {
+            foreach(var itemId in itensPadraoIds)
+            {
+                _itens.Add(new EtapaItemExecucao(Id, itemId));
+            }
+        }
     }
 
     public void AdicionarFoto(string urlArquivo)
@@ -42,10 +50,19 @@ public class LimpezaEtapaExecucao : EntidadeBase
         if (foto is not null)
         {
             _fotos.Remove(foto);
-            if (_fotos.Count == 0)
+            if (_fotos.Count == 0 && _itens.All(i => !i.EstaConcluida()))
                 ConcluidaEm = null;
         }
     }
 
-    public bool EstaConcluida() => _fotos.Count > 0;
+    public void RegistrarItemExecucao(Guid etapaItemPadraoId, StatusItemChecklist status, StatusFuncionalidade funcionalidade, string? relatoProblema, string? fotoUrl)
+    {
+        var item = _itens.FirstOrDefault(i => i.EtapaItemPadraoId == etapaItemPadraoId)
+            ?? throw new DomainException("Item não pertence a esta etapa.");
+            
+        item.RegistrarExecucao(status, funcionalidade, relatoProblema, fotoUrl);
+        ConcluidaEm = DateTime.UtcNow;
+    }
+
+    public bool EstaConcluida() => _itens.Count > 0 ? _itens.All(i => i.EstaConcluida()) : _fotos.Count > 0;
 }

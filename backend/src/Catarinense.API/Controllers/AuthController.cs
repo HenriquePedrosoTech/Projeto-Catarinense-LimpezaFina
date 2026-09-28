@@ -26,4 +26,17 @@ public class AuthController : ControllerBase
         var resposta = await _autenticarUsuarioUseCase.ExecutarAsync(request);
         return Ok(resposta);
     }
+
+    /// <summary>Troca a senha provisria no primeiro acesso ou se o admin resetar.</summary>
+    [HttpPost("trocar-senha")]
+    [Authorize]
+    public async Task<IActionResult> TrocarSenha([FromBody] TrocarSenhaRequest request, [FromServices] ITrocarSenhaUsuarioUseCase trocarSenhaUseCase)
+    {
+        var usuarioIdClaim = User.Claims.FirstOrDefault(c => c.Type == "usuarioId")?.Value;
+        if (!Guid.TryParse(usuarioIdClaim, out var usuarioId))
+            return Unauthorized("Token inválido.");
+
+        await trocarSenhaUseCase.ExecutarAsync(usuarioId, request);
+        return Ok(new { mensagem = "Senha alterada com sucesso. Você já pode usar o sistema." });
+    }
 }

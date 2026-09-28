@@ -50,6 +50,6 @@ public class AutenticarUsuarioUseCase : IAutenticarUsuarioUseCase
 
         var token = _jwtTokenGenerator.GerarToken(usuario);
 
-        return new LoginResponse(usuario.Id, usuario.Nome, usuario.Matricula, usuario.Perfil.ToString(), token);
+        return new LoginResponse(usuario.Id, usuario.Nome, usuario.Matricula, usuario.Perfil.ToString(), token, usuario.PrecisaTrocarSenha);
     }
 }

@@ -33,10 +33,25 @@ public static class LimpezaFinaMapper
                 return new EtapaResumoDto(
                     e.EtapaPadraoId,
                     etapaPadrao?.Nome ?? "(etapa removida)",
-                    etapaPadrao?.Descricao, etapaPadrao?.LinkVideo,
+                    etapaPadrao?.Descricao,
+                    etapaPadrao?.LinkVideo,
                     etapaPadrao?.Ordem ?? 0,
                     e.EstaConcluida(),
-                    e.Fotos.Select(f => f.UrlArquivo).ToList()
+                    e.Fotos.Select(f => f.UrlArquivo).ToList(),
+                    e.Itens.Select(i => {
+                        var itemPadrao = etapaPadrao?.Itens.FirstOrDefault(ip => ip.Id == i.EtapaItemPadraoId);
+                        return new EtapaItemResumoDto(
+                            i.Id,
+                            itemPadrao?.Texto ?? "(removido)",
+                            itemPadrao?.EnquadramentoFoto,
+                            itemPadrao?.Ordem ?? 0,
+                            i.Status?.ToString(),
+                            i.Funcionalidade?.ToString(),
+                            i.RelatoProblema,
+                            i.FotoUrl,
+                            i.EstaConcluida()
+                        );
+                    }).OrderBy(i => i.Ordem).ToList()
                 );
             })
             .ToList();

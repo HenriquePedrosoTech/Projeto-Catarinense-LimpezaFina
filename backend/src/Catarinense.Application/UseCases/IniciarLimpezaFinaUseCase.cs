@@ -43,7 +43,7 @@ public class IniciarLimpezaFinaUseCase : IIniciarLimpezaFinaUseCase
         var limpeza = new LimpezaFina(
             onibus.Id,
             operador.Id,
-            etapasAtivas.Select(e => e.Id)
+            etapasAtivas
         );
 
         await _limpezaFinaRepository.AdicionarAsync(limpeza);

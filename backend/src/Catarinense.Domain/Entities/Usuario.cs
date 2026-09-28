@@ -14,6 +14,7 @@ public class Usuario : EntidadeBase
     public string SenhaHash { get; private set; } = string.Empty;
     public PerfilUsuario Perfil { get; private set; }
     public bool Ativo { get; private set; } = true;
+    public bool PrecisaTrocarSenha { get; private set; } = true;
     public int TentativasFalhasLogin { get; private set; }
     public DateTime? BloqueadoAte { get; private set; }
 
@@ -50,6 +51,15 @@ public class Usuario : EntidadeBase
         if (!string.IsNullOrWhiteSpace(senhaHash))
             SenhaHash = senhaHash;
     }
+
+    public void TrocarSenha(string novaSenhaHash)
+    {
+        if (string.IsNullOrWhiteSpace(novaSenhaHash))
+            throw new DomainException("A nova senha no pode ser vazia.");
+        SenhaHash = novaSenhaHash;
+        PrecisaTrocarSenha = false;
+    }
+
     public void Desativar() => Ativo = false;
 
     public void Ativar() => Ativo = true;

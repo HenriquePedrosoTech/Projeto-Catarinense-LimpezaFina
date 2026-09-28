@@ -23,9 +23,11 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
+            new Claim("usuarioId", usuario.Id.ToString()),
             new Claim("matricula", usuario.Matricula),
             new Claim(ClaimTypes.Name, usuario.Nome),
-            new Claim(ClaimTypes.Role, usuario.Perfil.ToString())
+            new Claim(ClaimTypes.Role, usuario.Perfil.ToString()),
+            new Claim("precisaTrocarSenha", usuario.PrecisaTrocarSenha.ToString().ToLower())
         };
 
         var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_opcoes.Chave));

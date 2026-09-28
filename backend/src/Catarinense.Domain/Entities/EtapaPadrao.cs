@@ -1,4 +1,4 @@
-﻿using Catarinense.Domain.Exceptions;
+using Catarinense.Domain.Exceptions;
 
 namespace Catarinense.Domain.Entities;
 
@@ -9,6 +9,9 @@ public class EtapaPadrao : EntidadeBase
     public string? LinkVideo { get; private set; }
     public int Ordem { get; private set; }
     public bool Ativo { get; private set; } = true;
+    
+    private readonly List<EtapaItemPadrao> _itens = new();
+    public IReadOnlyCollection<EtapaItemPadrao> Itens => _itens.AsReadOnly();
 
     protected EtapaPadrao() { }
 
@@ -37,5 +40,10 @@ public class EtapaPadrao : EntidadeBase
         Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim();
         LinkVideo = string.IsNullOrWhiteSpace(linkVideo) ? null : linkVideo.Trim();
         Ordem = ordem;
+    }
+
+    public void AdicionarItem(string texto, int ordem, string? enquadramentoFoto = null)
+    {
+        _itens.Add(new EtapaItemPadrao(Id, texto, ordem, enquadramentoFoto));
     }
 }

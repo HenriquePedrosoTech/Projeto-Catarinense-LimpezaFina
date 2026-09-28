@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Catarinense.Application.Interfaces;
 using CloudinaryDotNet;
@@ -31,7 +32,7 @@ public class CloudinaryStorageService : IArmazenamentoArquivoService
     {
         var nomePasta = string.IsNullOrWhiteSpace(prefixo) ? "fotos-limpeza" : $"fotos-limpeza/{prefixo}";
         var extensao = Path.GetExtension(nomeArquivoOriginal);
-        var novoNome = $"{Guid.NewGuid()}"; // Cloudinary will append extension or format automatically, but we can also just use the guid as publicId
+        var novoNome = $"{Guid.NewGuid()}"; 
         
         var uploadParams = new ImageUploadParams()
         {
@@ -51,11 +52,27 @@ public class CloudinaryStorageService : IArmazenamentoArquivoService
         return uploadResult.SecureUrl.ToString();
     }
 
-    public Task ExcluirFotoAsync(string url)
+    public async Task ExcluirFotoAsync(string url)
     {
-        // For deletion, Cloudinary uses the PublicId (e.g. fotos-limpeza/8323/c43a4...). 
-        // We can extract it from the URL if needed later.
-        _logger.LogInformation("A exclusao automatica de arquivos no Cloudinary precisa do PublicId. Ignorado por enquanto: {Url}", url);
-        return Task.CompletedTask;
+        try
+        {
+            // The Cloudinary URL looks like: https://res.cloudinary.com/cloudname/image/upload/v1234/fotos-limpeza/1234/uuid.jpg
+            // We need to extract: "fotos-limpeza/1234/uuid" (without extension and without the domain/upload/v.. parts)
+            var match = Regex.Match(url, @"/upload/(?:v\d+/)?(.+)\.[a-zA-Z0-9]+$");
+            if (match.Success)
+            {
+                var publicId = match.Groups[1].Value;
+                var result = await _cloudinary.DestroyAsync(new DeletionParams(publicId));
+                _logger.LogInformation("Excluido do Cloudinary ({PublicId}): {Result}", publicId, result.Result);
+            }
+            else
+            {
+                _logger.LogWarning("Nao foi possivel extrair o PublicId da URL do Cloudinary: {Url}", url);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao tentar excluir foto do Cloudinary: {Url}", url);
+        }
     }
 }

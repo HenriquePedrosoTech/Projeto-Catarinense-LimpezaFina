@@ -42,6 +42,12 @@ public class Usuario : EntidadeBase
     }
 
     
+    public void TrocarSenha(string novaSenhaHash)
+    {
+        SenhaHash = novaSenhaHash;
+        PrecisaTrocarSenha = false;
+    }
+
     public void Atualizar(string nome, string? email, string? senhaHash = null)
     {
         if (string.IsNullOrWhiteSpace(nome))
@@ -78,4 +84,5 @@ public class Usuario : EntidadeBase
         BloqueadoAte = null;
     }
 }
+
 

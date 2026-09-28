@@ -1,15 +1,12 @@
 using Catarinense.Application.DTOs;
 using Catarinense.Domain.Entities;
 using Catarinense.Domain.Interfaces;
+using Catarinense.Domain.Enums;
 
 namespace Catarinense.Application.Common;
 
 public static class LimpezaFinaMapper
 {
-    /// <summary>
-    /// Carrega, num único lugar, o dicionário de EtapaPadrao usado pelas etapas de um registro.
-    /// Evita repetir essa consulta em cada Use Case que precisa montar o DTO de detalhes.
-    /// </summary>
     public static async Task<IReadOnlyDictionary<Guid, EtapaPadrao>> CarregarEtapasPadraoAsync(
         IEtapaPadraoRepository etapaPadraoRepository,
         LimpezaFina limpeza)
@@ -30,13 +27,32 @@ public static class LimpezaFinaMapper
             .Select(e =>
             {
                 etapasPadrao.TryGetValue(e.EtapaPadraoId, out var etapaPadrao);
+                
+                var itensExecucao = e.Itens.Select(i => 
+                {
+                    var itemPadrao = etapaPadrao?.Itens.FirstOrDefault(ip => ip.Id == i.EtapaItemPadraoId);
+                    return new EtapaItemResumoDto(
+                        i.Id,
+                        itemPadrao?.Texto ?? "(item removido)",
+                        itemPadrao?.EnquadramentoFoto,
+                        itemPadrao?.Ordem ?? 0,
+                        i.Status == StatusItemChecklist.Pendente ? null : (i.Status == StatusItemChecklist.NaoConforme ? "Não Conforme" : (i.Status == StatusItemChecklist.Conforme ? "Conforme" : "N/A")),
+                        i.Funcionalidade == StatusFuncionalidade.Pendente ? null : (i.Funcionalidade == StatusFuncionalidade.ComDefeito ? "Com Defeito" : "OK / Funcional"),
+                        i.RelatoProblema,
+                        i.FotoUrl,
+                        i.Concluida
+                    );
+                }).OrderBy(i => i.Ordem).ToList();
+
                 return new EtapaResumoDto(
                     e.EtapaPadraoId,
                     etapaPadrao?.Nome ?? "(etapa removida)",
-                    etapaPadrao?.Descricao, etapaPadrao?.LinkVideo,
+                    etapaPadrao?.Descricao, 
+                    etapaPadrao?.LinkVideo,
                     etapaPadrao?.Ordem ?? 0,
                     e.EstaConcluida(),
-                    e.Fotos.Select(f => f.UrlArquivo).ToList()
+                    e.Fotos.Select(f => f.UrlArquivo).ToList(),
+                    itensExecucao
                 );
             })
             .ToList();
@@ -70,4 +86,3 @@ public static class LimpezaFinaMapper
             limpeza.CortinasRetiradas
         );
 }
-

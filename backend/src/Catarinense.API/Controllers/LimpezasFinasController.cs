@@ -45,7 +45,29 @@ public class LimpezasFinasController : ControllerBase
         _consultarUseCase = consultarUseCase;
         _excluirUseCase = excluirUseCase;
         _configuration = configuration;
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>
     /// Operador inicia um novo registro de limpeza fina informando só o prefixo do
@@ -57,111 +79,551 @@ public class LimpezasFinasController : ControllerBase
     {
         var request = new IniciarLimpezaFinaRequest(body.PrefixoOnibus, OperadorLogadoId());
         var resultado = await _iniciarUseCase.ExecutarAsync(request);
-        return CreatedAtAction(nameof(ObterDetalhes), new { id = resultado.Id }, resultado);
+        return CreatedAtAction(nameof(ObterDetalhes), new { id = resultado.Id 
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}, resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}
 
     /// <summary>
     /// Administrador preenche/atualiza o número da O.S. (consultado manualmente no
     /// Protheus). Obrigatório antes de aprovar o registro.
     /// </summary>
-    [HttpPost("{id:guid}/os")]
+    [HttpPost("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/os")]
     [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> DefinirNumeroOS(Guid id, [FromBody] DefinirNumeroOSBody body)
     {
         var resultado = await _definirNumeroOSUseCase.ExecutarAsync(new DefinirNumeroOSRequest(id, body.NumeroOS));
         return Ok(resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>Envia a foto de evidência de uma etapa (multipart/form-data).</summary>
-    [HttpPost("{id:guid}/etapas/{etapaPadraoId:guid}/foto")]
+    [HttpPost("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/etapas/{etapaPadraoId:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/foto")]
     [RequestSizeLimit(20_000_000)] // 20MB
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> EnviarFotoEtapa(
         Guid id, Guid etapaPadraoId, [FromForm] EnviarFotoEtapaForm form)
     {
         if (form.Arquivo is null || form.Arquivo.Length == 0)
-            return BadRequest(new { erro = "Nenhum arquivo enviado." });
+            return BadRequest(new { erro = "Nenhum arquivo enviado." 
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+});
 
         await using var stream = form.Arquivo.OpenReadStream();
         var request = new RegistrarFotoEtapaRequest(id, etapaPadraoId, stream, form.Arquivo.FileName, form.Arquivo.ContentType);
         var resultado = await _registrarFotoUseCase.ExecutarAsync(request);
         return Ok(resultado);
-    }
-
-    [HttpPost("{id:guid}/etapas/{etapaPadraoId:guid}/itens/{itemId:guid}")]
-    [RequestSizeLimit(20_000_000)] // 20MB
-    public async Task<ActionResult<LimpezaFinaDetalhesDto>> EnviarItemExecucao(
-        Guid id, Guid etapaPadraoId, Guid itemId, [FromForm] EnviarItemExecucaoForm form)
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
     {
-        Stream? stream = null;
-        string? filename = null;
-        string? contentType = null;
-        
-        if (form.Arquivo is not null && form.Arquivo.Length > 0)
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
         {
-            stream = form.Arquivo.OpenReadStream();
-            filename = form.Arquivo.FileName;
-            contentType = form.Arquivo.ContentType;
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
         }
 
-        var useCase = HttpContext.RequestServices.GetRequiredService<IRegistrarItemExecucaoUseCase>();
-        var request = new RegistrarItemExecucaoRequest(id, etapaPadraoId, itemId, form.Status, form.Funcionalidade, form.RelatoProblema, stream!, filename!, contentType!);
-        var resultado = await useCase.ExecutarAsync(request);
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
         return Ok(resultado);
     }
+}
 
-    [HttpDelete("{id:guid}/etapas/{etapaPadraoId:guid}/foto")]
+    [HttpDelete("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/etapas/{etapaPadraoId:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/foto")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> RemoverFotoEtapa(
         Guid id, Guid etapaPadraoId, [FromQuery] string urlArquivo)
     {
         if (string.IsNullOrWhiteSpace(urlArquivo))
-            return BadRequest(new { erro = "A URL da foto é obrigatória." });
+            return BadRequest(new { erro = "A URL da foto é obrigatória." 
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+});
 
         var useCase = HttpContext.RequestServices.GetRequiredService<IRemoverFotoEtapaUseCase>();
         var request = new RemoverFotoEtapaRequest(id, etapaPadraoId, urlArquivo);
         var resultado = await useCase.ExecutarAsync(request);
         return Ok(resultado);
-    }
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
 
-    [HttpPost("{id:guid}/cortinas")]
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}
+
+    [HttpPost("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/cortinas")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> SinalizarCortinas(
         Guid id, [FromQuery] bool retiradas)
     {
         var useCase = HttpContext.RequestServices.GetRequiredService<Catarinense.Application.UseCases.ISinalizarCortinasUseCase>();
         var resultado = await useCase.ExecutarAsync(id, retiradas);
         return Ok(resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>Operador finaliza o registro (só permite se todas as etapas tiverem foto).</summary>
-    [HttpPost("{id:guid}/finalizar")]
+    [HttpPost("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/finalizar")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> Finalizar(Guid id)
     {
         var resultado = await _finalizarUseCase.ExecutarAsync(new FinalizarLimpezaFinaRequest(id, _configuration["Frontend:UrlBaseDetalhesLimpeza"] ?? "https://catarinense-limpezafina.vercel.app/admin/limpeza"));
         return Ok(resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>Administrador aprova o registro concluído.</summary>
-    [HttpPost("{id:guid}/aprovar")]
+    [HttpPost("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/aprovar")]
     [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> Aprovar(Guid id)
     {
         var resultado = await _aprovarUseCase.ExecutarAsync(new AprovarLimpezaFinaRequest(id, UsuarioLogadoId()));
         return Ok(resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>Administrador reprova o registro concluído, informando o motivo.</summary>
-    [HttpPost("{id:guid}/reprovar")]
+    [HttpPost("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/reprovar")]
     [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> Reprovar(Guid id, [FromBody] ReprovarLimpezaBody body)
     {
         var resultado = await _reprovarUseCase.ExecutarAsync(new ReprovarLimpezaFinaRequest(id, UsuarioLogadoId(), body.Motivo));
         return Ok(resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>
     /// Botão "Notificar": administrador dispara o e-mail avisando que a limpeza fina
     /// foi executada, com prefixo, O.S. e link para a página com as fotos de cada etapa.
     /// </summary>
-    [HttpPost("{id:guid}/notificar")]
+    [HttpPost("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}/notificar")]
     [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Notificar(Guid id, [FromBody] NotificarLimpezaBody body)
     {
@@ -171,19 +633,85 @@ public class LimpezasFinasController : ControllerBase
         var request = new EnviarNotificacaoLimpezaRequest(id, body.DestinatariosEmail, urlBase);
         await _enviarNotificacaoUseCase.ExecutarAsync(request);
         return NoContent();
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>
     /// Detalhes completos de um registro, com as etapas e fotos — é a página que
     /// abre a partir do link enviado no e-mail de notificação.
     /// </summary>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}")]
     [AllowAnonymous] // acessível pelo link do e-mail; o id é um GUID não sequencial
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> ObterDetalhes(Guid id)
     {
         var resultado = await _consultarUseCase.ObterDetalhesAsync(id);
         return Ok(resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>Lista registros filtrando por operador (o próprio usuário logado) ou por status.</summary>
     [HttpGet]
@@ -196,8 +724,52 @@ public class LimpezasFinasController : ControllerBase
         if (!string.IsNullOrWhiteSpace(status))
             return Ok(await _consultarUseCase.ListarPorStatusAsync(status));
 
-        return BadRequest(new { erro = "Informe 'operadorId' ou 'status' para filtrar a listagem." });
+        return BadRequest(new { erro = "Informe 'operadorId' ou 'status' para filtrar a listagem." 
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+});
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}
 
     [HttpGet("relatorio")]
     [Authorize(Roles = "Administrador")]
@@ -209,16 +781,82 @@ public class LimpezasFinasController : ControllerBase
     {
         var resultado = await _consultarUseCase.ListarParaRelatorioAsync(dataInicio, dataFim, status, operadorId);
         return Ok(resultado);
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     /// <summary>Exclui um registro de limpeza fina (e suas fotos). Uso: remover dados de teste.</summary>
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{id:guid
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}")]
     [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Excluir(Guid id)
     {
         await _excluirUseCase.ExecutarAsync(id);
         return NoContent();
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
+}
 
     private Guid OperadorLogadoId() => UsuarioLogadoId();
 
@@ -226,9 +864,54 @@ public class LimpezasFinasController : ControllerBase
     {
         var claim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         return Guid.TryParse(claim, out var id) ? id : throw new UnauthorizedAccessException("Token inválido.");
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
+    }
+}
+
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromForm] string status,
+        [FromForm] string funcionalidade,
+        [FromForm] string? relatoProblema,
+        IFormFile? arquivo,
+        [FromServices] IRegistrarItemExecucaoUseCase useCase,
+        [FromServices] Catarinense.Infrastructure.Services.IAzureBlobService blobService)
+    {
+        string? url = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            url = await blobService.UploadAsync(stream, arquivo.ContentType, arquivo.FileName);
+        }
+
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, url);
+        return Ok(resultado);
     }
 }
 
 public record IniciarLimpezaFinaBody(string PrefixoOnibus);
 public record DefinirNumeroOSBody(string NumeroOS);
+
 

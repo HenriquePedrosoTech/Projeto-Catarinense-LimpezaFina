@@ -6,47 +6,51 @@ namespace Catarinense.Domain.Entities;
 public class EtapaItemExecucao : EntidadeBase
 {
     public Guid LimpezaEtapaExecucaoId { get; private set; }
+    public LimpezaEtapaExecucao LimpezaEtapaExecucao { get; private set; } = null!;
+
     public Guid EtapaItemPadraoId { get; private set; }
     
-    public StatusItemChecklist? Status { get; private set; }
-    public StatusFuncionalidade? Funcionalidade { get; private set; }
+    // Nao precisamos mapear a navegacao pra EtapaItemPadrao se n quisermos, 
+    // mas vamos deixar so os Ids e dados basicos por simplicidade, ou entao:
+    public EtapaItemPadrao? EtapaItemPadrao { get; private set; }
+
+    public StatusItemChecklist Status { get; private set; } = StatusItemChecklist.Pendente;
+    public StatusFuncionalidade Funcionalidade { get; private set; } = StatusFuncionalidade.Pendente;
+    
     public string? RelatoProblema { get; private set; }
     public string? FotoUrl { get; private set; }
-    
-    public DateTime? ConcluidaEm { get; private set; }
+    public bool Concluida { get; private set; }
 
     protected EtapaItemExecucao() { }
 
     public EtapaItemExecucao(Guid limpezaEtapaExecucaoId, Guid etapaItemPadraoId)
     {
-        if (limpezaEtapaExecucaoId == Guid.Empty)
-            throw new DomainException("Execução de Etapa inválida.");
-        
-        if (etapaItemPadraoId == Guid.Empty)
-            throw new DomainException("Item padrão inválido.");
-
         LimpezaEtapaExecucaoId = limpezaEtapaExecucaoId;
         EtapaItemPadraoId = etapaItemPadraoId;
     }
 
-    public void RegistrarExecucao(StatusItemChecklist status, StatusFuncionalidade funcionalidade, string? relatoProblema, string? fotoUrl)
+    public void RegistrarExecucao(StatusItemChecklist status, StatusFuncionalidade func, string? relato, string? fotoUrl)
     {
-        if ((status == StatusItemChecklist.NaoConforme || funcionalidade == StatusFuncionalidade.ComDefeito) && string.IsNullOrWhiteSpace(relatoProblema))
+        if (status == StatusItemChecklist.Pendente)
+            throw new DomainException("Status invalido para registro.");
+            
+        if (func == StatusFuncionalidade.Pendente)
+            throw new DomainException("Funcionalidade invalida para registro.");
+
+        if ((status == StatusItemChecklist.NaoConforme || func == StatusFuncionalidade.ComDefeito) && string.IsNullOrWhiteSpace(relato))
         {
-            throw new DomainException("O relato de problema é obrigatório quando há não conformidade ou defeito.");
+            throw new DomainException("Relato de problema e obrigatorio para itens nao conformes ou com defeito.");
         }
 
-        // if (string.IsNullOrWhiteSpace(fotoUrl) && status != StatusItemChecklist.NaoSeAplica)
-        // {
-        //    throw new DomainException("A foto de evidência é obrigatória.");
-        // }
-
         Status = status;
-        Funcionalidade = funcionalidade;
-        RelatoProblema = relatoProblema?.Trim();
-        FotoUrl = fotoUrl;
-        ConcluidaEm = DateTime.UtcNow;
-    }
+        Funcionalidade = func;
+        RelatoProblema = string.IsNullOrWhiteSpace(relato) ? null : relato.Trim();
+        
+        if (!string.IsNullOrWhiteSpace(fotoUrl))
+        {
+            FotoUrl = fotoUrl;
+        }
 
-    public bool EstaConcluida() => Status.HasValue;
+        Concluida = true;
+    }
 }

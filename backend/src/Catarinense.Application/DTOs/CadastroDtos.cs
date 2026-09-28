@@ -10,11 +10,7 @@ public record OnibusResumoDto(Guid Id, string Prefixo, string? Placa, bool Ativo
 
 
 
-public record CadastrarEtapaItemPadraoRequest(string Texto, int Ordem, string? EnquadramentoFoto);
-public record CadastrarEtapaPadraoRequest(string Nome, int Ordem, string? Descricao, string? LinkVideo, List<CadastrarEtapaItemPadraoRequest>? Itens = null);
-
-public record EtapaItemPadraoResumoDto(Guid Id, string Texto, string? EnquadramentoFoto, int Ordem, bool Ativo);
-public record EtapaPadraoResumoDto(Guid Id, string Nome, string? Descricao, string? LinkVideo, int Ordem, bool Ativo, List<EtapaItemPadraoResumoDto>? Itens = null);
-
-public record EditarEtapaItemPadraoRequest(Guid? Id, string Texto, int Ordem, string? EnquadramentoFoto);
-public record EditarEtapaPadraoRequest(Guid Id, string Nome, int Ordem, string? Descricao, string? LinkVideo, List<EditarEtapaItemPadraoRequest>? Itens = null);
+public record CadastrarEtapaPadraoRequest(string Nome, int Ordem, string? Descricao, string? LinkVideo, IReadOnlyList<EtapaItemPadraoDto>? Itens);
+public record EtapaItemPadraoDto(string Texto, int Ordem, string? EnquadramentoFoto);
+public record EtapaPadraoResumoDto(Guid Id, string Nome, string? Descricao, string? LinkVideo, int Ordem, bool Ativo);
+public record EditarEtapaPadraoRequest(Guid Id, string Nome, int Ordem, string? Descricao, string? LinkVideo, IReadOnlyList<EtapaItemPadraoDto>? Itens);

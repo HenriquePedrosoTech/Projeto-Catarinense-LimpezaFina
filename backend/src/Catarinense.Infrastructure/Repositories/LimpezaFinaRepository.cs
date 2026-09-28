@@ -12,7 +12,7 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
 
     public async Task<LimpezaFina?> ObterComEtapasAsync(Guid id) =>
         await DbSet
-            .Include(l => l.Etapas)
+            .Include(l => l.Etapas).ThenInclude(e => e.Itens)
                 .ThenInclude(e => e.Fotos)
             .FirstOrDefaultAsync(l => l.Id == id);
 
@@ -71,6 +71,14 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
 
         foreach (var etapa in entidade.Etapas)
         {
+            foreach (var item in etapa.Itens)
+            {
+                var entrada = Contexto.Entry(item);
+                if (entrada.State == EntityState.Detached)
+                {
+                    entrada.State = EntityState.Added;
+                }
+            }
             foreach (var foto in etapa.Fotos)
             {
                 var entrada = Contexto.Entry(foto);

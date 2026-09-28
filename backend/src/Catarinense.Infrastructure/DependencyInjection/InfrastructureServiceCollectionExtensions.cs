@@ -77,7 +77,6 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IIniciarLimpezaFinaUseCase, Catarinense.Application.UseCases.IniciarLimpezaFinaUseCase>();
         services.AddScoped<IDefinirNumeroOSUseCase, Catarinense.Application.UseCases.DefinirNumeroOSUseCase>();
         services.AddScoped<IRegistrarFotoEtapaUseCase, Catarinense.Application.UseCases.RegistrarFotoEtapaUseCase>();
-        services.AddScoped<IRegistrarItemExecucaoUseCase, Catarinense.Application.UseCases.RegistrarItemExecucaoUseCase>();
         services.AddScoped<IRemoverFotoEtapaUseCase, Catarinense.Application.UseCases.RemoverFotoEtapaUseCase>();
         services.AddScoped<Catarinense.Application.UseCases.ISinalizarCortinasUseCase, Catarinense.Application.UseCases.SinalizarCortinasUseCase>();
         services.AddScoped<IFinalizarLimpezaFinaUseCase, Catarinense.Application.UseCases.FinalizarLimpezaFinaUseCase>();
@@ -91,7 +90,6 @@ public static class InfrastructureServiceCollectionExtensions
         // Cadastro / consulta de dados mestres (usuários, ônibus, etapas padrão)
         services.AddScoped<ICadastrarUsuarioUseCase, Catarinense.Application.UseCases.CadastrarUsuarioUseCase>();
         services.AddScoped<IEditarUsuarioUseCase, Catarinense.Application.UseCases.EditarUsuarioUseCase>();
-        services.AddScoped<ITrocarSenhaUsuarioUseCase, Catarinense.Application.UseCases.TrocarSenhaUsuarioUseCase>();
         services.AddScoped<IExcluirUsuarioUseCase, Catarinense.Application.UseCases.ExcluirUsuarioUseCase>();
         services.AddScoped<ICadastrarOnibusUseCase, Catarinense.Application.UseCases.CadastrarOnibusUseCase>();
         services.AddScoped<IExcluirOnibusUseCase, Catarinense.Application.UseCases.ExcluirOnibusUseCase>();

@@ -20,18 +20,18 @@ public class EditarEtapaPadraoUseCase : IEditarEtapaPadraoUseCase
             ?? throw new NotFoundException("Etapa padrao nao encontrada.");
 
         etapa.RenomearOuReordenar(request.Nome, request.Ordem, request.Descricao, request.LinkVideo);
+        etapa.LimparItens();
+        if (request.Itens != null)
+        {
+            foreach (var item in request.Itens.OrderBy(i => i.Ordem))
+            {
+                etapa.AdicionarItem(item.Texto, item.Ordem, item.EnquadramentoFoto);
+            }
+        }
 
         _etapaPadraoRepository.Atualizar(etapa);
         await _etapaPadraoRepository.SalvarAlteracoesAsync();
 
-        return new EtapaPadraoResumoDto(
-            etapa.Id, 
-            etapa.Nome, 
-            etapa.Descricao, 
-            etapa.LinkVideo, 
-            etapa.Ordem, 
-            etapa.Ativo,
-            etapa.Itens.Select(i => new EtapaItemPadraoResumoDto(i.Id, i.Texto, i.EnquadramentoFoto, i.Ordem, i.Ativo)).ToList()
-        );
+        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo);
     }
 }

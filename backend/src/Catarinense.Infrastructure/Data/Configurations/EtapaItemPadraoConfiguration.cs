@@ -9,16 +9,13 @@ public class EtapaItemPadraoConfiguration : IEntityTypeConfiguration<EtapaItemPa
     public void Configure(EntityTypeBuilder<EtapaItemPadrao> builder)
     {
         builder.ToTable("etapas_itens_padrao");
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Texto).IsRequired().HasMaxLength(255);
+        builder.Property(e => e.EnquadramentoFoto).HasMaxLength(500);
 
-        builder.HasKey(ei => ei.Id);
-        builder.Property(ei => ei.Id).ValueGeneratedNever();
-
-        builder.Property(ei => ei.Texto).HasMaxLength(300).IsRequired();
-        builder.Property(ei => ei.EnquadramentoFoto).HasMaxLength(300);
-        
-        builder.HasOne<EtapaPadrao>()
-               .WithMany(e => e.Itens)
-               .HasForeignKey(ei => ei.EtapaPadraoId)
-               .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(e => e.EtapaPadrao)
+            .WithMany(e => e.Itens)
+            .HasForeignKey(e => e.EtapaPadraoId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

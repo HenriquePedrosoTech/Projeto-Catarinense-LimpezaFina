@@ -151,18 +151,18 @@ export const api = {
   listarEtapasPadrao: (token: string) =>
     request<EtapaPadraoResumo[]>("/api/etapas-padrao", { token }),
 
-  cadastrarEtapaPadrao: (token: string, nome: string, ordem: number, descricao?: string, linkVideo?: string) =>
+  cadastrarEtapaPadrao: (token: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, itens?: { texto: string; ordem: number; enquadramentoFoto?: string | null }[]) =>
     request<EtapaPadraoResumo>("/api/etapas-padrao", {
       method: "POST",
       token,
-      body: JSON.stringify({ nome, ordem, descricao, linkVideo }),
+      body: JSON.stringify({ nome, ordem, descricao, linkVideo, itens }),
     }),
 
-  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string) =>
+  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, itens?: { id?: string; texto: string; ordem: number; enquadramentoFoto?: string | null }[]) =>
     request<EtapaPadraoResumo>(`/api/etapas-padrao/${etapaId}`, {
       method: "PUT",
       token,
-      body: JSON.stringify({ nome, ordem, descricao, linkVideo }),
+      body: JSON.stringify({ nome, ordem, descricao, linkVideo, itens }),
     }),
 
   excluirEtapaPadrao: (token: string, etapaId: string) =>
@@ -212,4 +212,5 @@ export const api = {
   excluirUsuario: (token: string, usuarioId: string) =>
     request<void>(`/api/usuarios/${usuarioId}`, { method: "DELETE", token }),
 };
+
 

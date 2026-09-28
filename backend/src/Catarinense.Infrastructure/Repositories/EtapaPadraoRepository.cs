@@ -14,7 +14,4 @@ public class EtapaPadraoRepository : RepositorioBase<EtapaPadrao>, IEtapaPadraoR
 
     public async Task<IReadOnlyList<EtapaPadrao>> ListarPorIdsAsync(IEnumerable<Guid> ids) =>
         await DbSet.Include(e => e.Itens).Where(e => ids.Contains(e.Id)).ToListAsync();
-
-    public override async Task<IReadOnlyList<EtapaPadrao>> ListarAsync() =>
-        await DbSet.Include(e => e.Itens).ToListAsync();
 }

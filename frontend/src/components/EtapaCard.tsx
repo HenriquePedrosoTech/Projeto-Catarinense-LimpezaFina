@@ -1,21 +1,19 @@
 "use client";
 
-import { useRef, useState } from "react";
-import type { EtapaResumo, EtapaItemResumo } from "@/lib/types";
+import { useRef, useState, useEffect } from "react";
+import type { EtapaResumo } from "@/lib/types";
 import { resolverUrlFoto } from "@/lib/fotos";
 import { Lightbox, useLightbox } from "./Lightbox";
 import { Camera, Check, Loader2, ImagePlus, Info, Upload } from "lucide-react";
-import { EtapaItemCard } from "./EtapaItemCard";
 
 interface Props {
   etapa: EtapaResumo;
   desabilitado: boolean;
   onEnviarFoto: (arquivo: File) => Promise<void>;
   onRemoverFoto?: (url: string) => Promise<void>;
-  onEnviarItem?: (itemId: string, status: string, funcionalidade: string, relato: string | null, arquivo: File | null) => Promise<void>;
 }
 
-export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, onEnviarItem }: Props) {
+export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto }: Props) {
   const inputCameraRef = useRef<HTMLInputElement>(null);
   const inputGaleriaRef = useRef<HTMLInputElement>(null);
   
@@ -56,8 +54,6 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
       setRemovendo(null);
     }
   }
-
-  const possuiItens = etapa.itens && etapa.itens.length > 0;
 
   return (
     <div
@@ -100,42 +96,80 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
           </div>
         </div>
 
-        {!possuiItens && (
-          <div className="flex shrink-0 items-center">
-            {enviando && <Loader2 className="h-5 w-5 animate-spin text-brand" />}
-            
-            {!etapa.concluida && !desabilitado && !enviando && (
-              <div className="relative">
-                <input ref={inputCameraRef} type="file" accept="image/*" capture="environment" onChange={handleArquivo} className="hidden" />
-                <input ref={inputGaleriaRef} type="file" accept="image/*" onChange={handleArquivo} className="hidden" />
-                <button
-                  type="button"
-                  onClick={() => window.innerWidth >= 640 ? inputGaleriaRef.current?.click() : setMostrarOpcoesFoto(true)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-ink/40 hover:bg-brand/10 hover:text-brand transition-colors"
-                >
-                  <Camera className="h-5 w-5" />
-                </button>
-              </div>
-            )}
+        <div className="flex shrink-0 items-center">
+          {enviando && <Loader2 className="h-5 w-5 animate-spin text-brand" />}
+          
+          {!etapa.concluida && !desabilitado && !enviando && (
+            <div className="relative">
+              <input
+                ref={inputCameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <input
+                ref={inputGaleriaRef}
+                type="file"
+                accept="image/*"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                    if (window.innerWidth >= 640) {
+                      inputGaleriaRef.current?.click();
+                    } else {
+                      setMostrarOpcoesFoto(true);
+                    }
+                  }}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-ink/40 hover:bg-brand/10 hover:text-brand transition-colors"
+              >
+                <Camera className="h-5 w-5" />
+              </button>
+            </div>
+          )}
 
-            {etapa.concluida && !desabilitado && !enviando && (
-              <div className="relative">
-                <input ref={inputCameraRef} type="file" accept="image/*" capture="environment" onChange={handleArquivo} className="hidden" />
-                <input ref={inputGaleriaRef} type="file" accept="image/*" onChange={handleArquivo} className="hidden" />
-                <button
-                  type="button"
-                  onClick={() => window.innerWidth >= 640 ? inputGaleriaRef.current?.click() : setMostrarOpcoesFoto(true)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand hover:bg-brand hover:text-white transition-colors"
-                >
-                  <ImagePlus className="h-5 w-5" />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+          {etapa.concluida && !desabilitado && !enviando && (
+            <div className="relative">
+               <input
+                ref={inputCameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <input
+                ref={inputGaleriaRef}
+                type="file"
+                accept="image/*"
+                onChange={handleArquivo}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                    if (window.innerWidth >= 640) {
+                      inputGaleriaRef.current?.click();
+                    } else {
+                      setMostrarOpcoesFoto(true);
+                    }
+                  }}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand hover:bg-brand hover:text-white transition-colors"
+              >
+                <ImagePlus className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {erro && <p className="mt-3 text-sm font-medium text-danger">{erro}</p>}
+      {erro && (
+        <p className="mt-3 text-sm font-medium text-danger">{erro}</p>
+      )}
 
       {mostrarDesc && etapa.descricao && (
         <div className="mt-3 rounded-lg bg-surface/50 p-3 text-sm text-ink/70">
@@ -143,23 +177,7 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
         </div>
       )}
 
-      {/* RENDERIZAÇÃO DE ITENS CHECKLIST */}
-      {possuiItens && (
-        <div className="mt-4 flex flex-col gap-3 border-t border-line pt-4">
-          {etapa.itens.map((item) => (
-            <EtapaItemCard
-              key={item.id}
-              item={item}
-              desabilitado={desabilitado}
-              onEnviarItem={onEnviarItem}
-              onAbrirFoto={abrir}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* RENDERIZAÇÃO DE FOTOS (quando não tem itens ou quando exibia no formato antigo) */}
-      {!possuiItens && etapa.fotos.length > 0 && (
+      {etapa.fotos.length > 0 && (
         <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
           {etapa.fotos.map((fotoUrl) => (
             <div key={fotoUrl} className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-surface border border-line">
@@ -176,7 +194,11 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
                   disabled={removendo === fotoUrl}
                   className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-ink/70 text-white opacity-100 transition-all hover:bg-danger md:opacity-0 md:group-hover:opacity-100"
                 >
-                  {removendo === fotoUrl ? <Loader2 className="h-3 w-3 animate-spin" /> : <span className="text-sm font-bold">X</span>}
+                  {removendo === fotoUrl ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <span className="text-sm font-bold">X</span>
+                  )}
                 </button>
               )}
             </div>
@@ -184,8 +206,12 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
         </div>
       )}
 
-      <Lightbox url={urlAberta} onClose={fechar} />
+      <Lightbox 
+        url={urlAberta} 
+        onClose={fechar} 
+      />
 
+      {/* Modal de Escolha de Foto */}
       {mostrarOpcoesFoto && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center bg-ink/50 backdrop-blur-sm sm:items-center animate-in fade-in">
           <div className="w-full bg-white rounded-t-3xl sm:rounded-2xl sm:max-w-sm overflow-hidden p-6 pb-12 sm:pb-6 animate-in slide-in-from-bottom-10 sm:zoom-in-95">
@@ -196,16 +222,22 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
                 onClick={() => { inputCameraRef.current?.click(); setMostrarOpcoesFoto(false); }}
                 className="flex items-center gap-3 w-full p-4 rounded-xl bg-surface hover:bg-brand/10 hover:text-brand transition-colors text-ink font-semibold"
               >
-                <Camera className="h-5 w-5" /> Tirar Foto
+                <Camera className="h-5 w-5" />
+                Tirar Foto
               </button>
               <button
                 type="button"
                 onClick={() => { inputGaleriaRef.current?.click(); setMostrarOpcoesFoto(false); }}
                 className="flex items-center gap-3 w-full p-4 rounded-xl bg-surface hover:bg-brand/10 hover:text-brand transition-colors text-ink font-semibold"
               >
-                <Upload className="h-5 w-5" /> Escolher da Galeria
+                <Upload className="h-5 w-5" />
+                Escolher da Galeria
               </button>
-              <button type="button" onClick={() => setMostrarOpcoesFoto(false)} className="mt-2 w-full p-4 rounded-xl bg-ink/5 text-ink/60 hover:bg-ink/10 font-bold transition-colors">
+              <button
+                type="button"
+                onClick={() => setMostrarOpcoesFoto(false)}
+                className="mt-2 w-full p-4 rounded-xl bg-ink/5 text-ink/60 hover:bg-ink/10 font-bold transition-colors"
+              >
                 Cancelar
               </button>
             </div>

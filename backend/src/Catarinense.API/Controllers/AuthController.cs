@@ -2,6 +2,8 @@ using Catarinense.Application.DTOs;
 using Catarinense.Application.Interfaces.UseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace Catarinense.API.Controllers;
@@ -15,7 +17,19 @@ public class AuthController : ControllerBase
     public AuthController(IAutenticarUsuarioUseCase autenticarUsuarioUseCase)
     {
         _autenticarUsuarioUseCase = autenticarUsuarioUseCase;
+    
+    [HttpPost("trocar-senha")]
+    [Authorize]
+    public async Task<IActionResult> TrocarSenha([FromBody] TrocarSenhaRequest request, [FromServices] ITrocarSenhaUsuarioUseCase useCase)
+    {
+        var usuarioIdStr = User.FindFirstValue("usuarioId");
+        if (!Guid.TryParse(usuarioIdStr, out var usuarioId))
+            return Unauthorized();
+            
+        await useCase.ExecutarAsync(usuarioId, request);
+        return NoContent();
     }
+}
 
     /// <summary>Login por matrícula + senha. Retorna o token JWT usado nas demais rotas.</summary>
     [HttpPost("login")]
@@ -25,18 +39,30 @@ public class AuthController : ControllerBase
     {
         var resposta = await _autenticarUsuarioUseCase.ExecutarAsync(request);
         return Ok(resposta);
-    }
-
-    /// <summary>Troca a senha provisria no primeiro acesso ou se o admin resetar.</summary>
+    
     [HttpPost("trocar-senha")]
     [Authorize]
-    public async Task<IActionResult> TrocarSenha([FromBody] TrocarSenhaRequest request, [FromServices] ITrocarSenhaUsuarioUseCase trocarSenhaUseCase)
+    public async Task<IActionResult> TrocarSenha([FromBody] TrocarSenhaRequest request, [FromServices] ITrocarSenhaUsuarioUseCase useCase)
     {
-        var usuarioIdClaim = User.Claims.FirstOrDefault(c => c.Type == "usuarioId")?.Value;
-        if (!Guid.TryParse(usuarioIdClaim, out var usuarioId))
-            return Unauthorized("Token inválido.");
-
-        await trocarSenhaUseCase.ExecutarAsync(usuarioId, request);
-        return Ok(new { mensagem = "Senha alterada com sucesso. Você já pode usar o sistema." });
+        var usuarioIdStr = User.FindFirstValue("usuarioId");
+        if (!Guid.TryParse(usuarioIdStr, out var usuarioId))
+            return Unauthorized();
+            
+        await useCase.ExecutarAsync(usuarioId, request);
+        return NoContent();
     }
 }
+
+    [HttpPost("trocar-senha")]
+    [Authorize]
+    public async Task<IActionResult> TrocarSenha([FromBody] TrocarSenhaRequest request, [FromServices] ITrocarSenhaUsuarioUseCase useCase)
+    {
+        var usuarioIdStr = User.FindFirstValue("usuarioId");
+        if (!Guid.TryParse(usuarioIdStr, out var usuarioId))
+            return Unauthorized();
+            
+        await useCase.ExecutarAsync(usuarioId, request);
+        return NoContent();
+    }
+}
+

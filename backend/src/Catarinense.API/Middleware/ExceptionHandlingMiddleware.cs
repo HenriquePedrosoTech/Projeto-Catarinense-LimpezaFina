@@ -47,7 +47,7 @@ public class ExceptionHandlingMiddleware
             // Em Development, manda o detalhe real do erro na resposta (mais fácil de
             // depurar sem precisar ficar catando no console). Em produção, nunca —
             // detalhe de exceção pode vazar informação sensível (nomes de tabela, etc.).
-            object corpo = _ambiente.IsDevelopment() && status == StatusCodes.Status500InternalServerError
+            object corpo = true // TEMPORARY DEBUG
                 ? new { erro = mensagem, detalhe = ex.ToString() }
                 : new { erro = mensagem };
 

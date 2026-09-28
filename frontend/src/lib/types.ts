@@ -8,6 +8,7 @@ export interface Usuario {
   matricula: string;
   perfil: Perfil;
   token: string;
+  precisaTrocarSenha: boolean;
 }
 
 export interface EtapaResumo {

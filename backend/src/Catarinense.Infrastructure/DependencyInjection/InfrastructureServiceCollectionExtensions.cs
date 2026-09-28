@@ -53,8 +53,15 @@ public static class InfrastructureServiceCollectionExtensions
         }
 
         
+        
+        var cloudinaryName = configuration["Cloudinary:CloudName"];
         var firebaseBucket = configuration["Firebase:StorageBucket"];
-        if (!string.IsNullOrWhiteSpace(firebaseBucket))
+        
+        if (!string.IsNullOrWhiteSpace(cloudinaryName))
+        {
+            services.AddScoped<IArmazenamentoArquivoService, CloudinaryStorageService>();
+        }
+        else if (!string.IsNullOrWhiteSpace(firebaseBucket))
         {
             services.AddScoped<IArmazenamentoArquivoService, FirebaseStorageService>();
         }
@@ -62,6 +69,7 @@ public static class InfrastructureServiceCollectionExtensions
         {
             services.AddScoped<IArmazenamentoArquivoService, ArmazenamentoArquivoLocalService>();
         }
+
 
 
         // Casos de uso (Application)

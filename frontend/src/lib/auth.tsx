@@ -12,6 +12,7 @@ interface AuthContextValue {
   carregando: boolean;
   entrar: (matricula: string, senha: string) => Promise<Usuario>;
   sair: () => void;
+  atualizarUsuario: (usuario: Usuario) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -47,13 +48,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return resultado;
   }
 
+  function atualizarUsuario(novoUsuario: Usuario) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(novoUsuario));
+    setUsuario(novoUsuario);
+  }
+
   function sair() {
     localStorage.removeItem(STORAGE_KEY);
     setUsuario(null);
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, carregando, entrar, sair }}>
+    <AuthContext.Provider value={{ usuario, carregando, entrar, sair, atualizarUsuario }}>
       {children}
     </AuthContext.Provider>
   );
@@ -65,13 +71,25 @@ export function useAuth() {
   return contexto;
 }
 
-export function useRequireAuth(perfilExigido?: "Administrador" | "Operador") {
+export function useRequireAuth(perfilExigido?: "Administrador" | "Operador", permitirTrocaSenha = false) {
   const { usuario, carregando } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (carregando) return;
     if (!usuario) {
+      router.replace("/login");
+      return;
+    }
+    if (usuario.precisaTrocarSenha && !permitirTrocaSenha) {
+      router.replace("/trocar-senha");
+      return;
+    }
+    if (!usuario.precisaTrocarSenha && permitirTrocaSenha) {
+      router.replace(usuario.perfil === "Administrador" ? "/admin" : "/operador");
+      return;
+    }
+    if (false) {
       router.replace("/login");
       return;
     }

@@ -9,6 +9,7 @@ public class EtapaItemExecucao : EntidadeBase
     public LimpezaEtapaExecucao LimpezaEtapaExecucao { get; private set; } = null!;
 
     public Guid EtapaItemPadraoId { get; private set; }
+    public bool Obrigatorio { get; private set; } = true;
     
     // Nao precisamos mapear a navegacao pra EtapaItemPadrao se n quisermos, 
     // mas vamos deixar so os Ids e dados basicos por simplicidade, ou entao:
@@ -23,10 +24,11 @@ public class EtapaItemExecucao : EntidadeBase
 
     protected EtapaItemExecucao() { }
 
-    public EtapaItemExecucao(Guid limpezaEtapaExecucaoId, Guid etapaItemPadraoId)
+    public EtapaItemExecucao(Guid limpezaEtapaExecucaoId, Guid etapaItemPadraoId, bool obrigatorio = true)
     {
         LimpezaEtapaExecucaoId = limpezaEtapaExecucaoId;
         EtapaItemPadraoId = etapaItemPadraoId;
+        Obrigatorio = obrigatorio;
     }
 
     public void RegistrarExecucao(StatusItemChecklist status, StatusFuncionalidade func, string? relato, string? fotoUrl)

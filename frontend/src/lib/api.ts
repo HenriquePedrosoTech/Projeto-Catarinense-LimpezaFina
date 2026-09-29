@@ -151,18 +151,18 @@ export const api = {
   listarEtapasPadrao: (token: string) =>
     request<EtapaPadraoResumo[]>("/api/etapas-padrao", { token }),
 
-  cadastrarEtapaPadrao: (token: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, itens?: { texto: string; ordem: number; enquadramentoFoto?: string | null }[]) =>
+  cadastrarEtapaPadrao: (token: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria?: boolean, itens?: { texto: string; ordem: number; enquadramentoFoto?: string | null; obrigatorio?: boolean }[]) =>
     request<EtapaPadraoResumo>("/api/etapas-padrao", {
       method: "POST",
       token,
-      body: JSON.stringify({ nome, ordem, descricao, linkVideo, itens }),
+      body: JSON.stringify({ nome, ordem, descricao, linkVideo, obrigatoria, itens }),
     }),
 
-  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, itens?: { id?: string; texto: string; ordem: number; enquadramentoFoto?: string | null }[]) =>
+  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria?: boolean, itens?: { id?: string; texto: string; ordem: number; enquadramentoFoto?: string | null; obrigatorio?: boolean }[]) =>
     request<EtapaPadraoResumo>(`/api/etapas-padrao/${etapaId}`, {
       method: "PUT",
       token,
-      body: JSON.stringify({ nome, ordem, descricao, linkVideo, itens }),
+      body: JSON.stringify({ nome, ordem, descricao, linkVideo, obrigatoria, itens }),
     }),
 
   excluirEtapaPadrao: (token: string, etapaId: string) =>

@@ -30,9 +30,9 @@ public class LimpezaEtapaExecucao : EntidadeBase
         EtapaPadraoId = etapaPadraoId;
     }
 
-    public void InicializarItem(Guid etapaItemPadraoId)
+    public void InicializarItem(Guid etapaItemPadraoId, bool obrigatorio = true)
     {
-        _itens.Add(new EtapaItemExecucao(Id, etapaItemPadraoId));
+        _itens.Add(new EtapaItemExecucao(Id, etapaItemPadraoId, obrigatorio));
     }
 
     public void AdicionarFoto(string urlArquivo)
@@ -68,7 +68,7 @@ public class LimpezaEtapaExecucao : EntidadeBase
     {
         if (_itens.Count > 0)
         {
-            return _itens.All(i => i.Concluida);
+            return _itens.Where(i => i.Obrigatorio).All(i => i.Concluida);
         }
         
         return _fotos.Count > 0;

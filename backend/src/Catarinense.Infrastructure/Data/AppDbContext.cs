@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<LimpezaEtapaExecucao> LimpezaEtapaExecucoes => Set<LimpezaEtapaExecucao>();
     public DbSet<FotoEtapa> FotosEtapa => Set<FotoEtapa>();
     public DbSet<EtapaItemPadrao> EtapasItensPadrao => Set<EtapaItemPadrao>();
+    public DbSet<FotoHash> FotosHashes => Set<FotoHash>();
     public DbSet<EtapaItemExecucao> EtapasItensExecucao => Set<EtapaItemExecucao>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

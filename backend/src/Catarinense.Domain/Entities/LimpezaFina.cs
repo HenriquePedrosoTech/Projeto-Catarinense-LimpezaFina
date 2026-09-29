@@ -59,7 +59,7 @@ public class LimpezaFina : EntidadeBase
             var execucao = new LimpezaEtapaExecucao(Id, etapa.Id);
         foreach (var item in etapa.Itens)
         {
-            execucao.InicializarItem(item.Id);
+            execucao.InicializarItem(item.Id, item.Obrigatorio);
         }
         _etapas.Add(execucao);
         }
@@ -85,13 +85,21 @@ public class LimpezaFina : EntidadeBase
         execucao.RemoverFoto(urlArquivo);
     }
 
-    public void Finalizar(Guid? etapaCortinaId = null)
+    public void Finalizar(IReadOnlyList<EtapaPadrao> etapasPadrao)
     {
         GarantirEmAndamento();
 
-        var etapasPendentes = _etapas.Where(e => !e.EstaConcluida() && !(e.EtapaPadraoId == etapaCortinaId && !CortinasRetiradas)).ToList();
+        var etapasPendentes = _etapas.Where(e => 
+        {
+            var padrao = etapasPadrao.FirstOrDefault(p => p.Id == e.EtapaPadraoId);
+            bool obrigatoria = padrao?.Obrigatoria ?? true;
+            if (!obrigatoria) return false;
+            if (padrao != null && padrao.Nome.ToUpper().Contains("CORTINA") && !CortinasRetiradas) return false;
+            return !e.EstaConcluida();
+        }).ToList();
+
         if (etapasPendentes.Count > 0)
-            throw new DomainException($"Existem {etapasPendentes.Count} etapa(s) sem foto de evidência. Finalize todas as etapas antes de concluir o registro.");
+            throw new DomainException($"Existem {etapasPendentes.Count} etapa(s) obrigat�ria(s) pendentes. Finalize todas as etapas antes de concluir o registro.");
 
         Status = StatusLimpeza.Concluida;
         FinalizadaEm = DateTime.UtcNow;
@@ -166,4 +174,6 @@ public class LimpezaFina : EntidadeBase
             throw new DomainException("Este registro precisa estar concluído antes de ser avaliado.");
     }
 }
+
+
 

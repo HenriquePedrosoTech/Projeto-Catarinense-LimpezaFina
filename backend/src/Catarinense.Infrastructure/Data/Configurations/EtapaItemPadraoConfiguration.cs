@@ -1,4 +1,4 @@
-using Catarinense.Domain.Entities;
+﻿using Catarinense.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,12 +10,13 @@ public class EtapaItemPadraoConfiguration : IEntityTypeConfiguration<EtapaItemPa
     {
         builder.ToTable("etapas_itens_padrao");
         builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
         builder.Property(e => e.Texto).IsRequired().HasMaxLength(255);
         builder.Property(e => e.EnquadramentoFoto).HasMaxLength(500);
 
         builder.HasOne(e => e.EtapaPadrao)
             .WithMany(e => e.Itens)
-            .HasForeignKey(e => e.EtapaPadraoId)
+            .HasForeignKey(e => e.EtapaPadraoId).IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

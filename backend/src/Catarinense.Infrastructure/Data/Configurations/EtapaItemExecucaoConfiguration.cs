@@ -1,4 +1,4 @@
-using Catarinense.Domain.Entities;
+﻿using Catarinense.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +10,7 @@ public class EtapaItemExecucaoConfiguration : IEntityTypeConfiguration<EtapaItem
     {
         builder.ToTable("etapas_itens_execucao");
         builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
         
         builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
         builder.Property(e => e.Funcionalidade).HasConversion<string>().HasMaxLength(50);

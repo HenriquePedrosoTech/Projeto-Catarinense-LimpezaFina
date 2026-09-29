@@ -1,9 +1,9 @@
 import { useState, type FormEvent, useEffect } from "react";
+import { X, Plus, Trash2 } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { X, Plus, Trash2 } from "lucide-react";
-import type { EtapaPadraoResumo, EtapaItemPadraoResumo } from "@/lib/types";
+import type { EtapaPadraoResumo } from "@/lib/types";
 
 interface EtapaEditModalProps {
   token: string;
@@ -13,32 +13,35 @@ interface EtapaEditModalProps {
 }
 
 export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditModalProps) {
+  if (!etapa) return null;
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [linkVideo, setLinkVideo] = useState("");
+  const [obrigatoria, setObrigatoria] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   
-  const [itens, setItens] = useState<{ id?: string, texto: string, enquadramentoFoto: string, ordem: number }[]>([]);
+  const [itens, setItens] = useState<{ id?: string, texto: string, enquadramentoFoto: string, ordem: number, obrigatorio: boolean }[]>([]);
 
   useEffect(() => {
     if (etapa) {
       setNome(etapa.nome);
       setDescricao(etapa.descricao || "");
       setLinkVideo(etapa.linkVideo || "");
+      setObrigatoria(etapa.obrigatoria ?? true);
       setItens(
         (etapa.itens || []).map((i) => ({
           id: i.id,
           texto: i.texto,
           enquadramentoFoto: i.enquadramentoFoto || "",
           ordem: i.ordem,
+          obrigatorio: i.obrigatorio ?? true,
         }))
       );
       setErro(null);
     }
   }, [etapa]);
 
-  if (!etapa) return null;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -47,16 +50,18 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
     try {
       await api.editarEtapaPadrao(
         token, 
-        etapa!.id, 
-        nome.trim(), 
-        etapa!.ordem, 
-        descricao.trim() || undefined,
-        linkVideo.trim() || undefined,
-        itens.map((i, index) => ({
+        etapa!.id,
+        nome,
+        etapa!.ordem,
+        descricao || undefined,
+        linkVideo || undefined,
+        obrigatoria,
+        itens.map(i => ({
           id: i.id,
-          texto: i.texto.trim(),
-          enquadramentoFoto: i.enquadramentoFoto.trim() || null,
-          ordem: index
+          texto: i.texto,
+          enquadramentoFoto: i.enquadramentoFoto || undefined,
+          ordem: i.ordem,
+          obrigatorio: i.obrigatorio
         }))
       );
       onSuccess();
@@ -68,16 +73,16 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
   }
 
   function adicionarItem() {
-    setItens([...itens, { texto: "", enquadramentoFoto: "", ordem: itens.length }]);
+    setItens([...itens, { texto: "", enquadramentoFoto: "", ordem: itens.length, obrigatorio: true }]);
   }
 
   function removerItem(index: number) {
     setItens(itens.filter((_, i) => i !== index));
   }
 
-  function atualizarItem(index: number, campo: "texto" | "enquadramentoFoto", valor: string) {
+  function atualizarItem(index: number, campo: "texto" | "enquadramentoFoto" | "obrigatorio", valor: any) {
     const novos = [...itens];
-    novos[index][campo] = valor;
+    (novos[index] as any)[campo] = valor;
     setItens(novos);
   }
 
@@ -91,7 +96,6 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
         >
           <X className="h-5 w-5" />
         </button>
-
         <h2 className="mb-4 text-xl font-bold text-ink">Editar Etapa e Itens</h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -115,15 +119,27 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
               />
             </div>
           </div>
+
           <div>
             <label className="mb-1 block text-sm font-medium text-ink">Procedimento Geral (Opcional)</label>
             <textarea
-              className="w-full rounded-md border border-line bg-surface p-3 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+              className="w-full rounded-lg border border-line bg-surface/50 p-3 text-ink placeholder:text-ink/40 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               rows={2}
               placeholder="Descreva o passo a passo..."
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
             />
+          </div>
+
+          <div className="flex items-center gap-2 mt-2">
+            <input 
+              type="checkbox" 
+              id="obrigatoria" 
+              checked={obrigatoria} 
+              onChange={(e) => setObrigatoria(e.target.checked)} 
+              className="h-4 w-4 rounded border-line text-brand focus:ring-brand" 
+            />
+            <label htmlFor="obrigatoria" className="text-sm font-medium text-ink">Esta etapa é obrigatória para finalizar a limpeza</label>
           </div>
 
           <div className="border-t border-line pt-4 mt-2">
@@ -133,36 +149,43 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
                 <Plus className="h-4 w-4" /> Novo Item
               </Button>
             </div>
-            
-            {itens.length === 0 ? (
-              <p className="text-sm text-ink/50 italic py-2">Nenhum item cadastrado. Esta etapa funcionará apenas com foto (modo antigo).</p>
-            ) : (
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-                {itens.map((item, index) => (
-                  <div key={index} className="flex gap-3 items-start bg-surface/30 p-3 rounded-lg border border-line">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-white text-xs font-bold mt-1">
-                      {index + 1}
-                    </span>
-                    <div className="flex-1 space-y-2">
-                      <Input 
-                        placeholder="Nome da tarefa (ex: Limpar Poltronas)" 
-                        value={item.texto} 
-                        onChange={(e) => atualizarItem(index, "texto", e.target.value)} 
-                        required 
-                      />
-                      <Input 
-                        placeholder="Instrução da Foto (ex: Foto pegando da poltrona para trás)" 
-                        value={item.enquadramentoFoto} 
-                        onChange={(e) => atualizarItem(index, "enquadramentoFoto", e.target.value)} 
-                      />
+
+            <div className="flex flex-col gap-3 max-h-80 overflow-y-auto p-1">
+              {itens.length === 0 ? (
+                <p className="text-sm text-ink/60 text-center py-4">Nenhum item cadastrado.</p>
+              ) : (
+                itens.map((item, index) => (
+                  <div key={index} className="flex flex-col gap-2 rounded-lg border border-line p-3 bg-surface/30">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-bold text-white">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 flex flex-col gap-2">
+                        <Input 
+                          placeholder="Nome da tarefa (ex: Limpar Poltronas)" 
+                          value={item.texto} 
+                          onChange={(e) => atualizarItem(index, "texto", e.target.value)} 
+                          required 
+                        />
+                        <Input 
+                          placeholder="Instrução da Foto (ex: Foto pegando da poltrona para trás)" 
+                          value={item.enquadramentoFoto} 
+                          onChange={(e) => atualizarItem(index, "enquadramentoFoto", e.target.value)} 
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removerItem(index)}
+                        className="text-ink/40 hover:text-danger transition-colors p-1"
+                        title="Remover item"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
                     </div>
-                    <button type="button" onClick={() => removerItem(index)} className="text-ink/40 hover:text-danger mt-2 ml-1" title="Remover item">
-                      <Trash2 className="h-5 w-5" />
-                    </button>
                   </div>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
           </div>
 
           {erro && <p className="rounded-md bg-danger/10 p-3 text-sm text-danger">{erro}</p>}

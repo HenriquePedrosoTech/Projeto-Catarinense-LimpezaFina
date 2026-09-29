@@ -13,7 +13,7 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
     public async Task<LimpezaFina?> ObterComEtapasAsync(Guid id) =>
         await DbSet
             .Include(l => l.Etapas).ThenInclude(e => e.Itens)
-                .ThenInclude(e => e.Fotos)
+            .Include(l => l.Etapas).ThenInclude(e => e.Fotos)
             .FirstOrDefaultAsync(l => l.Id == id);
 
     public async Task<IReadOnlyList<LimpezaFina>> ListarPorOnibusAsync(Guid onibusId) =>
@@ -90,3 +90,4 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
         }
     }
 }
+

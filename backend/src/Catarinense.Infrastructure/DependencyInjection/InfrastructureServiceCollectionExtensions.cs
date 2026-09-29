@@ -1,4 +1,4 @@
-using Catarinense.Application.Interfaces;
+﻿using Catarinense.Application.Interfaces;
 using Catarinense.Application.Interfaces.UseCases;
 using Catarinense.Domain.Interfaces;
 using Catarinense.Infrastructure.Data;
@@ -14,15 +14,15 @@ namespace Catarinense.Infrastructure.DependencyInjection;
 public static class InfrastructureServiceCollectionExtensions
 {
     /// <summary>
-    /// Registra DbContext (MySQL), repositórios e serviços de infraestrutura.
-    /// Chamado uma única vez no Program.cs da API: services.AddInfrastructure(Configuration).
+    /// Registra DbContext (MySQL), repositÃƒÂ³rios e serviÃƒÂ§os de infraestrutura.
+    /// Chamado uma ÃƒÂºnica vez no Program.cs da API: services.AddInfrastructure(Configuration).
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("MySql")
-            ?? throw new InvalidOperationException("Connection string 'MySql' não configurada em appsettings.json.");
+            ?? throw new InvalidOperationException("Connection string 'MySql' nÃƒÂ£o configurada em appsettings.json.");
 
-        // AutoDetect funciona com TiDB Cloud (compatível com o protocolo MySQL 5.7/8.0).
+        // AutoDetect funciona com TiDB Cloud (compatÃƒÂ­vel com o protocolo MySQL 5.7/8.0).
         // Se o auto-detect falhar em algum ambiente, troque por um ServerVersion fixo, ex.:
         // new MySqlServerVersion(new Version(8, 0, 11))
         services.AddDbContext<AppDbContext>(options =>
@@ -32,13 +32,14 @@ public static class InfrastructureServiceCollectionExtensions
         services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
         services.Configure<ArmazenamentoOptions>(configuration.GetSection(ArmazenamentoOptions.SectionName));
 
-        // Repositórios (Domain define a interface, Infrastructure implementa — DIP)
+        // RepositÃƒÂ³rios (Domain define a interface, Infrastructure implementa Ã¢â‚¬â€ DIP)
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<IOnibusRepository, OnibusRepository>();
         services.AddScoped<IEtapaPadraoRepository, EtapaPadraoRepository>();
+        services.AddScoped<IFotoHashRepository, FotoHashRepository>();
         services.AddScoped<ILimpezaFinaRepository, LimpezaFinaRepository>();
 
-        // Serviços de infraestrutura
+        // ServiÃƒÂ§os de infraestrutura
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         
@@ -74,12 +75,14 @@ public static class InfrastructureServiceCollectionExtensions
 
         // Casos de uso (Application)
         services.AddScoped<IAutenticarUsuarioUseCase, Catarinense.Application.UseCases.AutenticarUsuarioUseCase>();
+        services.AddScoped<Catarinense.Application.Interfaces.UseCases.ITrocarSenhaUsuarioUseCase, Catarinense.Application.UseCases.TrocarSenhaUsuarioUseCase>();
         services.AddScoped<IIniciarLimpezaFinaUseCase, Catarinense.Application.UseCases.IniciarLimpezaFinaUseCase>();
         services.AddScoped<IDefinirNumeroOSUseCase, Catarinense.Application.UseCases.DefinirNumeroOSUseCase>();
         services.AddScoped<IRegistrarFotoEtapaUseCase, Catarinense.Application.UseCases.RegistrarFotoEtapaUseCase>();
         services.AddScoped<IRemoverFotoEtapaUseCase, Catarinense.Application.UseCases.RemoverFotoEtapaUseCase>();
         services.AddScoped<Catarinense.Application.UseCases.ISinalizarCortinasUseCase, Catarinense.Application.UseCases.SinalizarCortinasUseCase>();
-        services.AddScoped<IFinalizarLimpezaFinaUseCase, Catarinense.Application.UseCases.FinalizarLimpezaFinaUseCase>();
+                services.AddScoped<IFinalizarLimpezaFinaUseCase, Catarinense.Application.UseCases.FinalizarLimpezaFinaUseCase>();
+        services.AddScoped<IRegistrarItemExecucaoUseCase, Catarinense.Application.UseCases.RegistrarItemExecucaoUseCase>();
         services.AddScoped<IAprovarLimpezaFinaUseCase, Catarinense.Application.UseCases.AprovarLimpezaFinaUseCase>();
         services.AddScoped<IReprovarLimpezaFinaUseCase, Catarinense.Application.UseCases.ReprovarLimpezaFinaUseCase>();
         services.AddScoped<IEnviarNotificacaoLimpezaUseCase, Catarinense.Application.UseCases.EnviarNotificacaoLimpezaUseCase>();
@@ -87,7 +90,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IExcluirLimpezaFinaUseCase, Catarinense.Application.UseCases.ExcluirLimpezaFinaUseCase>();
         services.AddScoped<Catarinense.Application.Common.DetalhesDtoBuilder>();
 
-        // Cadastro / consulta de dados mestres (usuários, ônibus, etapas padrão)
+        // Cadastro / consulta de dados mestres (usuÃƒÂ¡rios, ÃƒÂ´nibus, etapas padrÃƒÂ£o)
         services.AddScoped<ICadastrarUsuarioUseCase, Catarinense.Application.UseCases.CadastrarUsuarioUseCase>();
         services.AddScoped<IEditarUsuarioUseCase, Catarinense.Application.UseCases.EditarUsuarioUseCase>();
         services.AddScoped<IExcluirUsuarioUseCase, Catarinense.Application.UseCases.ExcluirUsuarioUseCase>();
@@ -104,5 +107,6 @@ public static class InfrastructureServiceCollectionExtensions
         return services;
     }
 }
+
 
 

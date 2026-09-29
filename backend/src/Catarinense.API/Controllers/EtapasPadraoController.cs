@@ -46,7 +46,7 @@ public class EtapasPadraoController : ControllerBase
     public async Task<ActionResult<EtapaPadraoResumoDto>> Editar(Guid id, [FromBody] CadastrarEtapaPadraoRequest request)
     {
         var useCase = HttpContext.RequestServices.GetRequiredService<IEditarEtapaPadraoUseCase>();
-        var editRequest = new EditarEtapaPadraoRequest(id, request.Nome, request.Ordem, request.Descricao, request.LinkVideo);
+        var editRequest = new EditarEtapaPadraoRequest(id, request.Nome, request.Ordem, request.Descricao, request.LinkVideo, request.Obrigatoria, request.Itens);
         var etapa = await useCase.ExecutarAsync(editRequest);
         return Ok(etapa);
     }

@@ -9,6 +9,12 @@ public class EtapaPadraoRepository : RepositorioBase<EtapaPadrao>, IEtapaPadraoR
 {
     public EtapaPadraoRepository(AppDbContext contexto) : base(contexto) { }
 
+    public override async Task<IReadOnlyList<EtapaPadrao>> ListarAsync() =>
+        await DbSet.Include(e => e.Itens).ToListAsync();
+
+    public override async Task<EtapaPadrao?> ObterPorIdAsync(Guid id) =>
+        await DbSet.Include(e => e.Itens).FirstOrDefaultAsync(e => e.Id == id);
+
     public async Task<IReadOnlyList<EtapaPadrao>> ListarAtivasAsync() =>
         await DbSet.Include(e => e.Itens).Where(e => e.Ativo).OrderBy(e => e.Ordem).ToListAsync();
 

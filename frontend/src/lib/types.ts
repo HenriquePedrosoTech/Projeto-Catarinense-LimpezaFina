@@ -11,19 +11,8 @@ export interface Usuario {
   precisaTrocarSenha: boolean;
 }
 
-export interface EtapaItemResumo {
-  id: string;
-  texto: string;
-  enquadramentoFoto?: string;
-  ordem: number;
-  status?: string;
-  funcionalidade?: string;
-  relatoProblema?: string;
-  fotoUrl?: string;
-  concluida: boolean;
-}
-
 export interface EtapaResumo {
+  obrigatoria?: boolean;
   etapaPadraoId: string;
   nome: string;
   descricao: string | null;
@@ -31,7 +20,20 @@ export interface EtapaResumo {
   ordem: number;
   concluida: boolean;
   fotos: string[];
-  itens?: EtapaItemResumo[];
+  itens: EtapaItemResumo[];
+}
+
+export interface EtapaItemResumo {
+  id: string;
+  texto: string;
+  enquadramentoFoto: string | null;
+  ordem: number;
+  status: string | null;
+  funcionalidade: string | null;
+  relatoProblema: string | null;
+  fotoUrl: string | null;
+  concluida: boolean;
+  obrigatorio?: boolean;
 }
 
 export interface LimpezaFinaDetalhes {
@@ -70,19 +72,21 @@ export interface OnibusResumo {
 
 export interface EtapaItemPadraoResumo {
   id?: string;
+  obrigatorio?: boolean;
   texto: string;
   ordem: number;
   enquadramentoFoto?: string;
 }
 
 export interface EtapaPadraoResumo {
+  itens?: EtapaItemPadraoResumo[];
+  obrigatoria?: boolean;
   id: string;
   nome: string;
   descricao: string | null;
   linkVideo?: string;
   ordem: number;
   ativo: boolean;
-  itens?: EtapaItemPadraoResumo[];
 }
 
 export interface UsuarioResumo {

@@ -14,20 +14,24 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
     private readonly IOnibusRepository _onibusRepository;
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IEtapaPadraoRepository _etapaPadraoRepository;
+    private readonly IFotoHashRepository _fotoHashRepository;
+    private readonly Catarinense.Application.Interfaces.IArmazenamentoArquivoService _armazenamentoArquivoService;
 
     public RegistrarItemExecucaoUseCase(
         ILimpezaFinaRepository limpezaFinaRepository,
         IOnibusRepository onibusRepository,
         IUsuarioRepository usuarioRepository,
-        IEtapaPadraoRepository etapaPadraoRepository)
+        IEtapaPadraoRepository etapaPadraoRepository, IFotoHashRepository fotoHashRepository, Catarinense.Application.Interfaces.IArmazenamentoArquivoService armazenamentoArquivoService)
     {
         _limpezaFinaRepository = limpezaFinaRepository;
         _onibusRepository = onibusRepository;
         _usuarioRepository = usuarioRepository;
         _etapaPadraoRepository = etapaPadraoRepository;
+        _fotoHashRepository = fotoHashRepository;
+        _armazenamentoArquivoService = armazenamentoArquivoService;
     }
 
-    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId, string status, string funcionalidade, string? relatoProblema, string? fotoUrl)
+    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId, string status, string funcionalidade, string? relatoProblema, byte[]? fotoBytes, string? fotoNome, string? fotoContentType)
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(limpezaFinaId)
             ?? throw new NotFoundException("Limpeza fina nao encontrada.");
@@ -46,7 +50,21 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
         if (!Enum.TryParse<StatusFuncionalidade>(funcEnumStr, out var funcEnum))
             throw new DomainException("Funcionalidade do item invalida.");
 
-        itemExecucao.RegistrarExecucao(statusEnum, funcEnum, relatoProblema, fotoUrl);
+        string? fotoUrlFinal = null;
+        if (fotoBytes != null && fotoBytes.Length > 0)
+        {
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            var hashBytes = sha256.ComputeHash(fotoBytes);
+            var hashStr = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+
+            if (await _fotoHashRepository.ExisteHashAsync(hashStr))
+                throw new DomainException("Esta foto ja foi enviada anteriormente. O reuso de fotos nao e permitido.");
+
+            fotoUrlFinal = await _armazenamentoArquivoService.SalvarFotoAsync(new MemoryStream(fotoBytes), fotoNome!, fotoContentType!, "evidencia");
+            await _fotoHashRepository.AdicionarAsync(new Catarinense.Domain.Entities.FotoHash(hashStr, fotoUrlFinal));
+        }
+
+        itemExecucao.RegistrarExecucao(statusEnum, funcEnum, relatoProblema, fotoUrlFinal);
         etapaExecucao.VerificarConclusao();
 
         _limpezaFinaRepository.Atualizar(limpeza);
@@ -59,3 +77,4 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
         return LimpezaFinaMapper.ParaDetalhesDto(limpeza, onibus!, operador!, etapasPadraoDict);
     }
 }
+

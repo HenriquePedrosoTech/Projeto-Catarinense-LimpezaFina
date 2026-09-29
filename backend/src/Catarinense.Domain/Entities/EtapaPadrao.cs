@@ -8,6 +8,7 @@ public class EtapaPadrao : EntidadeBase
     public string? Descricao { get; private set; }
     public string? LinkVideo { get; private set; }
     public int Ordem { get; private set; }
+    public bool Obrigatoria { get; private set; } = true;
     public bool Ativo { get; private set; } = true;
 
     private readonly List<EtapaItemPadrao> _itens = new();
@@ -15,7 +16,7 @@ public class EtapaPadrao : EntidadeBase
 
     protected EtapaPadrao() { }
 
-    public EtapaPadrao(string nome, int ordem, string? descricao = null, string? linkVideo = null)
+    public EtapaPadrao(string nome, int ordem, string? descricao = null, string? linkVideo = null, bool obrigatoria = true)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new DomainException("O nome da etapa e obrigatorio.");
@@ -27,11 +28,12 @@ public class EtapaPadrao : EntidadeBase
         Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim();
         LinkVideo = string.IsNullOrWhiteSpace(linkVideo) ? null : linkVideo.Trim();
         Ordem = ordem;
+        Obrigatoria = obrigatoria;
     }
 
     public void Desativar() => Ativo = false;
 
-    public void RenomearOuReordenar(string nome, int ordem, string? descricao = null, string? linkVideo = null)
+    public void RenomearOuReordenar(string nome, int ordem, string? descricao = null, string? linkVideo = null, bool obrigatoria = true)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new DomainException("O nome da etapa e obrigatorio.");
@@ -40,11 +42,12 @@ public class EtapaPadrao : EntidadeBase
         Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim();
         LinkVideo = string.IsNullOrWhiteSpace(linkVideo) ? null : linkVideo.Trim();
         Ordem = ordem;
+        Obrigatoria = obrigatoria;
     }
 
-    public void AdicionarItem(string texto, int ordem, string? enquadramentoFoto = null)
+    public void AdicionarItem(string texto, int ordem, string? enquadramentoFoto = null, bool obrigatorio = true)
     {
-        _itens.Add(new EtapaItemPadrao(Id, texto, ordem, enquadramentoFoto));
+        _itens.Add(new EtapaItemPadrao(Id, texto, ordem, enquadramentoFoto, obrigatorio));
     }
 
     public void LimparItens()

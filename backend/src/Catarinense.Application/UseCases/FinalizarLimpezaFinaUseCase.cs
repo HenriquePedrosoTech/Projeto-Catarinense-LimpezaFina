@@ -1,4 +1,4 @@
-ï»¿using Catarinense.Application.Common;
+using Catarinense.Application.Common;
 using Catarinense.Application.DTOs;
 using Catarinense.Application.Exceptions;
 using Catarinense.Application.Interfaces;
@@ -44,12 +44,10 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
     public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(FinalizarLimpezaFinaRequest request)
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(request.LimpezaFinaId)
-            ?? throw new NotFoundException("Registro de limpeza fina nÃ£o encontrado.");
+            ?? throw new NotFoundException("Registro de limpeza fina não encontrado.");
 
         var etapas = await _etapaPadraoRepository.ListarAsync();
-        var etapaCortina = etapas.FirstOrDefault(e => e.Nome.ToUpper().Contains("CORTINA"));
-
-        limpeza.Finalizar(etapaCortina?.Id);
+        limpeza.Finalizar(etapas);
 
         _limpezaFinaRepository.Atualizar(limpeza);
         await _limpezaFinaRepository.SalvarAlteracoesAsync();
@@ -74,15 +72,15 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
                 : $"{request.UrlBaseDetalhes.TrimEnd('/')}/{limpeza.Id}";
 
             var corpoHtml = $@"
-                <h2>Limpeza Fina ConcluÃ­da</h2>
-                <p>O operador <strong>{nomeOperador}</strong> finalizou a limpeza fina do Ã´nibus <strong>{prefixo}</strong>.</p>
+                <h2>Limpeza Fina Concluída</h2>
+                <p>O operador <strong>{nomeOperador}</strong> finalizou a limpeza fina do ônibus <strong>{prefixo}</strong>.</p>
                 <p>Acesse o painel para revisar as fotos e aprovar/reprovar a limpeza.</p>
                 {(string.IsNullOrEmpty(link) ? "" : $"<p><a href='{link}'>Clique aqui para ver os detalhes</a></p>")}
             ";
 
             var msg = new EmailMensagem(
                 emailsAdmins,
-                $"Aviso: Limpeza Fina ConcluÃ­da - Ã”nibus {prefixo}",
+                $"Aviso: Limpeza Fina Concluída - Ônibus {prefixo}",
                 corpoHtml
             );
 
@@ -107,7 +105,7 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
         }
         else
         {
-            _logger.LogWarning("Nenhum email disparado pois a lista de administradores ativos com e-mail Ã© vazia!");
+            _logger.LogWarning("Nenhum email disparado pois a lista de administradores ativos com e-mail é vazia!");
         }
 
         return await _detalhesDtoBuilder.ConstruirAsync(limpeza);

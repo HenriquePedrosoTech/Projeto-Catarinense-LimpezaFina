@@ -107,7 +107,11 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<Catarinense.Infrastructure.Data.AppDbContext>();
-    await dbContext.Database.MigrateAsync();
+    // EF Core Migrations estao desativadas no Render porque o historico de migrations foi perdido e isso causava erro de Table Already Exists.
+    // Aplicaremos apenas as alteracoes necessarias via SQL raw para nao quebrar:
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_padrao ADD COLUMN Descricao LONGTEXT NULL;");
+    } catch { /* ignora se a coluna ja existir */ }
 }
 
 // ---------- Seed do primeiro Administrador (só roda se SeedAdmin:Habilitado = true) ----------

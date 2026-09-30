@@ -103,6 +103,13 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// ---------- Apply EF Core Migrations ----------
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<Catarinense.Infrastructure.Data.AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
 // ---------- Seed do primeiro Administrador (só roda se SeedAdmin:Habilitado = true) ----------
 await SeedAdministradorInicial.ExecutarAsync(app.Services, app.Configuration, app.Logger);
 

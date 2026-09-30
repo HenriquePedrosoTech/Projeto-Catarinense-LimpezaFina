@@ -35,8 +35,6 @@ public static class SeedAdministradorInicial
         }
 
         using var scope = services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<Catarinense.Infrastructure.Data.AppDbContext>();
-        await Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(dbContext.Database);
         var usuarioRepository = scope.ServiceProvider.GetRequiredService<IUsuarioRepository>();
         var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
 

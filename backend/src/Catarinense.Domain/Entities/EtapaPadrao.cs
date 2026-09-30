@@ -50,8 +50,29 @@ public class EtapaPadrao : EntidadeBase
         _itens.Add(new EtapaItemPadrao(Id, texto, ordem, enquadramentoFoto, obrigatorio));
     }
 
-    public void LimparItens()
+    public void SincronizarItens(IEnumerable<(Guid? Id, string Texto, int Ordem, string? EnquadramentoFoto, bool Obrigatorio)> novosItens)
     {
-        _itens.Clear();
+        var idsParaManter = novosItens.Where(x => x.Id.HasValue && x.Id.Value != Guid.Empty).Select(x => x.Id).ToHashSet();
+
+        foreach (var item in _itens.Where(i => i.Ativo && !idsParaManter.Contains(i.Id)))
+        {
+            item.Desativar();
+        }
+
+        foreach (var novo in novosItens)
+        {
+            if (novo.Id.HasValue && novo.Id.Value != Guid.Empty)
+            {
+                var existente = _itens.FirstOrDefault(i => i.Id == novo.Id.Value);
+                if (existente != null)
+                {
+                    existente.Atualizar(novo.Texto, novo.Ordem, novo.EnquadramentoFoto, novo.Obrigatorio);
+                }
+            }
+            else
+            {
+                AdicionarItem(novo.Texto, novo.Ordem, novo.EnquadramentoFoto, novo.Obrigatorio);
+            }
+        }
     }
 }

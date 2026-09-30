@@ -57,7 +57,7 @@ public class LimpezaFina : EntidadeBase
 
         foreach (var etapa in etapas) {
             var execucao = new LimpezaEtapaExecucao(Id, etapa.Id);
-        foreach (var item in etapa.Itens)
+        foreach (var item in etapa.Itens.Where(i => i.Ativo))
         {
             execucao.InicializarItem(item.Id, item.Obrigatorio);
         }
@@ -99,7 +99,7 @@ public class LimpezaFina : EntidadeBase
         }).ToList();
 
         if (etapasPendentes.Count > 0)
-            throw new DomainException($"Existem {etapasPendentes.Count} etapa(s) obrigatória(s) pendentes. Finalize todas as etapas antes de concluir o registro.");
+            throw new DomainException($"Existem {etapasPendentes.Count} etapa(s) obrigatï¿½ria(s) pendentes. Finalize todas as etapas antes de concluir o registro.");
 
         Status = StatusLimpeza.Concluida;
         FinalizadaEm = DateTime.UtcNow;

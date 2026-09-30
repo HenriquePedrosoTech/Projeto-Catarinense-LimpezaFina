@@ -22,13 +22,13 @@ public class EditarEtapaPadraoUseCase : IEditarEtapaPadraoUseCase
         etapa.RenomearOuReordenar(request.Nome, request.Ordem, request.Descricao, request.LinkVideo, request.Obrigatoria);
         if (request.Itens != null)
         {
-            var tuplas = request.Itens.Select(i => (i.Id, i.Texto, i.Ordem, i.EnquadramentoFoto, i.Obrigatorio)).ToList();
+            var tuplas = request.Itens.Select(i => (i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio)).ToList();
             etapa.SincronizarItens(tuplas);
         }
 
         _etapaPadraoRepository.Atualizar(etapa);
         await _etapaPadraoRepository.SalvarAlteracoesAsync();
 
-        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo, etapa.Obrigatoria, etapa.Itens.Where(i => i.Ativo).Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.EnquadramentoFoto, i.Obrigatorio)).ToList());
+        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo, etapa.Obrigatoria, etapa.Itens.Where(i => i.Ativo).Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio)).ToList());
     }
 }

@@ -158,7 +158,7 @@ export const api = {
       body: JSON.stringify({ nome, ordem, descricao, linkVideo, obrigatoria, itens }),
     }),
 
-  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria?: boolean, itens?: { id?: string; texto: string; ordem: number; enquadramentoFoto?: string | null; obrigatorio?: boolean }[]) =>
+  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria?: boolean, itens?: { id?: string; texto: string; ordem: number; descricao?: string | null; enquadramentoFoto?: string | null; obrigatorio?: boolean }[]) =>
     request<EtapaPadraoResumo>(`/api/etapas-padrao/${etapaId}`, {
       method: "PUT",
       token,

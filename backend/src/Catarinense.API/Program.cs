@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Catarinense.API.Middleware;
 using Catarinense.API.Startup;

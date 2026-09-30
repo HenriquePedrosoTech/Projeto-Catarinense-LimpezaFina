@@ -34,6 +34,7 @@ public static class LimpezaFinaMapper
                     return new EtapaItemResumoDto(
                         i.Id,
                         itemPadrao?.Texto ?? "(item removido)",
+                        itemPadrao?.Descricao,
                         itemPadrao?.EnquadramentoFoto,
                         itemPadrao?.Ordem ?? 0,
                         i.Status == StatusItemChecklist.Pendente ? null : (i.Status == StatusItemChecklist.NaoConforme ? "NÃ£o Conforme" : (i.Status == StatusItemChecklist.Conforme ? "Conforme" : "N/A")),

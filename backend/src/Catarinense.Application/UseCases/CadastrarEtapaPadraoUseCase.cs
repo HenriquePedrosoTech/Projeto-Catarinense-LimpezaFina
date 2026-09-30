@@ -21,13 +21,13 @@ public class CadastrarEtapaPadraoUseCase : ICadastrarEtapaPadraoUseCase
         {
             foreach (var item in request.Itens.OrderBy(i => i.Ordem))
             {
-                etapa.AdicionarItem(item.Texto, item.Ordem, item.EnquadramentoFoto, item.Obrigatorio);
+                etapa.AdicionarItem(item.Texto, item.Ordem, item.Descricao, item.EnquadramentoFoto, item.Obrigatorio);
             }
         }
 
         await _etapaPadraoRepository.AdicionarAsync(etapa);
         await _etapaPadraoRepository.SalvarAlteracoesAsync();
 
-        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo, etapa.Obrigatoria, etapa.Itens.Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.EnquadramentoFoto, i.Obrigatorio)).ToList());
+        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo, etapa.Obrigatoria, etapa.Itens.Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio)).ToList());
     }
 }

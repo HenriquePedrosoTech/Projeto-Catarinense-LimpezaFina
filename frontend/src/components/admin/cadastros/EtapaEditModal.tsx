@@ -21,7 +21,7 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   
-  const [itens, setItens] = useState<{ id?: string, texto: string, enquadramentoFoto: string, ordem: number, obrigatorio: boolean }[]>([]);
+  const [itens, setItens] = useState<{ id?: string, texto: string, descricao: string, enquadramentoFoto: string, ordem: number, obrigatorio: boolean }[]>([]);
 
   useEffect(() => {
     if (etapa) {
@@ -33,6 +33,7 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
         (etapa.itens || []).map((i) => ({
           id: i.id,
           texto: i.texto,
+          descricao: i.descricao || "",
           enquadramentoFoto: i.enquadramentoFoto || "",
           ordem: i.ordem,
           obrigatorio: i.obrigatorio ?? true,
@@ -59,6 +60,7 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
         itens.map(i => ({
           id: i.id,
           texto: i.texto,
+          descricao: i.descricao || undefined,
           enquadramentoFoto: i.enquadramentoFoto || undefined,
           ordem: i.ordem,
           obrigatorio: i.obrigatorio
@@ -73,14 +75,14 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
   }
 
   function adicionarItem() {
-    setItens([...itens, { texto: "", enquadramentoFoto: "", ordem: itens.length, obrigatorio: true }]);
+    setItens([...itens, { texto: "", descricao: "", enquadramentoFoto: "", ordem: itens.length, obrigatorio: true }]);
   }
 
   function removerItem(index: number) {
     setItens(itens.filter((_, i) => i !== index));
   }
 
-  function atualizarItem(index: number, campo: "texto" | "enquadramentoFoto" | "obrigatorio", valor: any) {
+  function atualizarItem(index: number, campo: "texto" | "descricao" | "enquadramentoFoto" | "obrigatorio", valor: any) {
     const novos = [...itens];
     (novos[index] as any)[campo] = valor;
     setItens(novos);
@@ -167,8 +169,8 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
                           onChange={(e) => atualizarItem(index, "texto", e.target.value)} 
                           required 
                         />
-                        <Input 
-                          placeholder="Instrução da Foto (ex: Foto pegando da poltrona para trás)" 
+                        <Input placeholder="Descrição / Passo a passo do item" value={item.descricao} onChange={(e) => atualizarItem(index, "descricao", e.target.value)} />
+                        <Input placeholder="Instrução da Foto (ex: Foto pegando da poltrona para trás)" 
                           value={item.enquadramentoFoto} 
                           onChange={(e) => atualizarItem(index, "enquadramentoFoto", e.target.value)} 
                         />

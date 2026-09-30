@@ -45,12 +45,12 @@ public class EtapaPadrao : EntidadeBase
         Obrigatoria = obrigatoria;
     }
 
-    public void AdicionarItem(string texto, int ordem, string? enquadramentoFoto = null, bool obrigatorio = true)
+    public void AdicionarItem(string texto, int ordem, string? descricao = null, string? enquadramentoFoto = null, bool obrigatorio = true)
     {
-        _itens.Add(new EtapaItemPadrao(Id, texto, ordem, enquadramentoFoto, obrigatorio));
+        _itens.Add(new EtapaItemPadrao(Id, texto, ordem, descricao, enquadramentoFoto, obrigatorio));
     }
 
-    public void SincronizarItens(IEnumerable<(Guid? Id, string Texto, int Ordem, string? EnquadramentoFoto, bool Obrigatorio)> novosItens)
+    public void SincronizarItens(IEnumerable<(Guid? Id, string Texto, int Ordem, string? Descricao, string? EnquadramentoFoto, bool Obrigatorio)> novosItens)
     {
         var idsParaManter = novosItens.Where(x => x.Id.HasValue && x.Id.Value != Guid.Empty).Select(x => x.Id).ToHashSet();
 
@@ -66,12 +66,12 @@ public class EtapaPadrao : EntidadeBase
                 var existente = _itens.FirstOrDefault(i => i.Id == novo.Id.Value);
                 if (existente != null)
                 {
-                    existente.Atualizar(novo.Texto, novo.Ordem, novo.EnquadramentoFoto, novo.Obrigatorio);
+                    existente.Atualizar(novo.Texto, novo.Ordem, novo.Descricao, novo.EnquadramentoFoto, novo.Obrigatorio);
                 }
             }
             else
             {
-                AdicionarItem(novo.Texto, novo.Ordem, novo.EnquadramentoFoto, novo.Obrigatorio);
+                AdicionarItem(novo.Texto, novo.Ordem, novo.Descricao, novo.EnquadramentoFoto, novo.Obrigatorio);
             }
         }
     }

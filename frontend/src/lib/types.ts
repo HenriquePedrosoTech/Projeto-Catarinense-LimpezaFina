@@ -26,6 +26,7 @@ export interface EtapaResumo {
 export interface EtapaItemResumo {
   id: string;
   texto: string;
+  descricao: string | null;
   enquadramentoFoto: string | null;
   ordem: number;
   status: string | null;
@@ -75,6 +76,7 @@ export interface EtapaItemPadraoResumo {
   obrigatorio?: boolean;
   texto: string;
   ordem: number;
+  descricao?: string;
   enquadramentoFoto?: string;
 }
 

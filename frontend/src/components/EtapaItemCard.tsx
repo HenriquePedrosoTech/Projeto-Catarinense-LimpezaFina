@@ -125,6 +125,12 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onAbrirFoto }:
             {!item.obrigatorio && <span className="text-[10px] font-normal text-ink/50 bg-ink/5 px-2 py-0.5 rounded-full ml-2 uppercase">Opcional</span>}
           </h4>
           
+          {item.descricao && (
+            <p className="text-xs text-ink/60 mt-1">
+              {item.descricao}
+            </p>
+          )}
+          
           {item.enquadramentoFoto && !item.concluida && (
             <p className="text-xs text-ink/60 mt-1.5 flex items-start gap-1.5 bg-surface/50 p-2 rounded-md border border-line">
               <Camera className="w-3.5 h-3.5 shrink-0 mt-0.5" /> 

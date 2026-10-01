@@ -71,6 +71,16 @@ export const api = {
     }),
 
   trocarSenha: (token: string, novaSenha: string) => request<void>("/api/auth/trocar-senha", { method: "POST", token, body: JSON.stringify({ novaSenha }) }),
+
+  desmarcarItemExecucao: (token: string, limpezaId: string, etapaPadraoId: string, itemId: string) =>
+    request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/itens/${itemId}/desmarcar`, { method: "POST", token }),
+  
+  registrarProblemaExtraEtapa: (limpezaId: string, etapaPadraoId: string, descricao: string, arquivo: File | null, token: string) => {
+    const form = new FormData();
+    form.append("descricao", descricao);
+    if (arquivo) form.append("arquivo", arquivo);
+    return request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/problema-extra`, { method: "POST", token, body: form });
+  },
     enviarItemExecucao: (token: string, limpezaId: string, etapaPadraoId: string, itemId: string, status: string, funcionalidade: string, relatoProblema: string | null, arquivo: File | null) => {
       const form = new FormData();
       form.append("status", status);

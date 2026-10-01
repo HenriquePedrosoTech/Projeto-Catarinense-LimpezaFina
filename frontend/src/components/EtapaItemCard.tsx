@@ -10,10 +10,11 @@ interface Props {
   item: EtapaItemResumo;
   desabilitado: boolean;
   onEnviarItem?: (itemId: string, status: string, funcionalidade: string, relato: string | null, arquivo: File | null) => Promise<void>;
+  onDesmarcarItem?: (itemId: string) => Promise<void>;
   onAbrirFoto?: (url: string) => void;
 }
 
-export function EtapaItemCard({ item, desabilitado, onEnviarItem, onAbrirFoto }: Props) {
+export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarItem, onAbrirFoto }: Props) {
   const [status, setStatus] = useState(item.status || "Conforme");
   const [funcionalidade, setFuncionalidade] = useState(item.funcionalidade || "OK / Funcional");
   const [relato, setRelato] = useState(item.relatoProblema || "");
@@ -42,19 +43,37 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onAbrirFoto }:
     }
   }, [arquivo]);
 
+  
   async function handleMarcarConcluido() {
-    if (!onEnviarItem || item.concluida || desabilitado) return;
+    if (desabilitado || isEnviando) return;
     
-    // Se há uma instrução de foto (enquadramentoFoto) é porque a foto é obrigatória mesmo no fluxo normal
+    // Se j est concludo, vamos desmarcar
+    if (item.concluida) {
+      if (!onDesmarcarItem) return;
+      setEnviandoNormal(true);
+      setErro(null);
+      try {
+        await onDesmarcarItem(item.id);
+      } catch (err: any) {
+        setErro(err.message || "Erro ao desmarcar item.");
+      } finally {
+        setEnviandoNormal(false);
+      }
+      return;
+    }
+
+    if (!onEnviarItem) return;
+    
+    // Se h uma instruo de foto (enquadramentoFoto)  porque a foto  obrigatria mesmo no fluxo normal
     if (item.enquadramentoFoto && !arquivo && !item.fotoUrl) {
-      setErro("É necessário anexar a foto solicitada acima antes de marcar como concluído.");
+      setErro(" necessrio anexar a foto solicitada acima antes de marcar como concludo.");
       return;
     }
 
     setErro(null);
     setEnviandoNormal(true);
     try {
-      // Quando marca pelo checkbox normal, é porque está tudo OK.
+      // Quando marca pelo checkbox normal,  porque est tudo OK.
       await onEnviarItem(item.id, "Conforme", "OK / Funcional", null, arquivo);
     } catch (err: any) {
       setErro(err.message || "Erro ao salvar item.");
@@ -62,6 +81,7 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onAbrirFoto }:
       setEnviandoNormal(false);
     }
   }
+
 
   async function handleSalvarAvaria() {
     if (!onEnviarItem) return;
@@ -105,7 +125,7 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onAbrirFoto }:
         <button 
           type="button"
           onClick={handleMarcarConcluido}
-          disabled={desabilitado || item.concluida || isEnviando}
+          disabled={desabilitado || isEnviando}
           className={`mt-0.5 relative flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
             item.concluida 
               ? (temAvariaRegistrada ? "border-danger bg-danger text-white" : "border-success bg-success text-white") 

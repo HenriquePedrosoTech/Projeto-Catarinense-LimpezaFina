@@ -131,6 +131,39 @@ public class LimpezasFinasController : ControllerBase
     }
 
     [HttpPost("{id:guid}/cortinas")]
+        [HttpPost("{id:guid}/etapas/{etapaPadraoId:guid}/itens/{itemId:guid}/desmarcar")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<IActionResult> DesmarcarItem(
+        Guid id, 
+        Guid etapaPadraoId, 
+        Guid itemId,
+        [FromServices] Catarinense.Application.UseCases.IDesmarcarItemExecucaoUseCase useCase)
+    {
+        var result = await useCase.ExecutarAsync(id, etapaPadraoId, itemId);
+        return Ok(result);
+    }
+
+    [HttpPost("{id:guid}/etapas/{etapaPadraoId:guid}/problema-extra")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<IActionResult> RegistrarProblemaExtra(
+        Guid id, 
+        Guid etapaPadraoId, 
+        [FromForm] string descricao,
+        [FromForm] IFormFile? arquivo,
+        [FromServices] Catarinense.Application.UseCases.IRegistrarProblemaExtraEtapaUseCase useCase,
+        [FromServices] Catarinense.Application.Interfaces.IArmazenamentoArquivoService armazenamento)
+    {
+        string? fotoUrl = null;
+        if (arquivo != null && arquivo.Length > 0)
+        {
+            using var stream = arquivo.OpenReadStream();
+            fotoUrl = await armazenamento.SalvarFotoAsync(stream, arquivo.FileName, arquivo.ContentType, "problema_extra");
+        }
+        var result = await useCase.ExecutarAsync(new Catarinense.Application.DTOs.RegistrarProblemaExtraEtapaRequest(descricao, fotoUrl), id, etapaPadraoId);
+        return Ok(result);
+    }
+
+    [HttpPost("{id:guid}/cortinas")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> SinalizarCortinas(
         Guid id, [FromQuery] bool retiradas)
     {
@@ -239,6 +272,8 @@ public class LimpezasFinasController : ControllerBase
 
 public record IniciarLimpezaFinaBody(string PrefixoOnibus);
 public record DefinirNumeroOSBody(string NumeroOS);
+
+
 
 
 

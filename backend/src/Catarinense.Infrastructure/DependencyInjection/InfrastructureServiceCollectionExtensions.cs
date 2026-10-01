@@ -83,6 +83,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<Catarinense.Application.UseCases.ISinalizarCortinasUseCase, Catarinense.Application.UseCases.SinalizarCortinasUseCase>();
                 services.AddScoped<IFinalizarLimpezaFinaUseCase, Catarinense.Application.UseCases.FinalizarLimpezaFinaUseCase>();
         services.AddScoped<IRegistrarItemExecucaoUseCase, Catarinense.Application.UseCases.RegistrarItemExecucaoUseCase>();
+        services.AddScoped<Catarinense.Application.UseCases.IDesmarcarItemExecucaoUseCase, Catarinense.Application.UseCases.DesmarcarItemExecucaoUseCase>();
         services.AddScoped<IAprovarLimpezaFinaUseCase, Catarinense.Application.UseCases.AprovarLimpezaFinaUseCase>();
         services.AddScoped<IReprovarLimpezaFinaUseCase, Catarinense.Application.UseCases.ReprovarLimpezaFinaUseCase>();
         services.AddScoped<IEnviarNotificacaoLimpezaUseCase, Catarinense.Application.UseCases.EnviarNotificacaoLimpezaUseCase>();
@@ -107,6 +108,7 @@ public static class InfrastructureServiceCollectionExtensions
         return services;
     }
 }
+
 
 
 

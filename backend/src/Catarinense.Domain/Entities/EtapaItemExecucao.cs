@@ -1,4 +1,4 @@
-using Catarinense.Domain.Enums;
+﻿using Catarinense.Domain.Enums;
 using Catarinense.Domain.Exceptions;
 
 namespace Catarinense.Domain.Entities;
@@ -55,4 +55,15 @@ public class EtapaItemExecucao : EntidadeBase
 
         Concluida = true;
     }
+
+    public void DesfazerExecucao()
+    {
+        Status = StatusItemChecklist.Pendente;
+        Funcionalidade = StatusFuncionalidade.Pendente;
+        RelatoProblema = null;
+        FotoUrl = null;
+        Concluida = false;
+    }
+    }
 }
+

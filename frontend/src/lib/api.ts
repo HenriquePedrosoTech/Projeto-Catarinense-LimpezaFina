@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   EtapaPadraoResumo,
   LimpezaFinaDetalhes,
   LimpezaFinaResumo,
@@ -39,7 +39,7 @@ async function request<T>(
       const corpo = await resposta.json();
       if (corpo?.erro) mensagem = corpo.erro;
     } catch {
-      // corpo sem JSON (ex.: 204 ou erro de rede) — mantém mensagem padrão
+      // corpo sem JSON (ex.: 204 ou erro de rede) â€” mantÃ©m mensagem padrÃ£o
     }
     throw new ApiError(mensagem, resposta.status);
   }
@@ -228,5 +228,6 @@ export const api = {
   excluirUsuario: (token: string, usuarioId: string) =>
     request<void>(`/api/usuarios/${usuarioId}`, { method: "DELETE", token }),
 };
+
 
 

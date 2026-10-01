@@ -276,17 +276,26 @@ export default function ChecklistLimpezaPage() {
           </div>
 
           {emAndamento && (
-            <div className="sticky bottom-4 left-0 right-0 mt-8 z-40 bg-surface/80 p-2 rounded-2xl backdrop-blur-md border border-line shadow-lg">
+            <div className="sticky bottom-4 left-0 right-0 mt-8 z-40 bg-surface/80 p-2 rounded-2xl backdrop-blur-md border border-line shadow-lg flex gap-3">
+              <button
+                type="button"
+                onClick={() => setMostrarModalProblema(true)}
+                className="flex-shrink-0 flex flex-col items-center justify-center w-24 sm:w-32 bg-white border border-danger/20 text-danger rounded-xl shadow-sm hover:bg-danger/5 transition-colors font-semibold text-xs sm:text-sm text-center px-1"
+              >
+                <AlertTriangle className="h-5 w-5 mb-1" />
+                Relatar Problema
+              </button>
+              
               <Button
                 size="lg"
-                className="w-full h-14 text-lg font-bold rounded-xl shadow-md transition-all hover:scale-[1.02]"
+                className="flex-1 h-14 text-sm sm:text-lg font-bold rounded-xl shadow-md transition-all hover:scale-[1.02]"
                 onClick={handleFinalizarLimpeza}
                 disabled={!todasConcluidas || finalizando}
                 loading={finalizando}
               >
                 {todasConcluidas ? (
                   <>
-                    <CheckCircle className="mr-2 h-6 w-6" /> Concluir e Enviar
+                    <CheckCircle className="mr-2 h-5 w-5 sm:h-6 sm:w-6" /> Concluir e Enviar
                   </>
                 ) : (
                   <>Finalizar Limpeza ({concluidas}/{totalEtapas})</>

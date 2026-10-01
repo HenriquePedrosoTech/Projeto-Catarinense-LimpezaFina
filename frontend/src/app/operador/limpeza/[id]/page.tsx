@@ -329,10 +329,10 @@ export default function ChecklistLimpezaPage() {
               <h3 className="text-lg font-bold text-danger flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" /> Reportar Problema Extra
               </h3>
-              <p className="text-sm text-ink/70">Este problema ser� registrado na etapa atual.</p>
+              <p className="text-sm text-ink/70">Este problema será registrado na etapa atual.</p>
 
               <div>
-                <label className="text-xs font-semibold mb-1 block text-ink/80 uppercase">Descri��o *</label>
+                <label className="text-xs font-semibold mb-1 block text-ink/80 uppercase">Descrição *</label>
                 <textarea
                   value={relatoExtra}
                   onChange={(e) => setRelatoExtra(e.target.value)}

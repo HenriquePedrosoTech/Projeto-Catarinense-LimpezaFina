@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { LimpezaFinaDetalhes } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, Info } from "lucide-react";
+import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, Info, X, Camera } from "lucide-react";
 import { EtapaCard } from "@/components/EtapaCard";
 
 export default function ChecklistLimpezaPage() {
@@ -20,6 +20,11 @@ export default function ChecklistLimpezaPage() {
   const [alerta, setAlerta] = useState<{ titulo: string; mensagem: string } | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [finalizando, setFinalizando] = useState(false);
+  const [mostrarModalProblema, setMostrarModalProblema] = useState(false);
+  const [relatoExtra, setRelatoExtra] = useState("");
+  const [fotoExtra, setFotoExtra] = useState<File | null>(null);
+  const [enviandoProblema, setEnviandoProblema] = useState(false);
+  const inputFotoExtraRef = useRef<HTMLInputElement>(null);
   const [etapaAtivaId, setEtapaAtivaId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -264,7 +269,7 @@ export default function ChecklistLimpezaPage() {
                   onEnviarFoto={(arquivo) => handleEnviarFoto(etapa.etapaPadraoId, arquivo)}
                   onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)}
                   onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
-                  onRegistrarProblemaExtra={(etapaId, desc, foto) => handleRegistrarProblemaExtra(etapaId, desc, foto)}
+                  
                 />
               </div>
             ))}
@@ -302,7 +307,104 @@ export default function ChecklistLimpezaPage() {
         </div>
       </main>
 
-      {alerta && (
+      {mostrarModalProblema && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4 animate-in fade-in">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in zoom-in-95 relative flex flex-col gap-4">
+              <button 
+                onClick={() => setMostrarModalProblema(false)}
+                className="absolute top-4 right-4 text-ink/40 hover:text-ink bg-surface p-1.5 rounded-full"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              
+              <h3 className="text-lg font-bold text-danger flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" /> Reportar Problema Extra
+              </h3>
+              <p className="text-sm text-ink/70">Este problema ser� registrado na etapa atual.</p>
+
+              <div>
+                <label className="text-xs font-semibold mb-1 block text-ink/80 uppercase">Descri��o *</label>
+                <textarea
+                  value={relatoExtra}
+                  onChange={(e) => setRelatoExtra(e.target.value)}
+                  disabled={enviandoProblema}
+                  placeholder="Descreva o problema encontrado..."
+                  className="w-full min-h-[100px] p-3 rounded-xl border border-line bg-surface text-sm text-ink focus:border-danger focus:ring-1 focus:ring-danger outline-none resize-y transition-shadow"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold mb-1 block text-ink/80 uppercase">Foto (Opcional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={inputFotoExtraRef}
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setFotoExtra(e.target.files[0]);
+                    }
+                  }}
+                />
+                
+                {fotoExtra ? (
+                  <div className="relative w-full h-32 rounded-xl overflow-hidden border border-line">
+                    <img src={URL.createObjectURL(fotoExtra)} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setFotoExtra(null)}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-2 hover:bg-black/80 shadow-md"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => inputFotoExtraRef.current?.click()}
+                    disabled={enviandoProblema}
+                    className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-danger/20 bg-danger/5 text-danger/80 py-4 rounded-xl hover:bg-danger/10 transition-colors text-sm font-semibold"
+                  >
+                    <Camera className="w-5 h-5" /> Anexar Foto
+                  </button>
+                )}
+              </div>
+
+              <div className="flex gap-3 mt-2">
+                <Button
+                  variant="outline"
+                  className="flex-1 rounded-xl h-12"
+                  onClick={() => {
+                    setMostrarModalProblema(false);
+                    setRelatoExtra("");
+                    setFotoExtra(null);
+                  }}
+                  disabled={enviandoProblema}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  className="flex-[2] bg-danger hover:bg-danger-hover text-white rounded-xl h-12"
+                  disabled={enviandoProblema || !relatoExtra.trim()}
+                  loading={enviandoProblema}
+                  onClick={async () => {
+                    setEnviandoProblema(true);
+                    try {
+                      if (etapaAtivaId) { await handleRegistrarProblemaExtra(etapaAtivaId, relatoExtra, fotoExtra); }
+                      setMostrarModalProblema(false);
+                      setRelatoExtra("");
+                      setFotoExtra(null);
+                    } catch (e) {} finally { setEnviandoProblema(false); }
+                  }}
+                >
+                  Enviar Problema
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {alerta && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4">
           <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl animate-in zoom-in-95">
             <h3 className="mb-2 text-lg font-bold text-ink">{alerta.titulo}</h3>

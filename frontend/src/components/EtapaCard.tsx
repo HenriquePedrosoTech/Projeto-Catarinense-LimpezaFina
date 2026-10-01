@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import type { EtapaResumo } from "@/lib/types";
 import { resolverUrlFoto } from "@/lib/fotos";
 import { Lightbox, useLightbox } from "./Lightbox";
-import { Camera, Check, Loader2, ImagePlus, Info, Upload } from "lucide-react";
+import { Camera, Check, Loader2, ImagePlus, Info, Upload, AlertTriangle } from "lucide-react";
 import { EtapaItemCard } from "./EtapaItemCard";
 
 interface Props {
@@ -25,6 +25,11 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
   const [mostrarDesc, setMostrarDesc] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [mostrarOpcoesFoto, setMostrarOpcoesFoto] = useState(false);
+  const [mostrarProblemaExtra, setMostrarProblemaExtra] = useState(false);
+  const [relatoExtra, setRelatoExtra] = useState("");
+  const [fotoExtra, setFotoExtra] = useState<File | null>(null);
+  const [enviandoProblemaExtra, setEnviandoProblemaExtra] = useState(false);
+  const inputFotoExtraRef = useRef<HTMLInputElement>(null);
   const { urlAberta, abrir, fechar } = useLightbox();
 
   async function handleArquivo(e: React.ChangeEvent<HTMLInputElement>) {
@@ -152,11 +157,122 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
               item={item}
               desabilitado={desabilitado}
               onEnviarItem={onEnviarItem}
-              onAbrirFoto={abrir}
-            />
-          ))}
-        </div>
-      )}
+              onAbrirFoto={abrir}              />
+            ))}
+            
+            {/* Sessao de Problema Extra */}
+          {etapa.problemaExtraDescricao ? (
+             <div className="mt-4 p-4 rounded-xl border border-danger/20 bg-danger/5">
+                <h4 className="text-sm font-semibold text-danger flex items-center gap-2 mb-2">
+                  <AlertTriangle className="w-4 h-4" /> Problema Extra Reportado
+                </h4>
+                <p className="text-sm text-ink/80">{etapa.problemaExtraDescricao}</p>
+                {etapa.problemaExtraFotoUrl && (
+                  <button onClick={() => abrir(etapa.problemaExtraFotoUrl!)} className="mt-3 block w-full">
+                    <img src={resolverUrlFoto(etapa.problemaExtraFotoUrl)} alt="Problema extra" className="w-full h-32 object-cover rounded-lg border border-line" />
+                  </button>
+                )}
+             </div>
+          ) : (
+            <div className="mt-2 pt-2 border-t border-line border-dashed">
+              {!mostrarProblemaExtra ? (
+                <button
+                  type="button"
+                  onClick={() => setMostrarProblemaExtra(true)}
+                  disabled={desabilitado}
+                  className="text-sm text-primary hover:text-primary-hover font-medium flex items-center gap-1.5"
+                >
+                  <AlertTriangle className="w-4 h-4" /> Encontrou outro problema? Reporte
+                </button>
+              ) : (
+                <div className="p-4 rounded-xl border border-danger/20 bg-danger/5 flex flex-col gap-3">
+                  <h4 className="text-sm font-semibold text-danger flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" /> Reportar Problema Extra
+                  </h4>
+                  
+                  <div>
+                    <label className="text-xs font-semibold mb-1 block text-danger/80 uppercase">Descri��o *</label>
+                    <textarea
+                      value={relatoExtra}
+                      onChange={(e) => setRelatoExtra(e.target.value)}
+                      disabled={desabilitado || enviandoProblemaExtra}
+                      placeholder="Descreva o problema encontrado..."
+                      className="w-full min-h-[80px] p-2.5 rounded-lg border border-line bg-surface text-sm text-ink focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-y transition-shadow"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-semibold mb-1 block text-danger/80 uppercase">Foto (Opcional)</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={inputFotoExtraRef}
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setFotoExtra(e.target.files[0]);
+                        }
+                      }}
+                    />
+                    
+                    {fotoExtra ? (
+                      <div className="relative w-full h-24 rounded-lg overflow-hidden border border-line">
+                        <img src={URL.createObjectURL(fotoExtra)} alt="Preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setFotoExtra(null)}
+                          className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1.5 hover:bg-black/80"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => inputFotoExtraRef.current?.click()}
+                        disabled={desabilitado || enviandoProblemaExtra}
+                        className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-danger/20 bg-white/50 text-danger/80 py-3 rounded-lg hover:bg-danger/5 transition-colors text-sm font-medium"
+                      >
+                        <Camera className="w-4 h-4" /> Anexar Foto
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 mt-1">
+                    <button
+                      type="button"
+                      disabled={desabilitado || enviandoProblemaExtra}
+                      onClick={() => {
+                        setMostrarProblemaExtra(false);
+                        setRelatoExtra("");
+                        setFotoExtra(null);
+                      }}
+                      className="flex-1 py-2.5 rounded-lg border border-danger/20 text-danger/80 font-semibold text-sm hover:bg-danger/5"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      disabled={desabilitado || enviandoProblemaExtra || !relatoExtra.trim()}
+                      onClick={async () => {
+                         if (!onRegistrarProblemaExtra) return;
+                         setEnviandoProblemaExtra(true);
+                         try {
+                           await onRegistrarProblemaExtra(etapa.etapaPadraoId, relatoExtra, fotoExtra);
+                           setMostrarProblemaExtra(false);
+                         } catch (e) {} finally { setEnviandoProblemaExtra(false); }
+                      }}
+                      className="flex-[2] py-2.5 rounded-lg bg-danger text-white font-semibold text-sm hover:bg-danger-hover disabled:opacity-50 flex justify-center items-center gap-2"
+                    >
+                      {enviandoProblemaExtra ? <Loader2 className="w-4 h-4 animate-spin" /> : "Enviar Problema"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          </div>
+        )}
 
       {!possuiItens && etapa.fotos && etapa.fotos.length > 0 && (
         <div className="mt-4 flex gap-3 overflow-x-auto pb-2">

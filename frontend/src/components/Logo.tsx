@@ -12,7 +12,7 @@ export function Logo({ className = "" }: { className?: string }) {
           className="rounded object-contain"
           priority
         />
-        <span className="text-[11px] font-bold tracking-widest uppercase text-ink mt-1 leading-none whitespace-nowrap">
+        <span className="text-[11px] font-bold tracking-widest uppercase text-navy mt-1 leading-none whitespace-nowrap">
           Catarinense
         </span>
       </div>

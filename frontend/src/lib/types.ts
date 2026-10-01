@@ -21,6 +21,8 @@ export interface EtapaResumo {
   concluida: boolean;
   fotos: string[];
   itens: EtapaItemResumo[];
+  problemaExtraDescricao?: string | null;
+  problemaExtraFotoUrl?: string | null;
 }
 
 export interface EtapaItemResumo {

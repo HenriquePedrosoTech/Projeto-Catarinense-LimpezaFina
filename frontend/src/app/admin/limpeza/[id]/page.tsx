@@ -184,6 +184,17 @@ export default function AvaliarLimpezaPage() {
                       <p className="font-semibold text-ink">{etapa.nome}</p>
                     </div>
                     <div className="flex gap-3 overflow-x-auto">
+                      {etapa.problemaExtraDescricao && (
+                        <div className="mb-4 p-3 rounded-lg border border-danger/20 bg-danger/5">
+                          <h4 className="text-xs font-bold text-danger mb-1 flex items-center gap-1">Problema Reportado</h4>
+                          <p className="text-sm text-ink/80">{etapa.problemaExtraDescricao}</p>
+                          {etapa.problemaExtraFotoUrl && (
+                            <button onClick={() => abrir(etapa.problemaExtraFotoUrl!)} className="mt-2 block">
+                              <img src={resolverUrlFoto(etapa.problemaExtraFotoUrl)} alt="Problema" className="h-16 rounded border border-line" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                       {etapa.fotos.length === 0 && (
                         <p className="text-sm text-ink/40">Sem fotos registradas.</p>
                       )}

@@ -112,6 +112,14 @@ using (var scope = app.Services.CreateScope())
     try {
         await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_padrao ADD COLUMN Descricao LONGTEXT NULL;");
     } catch { /* ignora se a coluna ja existir */ }
+    
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraDescricao LONGTEXT NULL;");
+    } catch { /* ignora se a coluna ja existir */ }
+
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraFotoUrl VARCHAR(1000) NULL;");
+    } catch { /* ignora se a coluna ja existir */ }
 }
 
 // ---------- Seed do primeiro Administrador (só roda se SeedAdmin:Habilitado = true) ----------

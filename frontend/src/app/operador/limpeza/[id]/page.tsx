@@ -55,6 +55,18 @@ export default function ChecklistLimpezaPage() {
     }
   }
 
+  const handleRegistrarProblemaExtra = async (etapaId: string, descricao: string, foto: File | null) => {
+    if (!usuario || !limpeza) return;
+    try {
+      await api.registrarProblemaExtraEtapa(limpeza.id, etapaId, descricao, foto, usuario.token);
+      setAlerta({ titulo: "Sucesso", mensagem: "Problema extra reportado com sucesso!" });
+      const data = await api.obterDetalhesLimpeza(limpeza.id, usuario.token);
+      setLimpeza(data);
+    } catch (err) {
+      setAlerta({ titulo: "Erro", mensagem: "Falha ao registrar problema extra." });
+    }
+  };
+
   async function handleEnviarItemExecucao(etapaPadraoId: string, itemId: string, status: string, funcionalidade: string, relato: string | null, arquivo: File | null) {
     if (!usuario || !limpeza) return;
     try {
@@ -252,6 +264,7 @@ export default function ChecklistLimpezaPage() {
                   onEnviarFoto={(arquivo) => handleEnviarFoto(etapa.etapaPadraoId, arquivo)}
                   onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)}
                   onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
+                  onRegistrarProblemaExtra={(etapaId, desc, foto) => handleRegistrarProblemaExtra(etapaId, desc, foto)}
                 />
               </div>
             ))}

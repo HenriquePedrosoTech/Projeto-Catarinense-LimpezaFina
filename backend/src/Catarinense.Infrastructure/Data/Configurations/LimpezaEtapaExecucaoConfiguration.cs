@@ -16,6 +16,8 @@ public class LimpezaEtapaExecucaoConfiguration : IEntityTypeConfiguration<Limpez
         builder.Property(e => e.LimpezaFinaId).IsRequired();
         builder.Property(e => e.EtapaPadraoId).IsRequired();
         builder.Property(e => e.ConcluidaEm);
+        builder.Property(e => e.ProblemaExtraDescricao).HasMaxLength(2000);
+        builder.Property(e => e.ProblemaExtraFotoUrl).HasMaxLength(1000);
         builder.Property(e => e.CriadoEm);
 
         builder.Metadata.FindNavigation(nameof(LimpezaEtapaExecucao.Fotos))!

@@ -3,9 +3,10 @@ namespace Catarinense.Application.DTOs;
 public record IniciarLimpezaFinaRequest(string PrefixoOnibus, Guid OperadorId);
 
 public record DefinirNumeroOSRequest(Guid LimpezaFinaId, string NumeroOS);
+public record RegistrarProblemaExtraEtapaRequest(string Descricao, string? FotoUrl);
 
 public record EtapaItemResumoDto(Guid Id, string Texto, string? Descricao, string? EnquadramentoFoto, int Ordem, string? Status, string? Funcionalidade, string? RelatoProblema, string? FotoUrl, bool Concluida, bool Obrigatorio);
-public record EtapaResumoDto(Guid EtapaPadraoId, string Nome, string? Descricao, string? LinkVideo, int Ordem, bool Concluida, IReadOnlyList<string> Fotos, IReadOnlyList<EtapaItemResumoDto> Itens, bool Obrigatoria);
+public record EtapaResumoDto(Guid EtapaPadraoId, string Nome, string? Descricao, string? LinkVideo, int Ordem, bool Concluida, IReadOnlyList<string> Fotos, IReadOnlyList<EtapaItemResumoDto> Itens, bool Obrigatoria, string? ProblemaExtraDescricao, string? ProblemaExtraFotoUrl);
 
 public record LimpezaFinaResumoDto(
     Guid Id,

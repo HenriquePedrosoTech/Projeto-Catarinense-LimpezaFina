@@ -13,9 +13,10 @@ interface Props {
   onEnviarFoto: (arquivo: File) => Promise<void>;
   onRemoverFoto?: (url: string) => Promise<void>;
   onEnviarItem?: (itemId: string, status: string, funcionalidade: string, relato: string | null, arquivo: File | null) => Promise<void>;
+  onRegistrarProblemaExtra?: (etapaId: string, descricao: string, foto: File | null) => Promise<void>;
 }
 
-export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, onEnviarItem }: Props) {
+export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, onEnviarItem, onRegistrarProblemaExtra }: Props) {
   const inputCameraRef = useRef<HTMLInputElement>(null);
   const inputGaleriaRef = useRef<HTMLInputElement>(null);
   

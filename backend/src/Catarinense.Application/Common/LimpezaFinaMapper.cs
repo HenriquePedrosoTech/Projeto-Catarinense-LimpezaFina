@@ -53,8 +53,7 @@ public static class LimpezaFinaMapper
                     etapaPadrao?.Ordem ?? 0,
                     e.EstaConcluida(),
                     e.Fotos.Select(f => f.UrlArquivo).ToList(),
-                    itensExecucao, etapaPadrao?.Obrigatoria ?? true
-                );
+                    itensExecucao, etapaPadrao?.Obrigatoria ?? true, e.ProblemaExtraDescricao, e.ProblemaExtraFotoUrl);
             })
             .ToList();
 

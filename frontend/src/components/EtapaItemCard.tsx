@@ -126,9 +126,9 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onAbrirFoto }:
           </h4>
           
           {item.descricao && (
-            <p className="text-xs text-ink/60 mt-1">
+            <div className="text-sm text-ink/80 bg-ink/5 p-2.5 rounded-md mt-2 border-l-[3px] border-primary leading-snug">
               {item.descricao}
-            </p>
+            </div>
           )}
           
           {item.enquadramentoFoto && !item.concluida && (

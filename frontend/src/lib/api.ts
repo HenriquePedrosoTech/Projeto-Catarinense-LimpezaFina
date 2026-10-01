@@ -101,6 +101,22 @@ export const api = {
       { method: "POST", token }
     ),
 
+    registrarProblemaExtraEtapa: async (limpezaFinaId: string, etapaPadraoId: string, descricao: string, foto: File | null, token: string): Promise<void> => {
+    const formData = new FormData();
+    formData.append("descricao", descricao);
+    if (foto) formData.append("arquivo", foto);
+    
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/limpezas-finas/${limpezaFinaId}/etapas/${etapaPadraoId}/problema-extra`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) {
+       const text = await res.text();
+       throw new Error(text || "Erro na API");
+    }
+  },
+  
   finalizarLimpeza: (token: string, limpezaId: string) =>
     request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/finalizar`, { method: "POST", token }),
 

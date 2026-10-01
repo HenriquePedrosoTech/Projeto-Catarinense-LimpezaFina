@@ -7,6 +7,8 @@ public class LimpezaEtapaExecucao : EntidadeBase
     public Guid LimpezaFinaId { get; private set; }
     public Guid EtapaPadraoId { get; private set; }
     public DateTime? ConcluidaEm { get; private set; }
+    public string? ProblemaExtraDescricao { get; private set; }
+    public string? ProblemaExtraFotoUrl { get; private set; }
 
     private readonly List<FotoEtapa> _fotos = new();
     public IReadOnlyCollection<FotoEtapa> Fotos => _fotos.AsReadOnly();
@@ -72,5 +74,13 @@ public class LimpezaEtapaExecucao : EntidadeBase
         }
         
         return _fotos.Count > 0;
+    }
+
+
+    public void RelatarProblemaExtra(string descricao, string? fotoUrl)
+    {
+        if (string.IsNullOrWhiteSpace(descricao)) throw new DomainException("A descricao do problema e obrigatoria.");
+        ProblemaExtraDescricao = descricao;
+        ProblemaExtraFotoUrl = fotoUrl;
     }
 }

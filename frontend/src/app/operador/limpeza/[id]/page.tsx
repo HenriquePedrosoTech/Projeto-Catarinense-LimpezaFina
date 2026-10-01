@@ -281,6 +281,7 @@ export default function ChecklistLimpezaPage() {
                   onEnviarFoto={(arquivo) => handleEnviarFoto(etapa.etapaPadraoId, arquivo)}
                   onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)}
                   onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
+                    onDesmarcarItem={(itemId) => handleDesmarcarItem(etapa.etapaPadraoId, itemId)}
                   
                 />
               </div>
@@ -452,4 +453,5 @@ export default function ChecklistLimpezaPage() {
     </div>
   );
 }
+
 

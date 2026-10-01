@@ -276,17 +276,27 @@ export default function ChecklistLimpezaPage() {
           </div>
 
           {emAndamento && (
-            <div className="sticky bottom-4 left-0 right-0 mt-8 z-40 bg-surface/80 p-2 rounded-2xl backdrop-blur-md border border-line shadow-lg">
+            <div className="sticky bottom-4 left-0 right-0 mt-8 z-40 bg-surface/80 p-2 rounded-2xl backdrop-blur-md border border-line shadow-lg flex gap-2 sm:gap-3">
+              {/* Botão para Celular (Mobile) */}
+              <button
+                type="button"
+                onClick={() => setMostrarModalProblema(true)}
+                className="md:hidden flex-shrink-0 flex flex-col items-center justify-center w-24 bg-white border border-danger/20 text-danger rounded-xl shadow-sm hover:bg-danger/5 transition-colors font-semibold text-xs text-center px-1"
+              >
+                <AlertTriangle className="h-5 w-5 mb-1" />
+                Relatar Problema
+              </button>
+              
               <Button
                 size="lg"
-                className="w-full h-14 text-lg font-bold rounded-xl shadow-md transition-all hover:scale-[1.02]"
+                className="flex-1 h-14 text-sm sm:text-lg font-bold rounded-xl shadow-md transition-all hover:scale-[1.02]"
                 onClick={handleFinalizarLimpeza}
                 disabled={!todasConcluidas || finalizando}
                 loading={finalizando}
               >
                 {todasConcluidas ? (
                   <>
-                    <CheckCircle className="mr-2 h-6 w-6" /> Concluir e Enviar
+                    <CheckCircle className="mr-2 h-5 w-5 sm:h-6 sm:w-6" /> Concluir e Enviar
                   </>
                 ) : (
                   <>Finalizar Limpeza ({concluidas}/{totalEtapas})</>
@@ -295,16 +305,17 @@ export default function ChecklistLimpezaPage() {
             </div>
           )}
 
-          {emAndamento && (
+          {emAndamento && (<>
+            {/* Botão para Desktop */}
             <button
               type="button"
               onClick={() => setMostrarModalProblema(true)}
-              className="fixed bottom-24 left-4 md:left-8 z-[60] flex items-center gap-2 bg-white border-2 border-danger text-danger rounded-xl shadow-2xl hover:bg-danger/5 transition-all p-3 font-bold text-sm"
+              className="hidden md:flex fixed bottom-24 left-8 z-[60] items-center gap-2 bg-white border-2 border-danger text-danger rounded-xl shadow-2xl hover:bg-danger/5 transition-all p-3 font-bold text-sm"
             >
               <AlertTriangle className="h-5 w-5" />
               Relatar Problema Adicional
             </button>
-          )}
+          </>)}
 
           {!emAndamento && (
             <div className="mt-8 rounded-lg border border-dashed border-line bg-surface p-6 text-center">

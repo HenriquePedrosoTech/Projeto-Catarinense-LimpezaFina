@@ -31,7 +31,7 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
         _armazenamentoArquivoService = armazenamentoArquivoService;
     }
 
-    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId, string status, string funcionalidade, string? relatoProblema, byte[]? fotoBytes, string? fotoNome, string? fotoContentType)
+    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId, string status, string funcionalidade, string? relatoProblema, byte[]? fotoBytes, string? fotoNome, string? fotoContentType, Guid usuarioLogadoId, bool isAdministrador)
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(limpezaFinaId)
             ?? throw new NotFoundException("Limpeza fina nao encontrada.");

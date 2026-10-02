@@ -5,12 +5,22 @@ public record RegistrarFotoEtapaRequest(
     Guid EtapaPadraoId,
     Stream ConteudoArquivo,
     string NomeArquivoOriginal,
-    string ContentType
-);
+    string ContentType,
+    Guid UsuarioLogadoId,
+    bool IsAdministrador);
 
-public record RemoverFotoEtapaRequest(Guid LimpezaFinaId, Guid EtapaPadraoId, string UrlArquivo);
+public record RemoverFotoEtapaRequest(
+    Guid LimpezaFinaId,
+    Guid EtapaPadraoId,
+    string UrlArquivo,
+    Guid UsuarioLogadoId,
+    bool IsAdministrador);
 
-public record FinalizarLimpezaFinaRequest(Guid LimpezaFinaId, string UrlBaseDetalhes = "");
+public record FinalizarLimpezaFinaRequest(
+    Guid LimpezaFinaId,
+    string UrlBaseDetalhes,
+    Guid UsuarioLogadoId,
+    bool IsAdministrador);
 
 public record AprovarLimpezaFinaRequest(Guid LimpezaFinaId, Guid AvaliadorId);
 

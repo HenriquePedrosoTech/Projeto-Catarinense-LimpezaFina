@@ -98,7 +98,7 @@ public class LimpezasFinasController : ControllerBase
 
         var resultado = await useCase.ExecutarAsync(
             id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, 
-            fotoBytes, fotoNome, fotoContentType);
+            fotoBytes, fotoNome, fotoContentType, UsuarioLogadoId(), User.IsInRole("Administrador"));
             
         return Ok(resultado);
     }
@@ -112,7 +112,7 @@ public class LimpezasFinasController : ControllerBase
             return BadRequest(new { erro = "Nenhum arquivo enviado." });
 
         await using var stream = form.Arquivo.OpenReadStream();
-        var request = new RegistrarFotoEtapaRequest(id, etapaPadraoId, stream, form.Arquivo.FileName, form.Arquivo.ContentType);
+        var request = new RegistrarFotoEtapaRequest(id, etapaPadraoId, stream, form.Arquivo.FileName, form.Arquivo.ContentType, UsuarioLogadoId(), User.IsInRole("Administrador"));
         var resultado = await _registrarFotoUseCase.ExecutarAsync(request);
         return Ok(resultado);
     }
@@ -125,7 +125,7 @@ public class LimpezasFinasController : ControllerBase
             return BadRequest(new { erro = "A URL da foto é obrigatória." });
 
         var useCase = HttpContext.RequestServices.GetRequiredService<IRemoverFotoEtapaUseCase>();
-        var request = new RemoverFotoEtapaRequest(id, etapaPadraoId, urlArquivo);
+        var request = new RemoverFotoEtapaRequest(id, etapaPadraoId, urlArquivo, UsuarioLogadoId(), User.IsInRole("Administrador"));
         var resultado = await useCase.ExecutarAsync(request);
         return Ok(resultado);
     }
@@ -135,7 +135,7 @@ public class LimpezasFinasController : ControllerBase
         Guid id, [FromQuery] bool retiradas)
     {
         var useCase = HttpContext.RequestServices.GetRequiredService<Catarinense.Application.UseCases.ISinalizarCortinasUseCase>();
-        var resultado = await useCase.ExecutarAsync(id, retiradas);
+        var resultado = await useCase.ExecutarAsync(id, retiradas, UsuarioLogadoId(), User.IsInRole("Administrador"));
         return Ok(resultado);
     }
 
@@ -143,7 +143,7 @@ public class LimpezasFinasController : ControllerBase
     [HttpPost("{id:guid}/finalizar")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> Finalizar(Guid id)
     {
-        var resultado = await _finalizarUseCase.ExecutarAsync(new FinalizarLimpezaFinaRequest(id));
+        var resultado = await _finalizarUseCase.ExecutarAsync(new FinalizarLimpezaFinaRequest(id, _configuration["Frontend:UrlBaseDetalhesLimpeza"] ?? "https://catarinense-limpezafina.vercel.app/admin/limpeza", UsuarioLogadoId(), User.IsInRole("Administrador")));
         return Ok(resultado);
     }
 

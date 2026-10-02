@@ -7,7 +7,7 @@ namespace Catarinense.Application.UseCases;
 
 public interface ISinalizarCortinasUseCase
 {
-    Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, bool retiradas);
+    Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, bool retiradas, Guid usuarioLogadoId, bool isAdministrador);
 }
 
 public class SinalizarCortinasUseCase : ISinalizarCortinasUseCase
@@ -23,7 +23,7 @@ public class SinalizarCortinasUseCase : ISinalizarCortinasUseCase
         _detalhesDtoBuilder = detalhesDtoBuilder;
     }
 
-    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, bool retiradas)
+    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, bool retiradas, Guid usuarioLogadoId, bool isAdministrador)
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(limpezaFinaId)
             ?? throw new NotFoundException("Registro não encontrado.");

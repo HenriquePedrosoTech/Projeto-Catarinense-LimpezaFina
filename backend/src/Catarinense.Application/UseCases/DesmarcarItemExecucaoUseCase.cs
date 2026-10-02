@@ -9,7 +9,7 @@ namespace Catarinense.Application.UseCases;
 
 public interface IDesmarcarItemExecucaoUseCase
 {
-    Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId);
+    Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId, Guid usuarioLogadoId, bool isAdministrador);
 }
 
 public class DesmarcarItemExecucaoUseCase : IDesmarcarItemExecucaoUseCase
@@ -31,7 +31,7 @@ public class DesmarcarItemExecucaoUseCase : IDesmarcarItemExecucaoUseCase
         _etapaPadraoRepository = etapaPadraoRepository;
     }
 
-    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId)
+    public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(Guid limpezaFinaId, Guid etapaPadraoId, Guid itemId, Guid usuarioLogadoId, bool isAdministrador)
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(limpezaFinaId)
             ?? throw new NotFoundException("Limpeza fina nao encontrada.");

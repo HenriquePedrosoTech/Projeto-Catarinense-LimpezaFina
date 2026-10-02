@@ -6,9 +6,9 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#C41230",
-          dark: "#8F0E24",
-          light: "#E94E64",
+          DEFAULT: "#0082C8", // Catarinense Blue
+          dark: "#00649D",
+          light: "#33A1DB",
         },
         ink: "#10182B",
         navy: "#0F2A4A",

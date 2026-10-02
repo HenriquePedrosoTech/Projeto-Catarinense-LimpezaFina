@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 import type { LimpezaFinaDetalhes } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, Info, X, Camera } from "lucide-react";
+import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, Info, X, Camera, ArrowRight } from "lucide-react";
 import { EtapaCard } from "@/components/EtapaCard";
 
 export default function ChecklistLimpezaPage() {
@@ -145,6 +145,17 @@ export default function ChecklistLimpezaPage() {
     }
   }
 
+  
+  const indexAtual = limpeza?.etapas.findIndex(e => e.etapaPadraoId === etapaAtivaId) ?? -1;
+  const temProxima = indexAtual >= 0 && indexAtual < (limpeza?.etapas.length ?? 0) - 1;
+  
+  const irParaProximaEtapa = () => {
+    if (temProxima && limpeza) {
+      setEtapaAtivaId(limpeza.etapas[indexAtual + 1].etapaPadraoId);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   if (carregando) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface">
@@ -280,7 +291,8 @@ export default function ChecklistLimpezaPage() {
                   desabilitado={!emAndamento}
                   onEnviarFoto={(arquivo) => handleEnviarFoto(etapa.etapaPadraoId, arquivo)}
                   onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)}
-                  onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
+                  onDesmarcarItem={(itemId) => handleDesmarcarItem(etapa.etapaPadraoId, itemId)}
+                    onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
                   
                 />
               </div>
@@ -299,21 +311,35 @@ export default function ChecklistLimpezaPage() {
                 Relatar Problema
               </button>
               
-              <Button
-                size="lg"
-                className="flex-1 h-14 text-sm sm:text-lg font-bold rounded-xl shadow-md transition-all hover:scale-[1.02]"
-                onClick={handleFinalizarLimpeza}
-                disabled={!todasConcluidas || finalizando}
-                loading={finalizando}
-              >
-                {todasConcluidas ? (
-                  <>
-                    <CheckCircle className="mr-2 h-5 w-5 sm:h-6 sm:w-6" /> Concluir e Enviar
-                  </>
-                ) : (
-                  <>Finalizar Limpeza ({concluidas}/{totalEtapas})</>
+              {temProxima && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    className="flex-1 h-14 text-sm sm:text-lg font-bold rounded-xl shadow-sm border-brand text-brand hover:bg-brand/5"
+                    onClick={irParaProximaEtapa}
+                  >
+                    Próxima Etapa <ArrowRight className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
                 )}
-              </Button>
+                
+                {(!temProxima || todasConcluidas) && (
+                  <Button
+                    size="lg"
+                    className="flex-1 h-14 text-sm sm:text-lg font-bold rounded-xl shadow-md transition-all hover:scale-[1.02]"
+                    onClick={handleFinalizarLimpeza}
+                    disabled={!todasConcluidas || finalizando}
+                    loading={finalizando}
+                  >
+                    {todasConcluidas ? (
+                      <>
+                        <CheckCircle className="mr-2 h-5 w-5 sm:h-6 sm:w-6" /> Concluir
+                      </>
+                    ) : (
+                      <>Finalizar ({concluidas}/{totalEtapas})</>
+                    )}
+                  </Button>
+                )}
             </div>
           )}
 

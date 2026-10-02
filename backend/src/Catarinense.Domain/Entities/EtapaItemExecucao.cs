@@ -64,6 +64,6 @@ public class EtapaItemExecucao : EntidadeBase
         FotoUrl = null;
         Concluida = false;
     }
-    }
 }
+
 

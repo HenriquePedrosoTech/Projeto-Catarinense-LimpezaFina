@@ -14,15 +14,15 @@ namespace Catarinense.Infrastructure.DependencyInjection;
 public static class InfrastructureServiceCollectionExtensions
 {
     /// <summary>
-    /// Registra DbContext (MySQL), repositÃƒÂ³rios e serviÃƒÂ§os de infraestrutura.
-    /// Chamado uma ÃƒÂºnica vez no Program.cs da API: services.AddInfrastructure(Configuration).
+    /// Registra DbContext (MySQL), repositÃÂ³rios e serviÃÂ§os de infraestrutura.
+    /// Chamado uma ÃÂºnica vez no Program.cs da API: services.AddInfrastructure(Configuration).
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("MySql")
-            ?? throw new InvalidOperationException("Connection string 'MySql' nÃƒÂ£o configurada em appsettings.json.");
+            ?? throw new InvalidOperationException("Connection string 'MySql' nÃÂ£o configurada em appsettings.json.");
 
-        // AutoDetect funciona com TiDB Cloud (compatÃƒÂ­vel com o protocolo MySQL 5.7/8.0).
+        // AutoDetect funciona com TiDB Cloud (compatÃÂ­vel com o protocolo MySQL 5.7/8.0).
         // Se o auto-detect falhar em algum ambiente, troque por um ServerVersion fixo, ex.:
         // new MySqlServerVersion(new Version(8, 0, 11))
         services.AddDbContext<AppDbContext>(options =>
@@ -32,14 +32,14 @@ public static class InfrastructureServiceCollectionExtensions
         services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
         services.Configure<ArmazenamentoOptions>(configuration.GetSection(ArmazenamentoOptions.SectionName));
 
-        // RepositÃƒÂ³rios (Domain define a interface, Infrastructure implementa Ã¢â‚¬â€ DIP)
+        // RepositÃÂ³rios (Domain define a interface, Infrastructure implementa ââ‚¬" DIP)
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<IOnibusRepository, OnibusRepository>();
         services.AddScoped<IEtapaPadraoRepository, EtapaPadraoRepository>();
         services.AddScoped<IFotoHashRepository, FotoHashRepository>();
         services.AddScoped<ILimpezaFinaRepository, LimpezaFinaRepository>();
 
-        // ServiÃƒÂ§os de infraestrutura
+        // ServiÃÂ§os de infraestrutura
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         
@@ -83,7 +83,6 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<Catarinense.Application.UseCases.ISinalizarCortinasUseCase, Catarinense.Application.UseCases.SinalizarCortinasUseCase>();
                 services.AddScoped<IFinalizarLimpezaFinaUseCase, Catarinense.Application.UseCases.FinalizarLimpezaFinaUseCase>();
         services.AddScoped<IRegistrarItemExecucaoUseCase, Catarinense.Application.UseCases.RegistrarItemExecucaoUseCase>();
-        services.AddScoped<Catarinense.Application.UseCases.IDesmarcarItemExecucaoUseCase, Catarinense.Application.UseCases.DesmarcarItemExecucaoUseCase>();
         services.AddScoped<IAprovarLimpezaFinaUseCase, Catarinense.Application.UseCases.AprovarLimpezaFinaUseCase>();
         services.AddScoped<IReprovarLimpezaFinaUseCase, Catarinense.Application.UseCases.ReprovarLimpezaFinaUseCase>();
         services.AddScoped<IEnviarNotificacaoLimpezaUseCase, Catarinense.Application.UseCases.EnviarNotificacaoLimpezaUseCase>();
@@ -91,7 +90,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IExcluirLimpezaFinaUseCase, Catarinense.Application.UseCases.ExcluirLimpezaFinaUseCase>();
         services.AddScoped<Catarinense.Application.Common.DetalhesDtoBuilder>();
 
-        // Cadastro / consulta de dados mestres (usuÃƒÂ¡rios, ÃƒÂ´nibus, etapas padrÃƒÂ£o)
+        // Cadastro / consulta de dados mestres (usuÃÂ¡rios, ÃÂ´nibus, etapas padrÃÂ£o)
         services.AddScoped<ICadastrarUsuarioUseCase, Catarinense.Application.UseCases.CadastrarUsuarioUseCase>();
         services.AddScoped<IEditarUsuarioUseCase, Catarinense.Application.UseCases.EditarUsuarioUseCase>();
         services.AddScoped<IExcluirUsuarioUseCase, Catarinense.Application.UseCases.ExcluirUsuarioUseCase>();
@@ -108,7 +107,6 @@ public static class InfrastructureServiceCollectionExtensions
         return services;
     }
 }
-
 
 
 

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -55,7 +55,7 @@ export default function ChecklistLimpezaPage() {
       const nomeDaEtapa = limpeza?.etapas.find(e => e.etapaPadraoId === etapaPadraoId)?.nome || "Etapa desconhecida";
       setAlerta({
         titulo: "Erro ao cadastrar foto",
-        mensagem: `Ocorreu um erro ao enviar a foto para a etapa: ${nomeDaEtapa}. Verifique sua conexÃ£o e tente novamente.`
+        mensagem: `Ocorreu um erro ao enviar a foto para a etapa: ${nomeDaEtapa}. Verifique sua conexão e tente novamente.`
       });
     }
   }
@@ -92,7 +92,7 @@ export default function ChecklistLimpezaPage() {
     } catch (err) {
       setAlerta({
         titulo: "Erro ao remover foto",
-        mensagem: "NÃ£o foi possÃ­vel remover a foto. Tente novamente."
+        mensagem: "Não foi possível remover a foto. Tente novamente."
       });
     }
   }
@@ -116,7 +116,7 @@ export default function ChecklistLimpezaPage() {
       const faltantes = etapasObrigatorias.filter(e => !e.concluida).map(e => e.nome).join(", ");
       setAlerta({
         titulo: "Checklist incompleto!",
-        mensagem: `VocÃª nÃ£o anexou as fotos exigidas nas seguintes etapas: ${faltantes}.`
+        mensagem: `Você não anexou as fotos exigidas nas seguintes etapas: ${faltantes}.`
       });
       return;
     }
@@ -127,7 +127,7 @@ export default function ChecklistLimpezaPage() {
       await api.finalizarLimpeza(usuario.token, id);
       router.push("/operador");
     } catch (err) {
-      setErro(err instanceof ApiError ? err.message : "NÃ£o foi possÃ­vel finalizar.");
+      setErro(err instanceof ApiError ? err.message : "Não foi possível finalizar.");
       setFinalizando(false);
     }
   }
@@ -161,9 +161,9 @@ export default function ChecklistLimpezaPage() {
       <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-surface">
         <div className="rounded-xl bg-white p-8 text-center shadow-lg border border-line">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-danger" />
-          <h2 className="mb-2 text-xl font-bold text-ink">Registro nÃ£o encontrado</h2>
-          <p className="mb-6 text-ink/60">{erro || "NÃ£o foi possÃ­vel localizar esta limpeza."}</p>
-          <Button onClick={() => router.push("/operador")}>Voltar para InÃ­cio</Button>
+          <h2 className="mb-2 text-xl font-bold text-ink">Registro não encontrado</h2>
+          <p className="mb-6 text-ink/60">{erro || "Não foi possível localizar esta limpeza."}</p>
+          <Button onClick={() => router.push("/operador")}>Voltar para Início</Button>
         </div>
       </div>
     );
@@ -210,7 +210,7 @@ export default function ChecklistLimpezaPage() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-ink/40" />
                 <span className="truncate">
-                  <strong>InÃ­cio:</strong>{" "}
+                  <strong>Início:</strong>{" "}
                   {new Date(limpeza.iniciadaEm).toLocaleDateString("pt-BR")}
                 </span>
               </div>
@@ -248,7 +248,7 @@ export default function ChecklistLimpezaPage() {
                 />
                 <label htmlFor="cortinas" className="flex flex-col cursor-pointer">
                   <span className="text-sm font-semibold text-ink">Cortinas foram retiradas?</span>
-                  <span className="text-xs text-ink/60">Marque caso as cortinas tenham sido removidas do veÃ­culo</span>
+                  <span className="text-xs text-ink/60">Marque caso as cortinas tenham sido removidas do veículo</span>
                 </label>
               </div>
             </CardContent>
@@ -281,7 +281,6 @@ export default function ChecklistLimpezaPage() {
                   onEnviarFoto={(arquivo) => handleEnviarFoto(etapa.etapaPadraoId, arquivo)}
                   onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)}
                   onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
-                    onDesmarcarItem={(itemId) => handleDesmarcarItem(etapa.etapaPadraoId, itemId)}
                   
                 />
               </div>
@@ -290,7 +289,7 @@ export default function ChecklistLimpezaPage() {
 
           {emAndamento && (
             <div className="sticky bottom-4 left-0 right-0 mt-8 z-40 bg-surface/80 p-2 rounded-2xl backdrop-blur-md border border-line shadow-lg flex gap-2 sm:gap-3">
-              {/* BotÃ£o para Celular (Mobile) */}
+              {/* Botão para Celular (Mobile) */}
               <button
                 type="button"
                 onClick={() => setMostrarModalProblema(true)}
@@ -319,7 +318,7 @@ export default function ChecklistLimpezaPage() {
           )}
 
           {emAndamento && (<>
-            {/* BotÃ£o para Desktop */}
+            {/* Botão para Desktop */}
             <button
               type="button"
               onClick={() => setMostrarModalProblema(true)}
@@ -333,9 +332,9 @@ export default function ChecklistLimpezaPage() {
           {!emAndamento && (
             <div className="mt-8 rounded-lg border border-dashed border-line bg-surface p-6 text-center">
               <CheckCircle className="mx-auto mb-2 h-8 w-8 text-success/60" />
-              <p className="font-semibold text-ink">Checklist ConcluÃ­do</p>
+              <p className="font-semibold text-ink">Checklist Concluído</p>
               <p className="mt-1 text-sm text-ink/60">
-                Este registro jÃ¡ foi finalizado e aguarda a avaliaÃ§Ã£o do administrador.
+                Este registro já foi finalizado e aguarda a avaliação do administrador.
               </p>
             </div>
           )}
@@ -355,10 +354,10 @@ export default function ChecklistLimpezaPage() {
               <h3 className="text-lg font-bold text-danger flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" /> Reportar Problema Extra
               </h3>
-              <p className="text-sm text-ink/70">Este problema serÃ¡ registrado na etapa atual.</p>
+              <p className="text-sm text-ink/70">Este problema será registrado na etapa atual.</p>
 
               <div>
-                <label className="text-xs font-semibold mb-1 block text-ink/80 uppercase">DescriÃ§Ã£o *</label>
+                <label className="text-xs font-semibold mb-1 block text-ink/80 uppercase">Descrição *</label>
                 <textarea
                   value={relatoExtra}
                   onChange={(e) => setRelatoExtra(e.target.value)}
@@ -453,5 +452,3 @@ export default function ChecklistLimpezaPage() {
     </div>
   );
 }
-
-

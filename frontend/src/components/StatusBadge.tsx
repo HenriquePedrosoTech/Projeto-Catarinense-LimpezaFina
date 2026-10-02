@@ -1,7 +1,7 @@
 import type { StatusLimpeza } from "@/lib/types";
 
 const CONFIG: Record<StatusLimpeza, { texto: string; classe: string }> = {
-  EmAndamento: { texto: "Em andamento", classe: "bg-navy/10 text-navy border-navy/20" },
+  EmAndamento: { texto: "Em andamento", classe: "bg-brand-blue/10 text-brand-blue border-brand-blue/20" },
   Concluida: { texto: "Aguardando avaliação", classe: "bg-warning/10 text-warning border-warning/20" },
   Aprovada: { texto: "Aprovada", classe: "bg-success/10 text-success border-success/20" },
   Reprovada: { texto: "Reprovada", classe: "bg-danger/10 text-danger border-danger/20" },

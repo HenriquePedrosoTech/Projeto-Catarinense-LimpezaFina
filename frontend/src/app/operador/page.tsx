@@ -58,14 +58,14 @@ export default function OperadorHomePage() {
             placeholder="Pesquisar prefixo ou O.S..."
             value={pesquisa}
             onChange={(e) => setPesquisa(e.target.value)}
-            className="block w-full pl-9 pr-3 py-2 border border-line rounded-xl text-sm focus:ring-brand focus:border-brand bg-white"
+            className="block w-full pl-9 pr-3 py-2 border border-line rounded-xl text-sm focus:ring-brand-blue focus:border-brand-blue bg-white"
           />
         </div>
         <input
           type="date"
           value={dataPesquisa}
           onChange={(e) => setDataPesquisa(e.target.value)}
-          className="block w-full sm:w-auto px-3 py-2 border border-line rounded-xl text-sm focus:ring-brand focus:border-brand bg-white"
+          className="block w-full sm:w-auto px-3 py-2 border border-line rounded-xl text-sm focus:ring-brand-blue focus:border-brand-blue bg-white"
         />
       </div>
 
@@ -99,7 +99,7 @@ export default function OperadorHomePage() {
             >
               <Card
                 className={`group transition-all active:scale-[0.98] ${
-                  l.status === "EmAndamento" ? "border-brand/40 shadow-sm" : ""
+                  l.status === "EmAndamento" ? "border-brand-blue/40 shadow-sm" : ""
                 }`}
               >
                 <CardContent className="p-4">

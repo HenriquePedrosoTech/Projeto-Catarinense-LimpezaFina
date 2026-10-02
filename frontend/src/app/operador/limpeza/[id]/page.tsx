@@ -270,7 +270,7 @@ export default function ChecklistLimpezaPage() {
               <button
                 key={etapa.etapaPadraoId}
                 onClick={() => setEtapaAtivaId(etapa.etapaPadraoId)}
-                className={`shrink-0 px-4 py-3 rounded-xl border text-sm font-semibold transition-all ${etapaAtivaId === etapa.etapaPadraoId ? "bg-brand text-white border-brand shadow-md" : "bg-white text-ink border-line hover:border-brand/50"} ${etapa.concluida ? "opacity-75" : ""}`}
+                className={`shrink-0 px-4 py-3 rounded-xl border text-sm font-semibold transition-all ${etapaAtivaId === etapa.etapaPadraoId ? "bg-brand-blue text-white border-brand-blue shadow-md" : "bg-white text-ink border-line hover:border-brand/50"} ${etapa.concluida ? "opacity-75" : ""}`}
               >
                 <div className="flex items-center gap-2">
                   <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${etapaAtivaId === etapa.etapaPadraoId ? "bg-white text-brand" : "bg-surface text-ink/60"}`}>
@@ -316,7 +316,7 @@ export default function ChecklistLimpezaPage() {
                     type="button"
                     variant="outline"
                     size="lg"
-                    className="flex-1 h-14 text-sm sm:text-lg font-bold rounded-xl shadow-sm border-brand text-brand hover:bg-brand/5"
+                    className="flex-1 h-14 text-sm sm:text-lg font-bold rounded-xl shadow-sm border-brand-blue text-brand-blue hover:bg-brand-blue/5"
                     onClick={irParaProximaEtapa}
                   >
                     Próxima Etapa <ArrowRight className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />

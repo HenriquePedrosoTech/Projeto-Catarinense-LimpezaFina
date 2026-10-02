@@ -16,11 +16,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50";
 
     const variants = {
-      primary: "bg-brand text-white hover:bg-brand-dark",
+      primary: "bg-brand-blue text-white hover:bg-[#00649D]",
       secondary: "bg-surface text-ink hover:bg-line/70",
       danger: "bg-danger text-white hover:bg-danger/90",
       ghost: "bg-transparent text-ink/70 hover:bg-line/50 hover:text-ink",
-      outline: "border border-line bg-transparent text-ink/80 hover:border-brand hover:text-brand",
+      outline: "border border-line bg-transparent text-ink/80 hover:border-brand-blue hover:text-brand-blue",
     };
 
     const sizes = {

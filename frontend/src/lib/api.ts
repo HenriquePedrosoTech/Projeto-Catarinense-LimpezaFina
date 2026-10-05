@@ -180,6 +180,9 @@ export const api = {
   excluirEtapaPadrao: (token: string, etapaId: string) =>
     request<void>(`/api/etapas-padrao/${etapaId}`, { method: "DELETE", token }),
 
+  reordenarEtapasPadrao: (token: string, etapas: { id: string; ordem: number }[]) =>
+    request<void>("/api/etapas-padrao/reordenar", { method: "PUT", token, body: JSON.stringify(etapas) }),
+
   listarOnibus: (token: string) => request<OnibusResumo[]>("/api/onibus", { token }),
 
   cadastrarOnibus: (token: string, prefixo: string, placa: string) =>

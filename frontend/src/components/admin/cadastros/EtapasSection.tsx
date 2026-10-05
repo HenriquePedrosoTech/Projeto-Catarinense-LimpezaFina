@@ -6,9 +6,83 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog, AlertDialog } from "@/components/ui/Dialogs";
 import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { ListChecks, Trash2, Edit2, Info } from "lucide-react";
+import { ListChecks, Trash2, Edit2, Info, GripVertical } from "lucide-react";
 import type { EtapaPadraoResumo } from "@/lib/types";
 import { EtapaEditModal } from "./EtapaEditModal";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+function SortableItem({ id, e, i, onEdit, onDelete, excluindoId }: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <li ref={setNodeRef} style={style} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-4 hover:bg-surface/50 bg-white z-10">
+      <div className="flex flex-1 items-center gap-4">
+        <button {...attributes} {...listeners} className="cursor-grab text-ink/40 hover:text-ink/80 touch-none">
+          <GripVertical className="h-5 w-5" />
+        </button>
+        <span className="flex h-7 w-7 items-center justify-center rounded bg-ink text-xs font-bold text-white shadow-sm shrink-0">
+          {i + 1}
+        </span>
+        <div className="flex flex-col">
+          <span className="font-medium text-ink">{e.nome}</span>
+          {e.descricao && (
+            <span className="text-xs text-ink/60 flex items-center gap-1 mt-0.5">
+              <Info className="h-3 w-3" /> P.O.P configurado
+            </span>
+          )}
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-end gap-2 sm:mt-0 mt-3 sm:w-auto w-full border-t sm:border-t-0 border-line/50 pt-2 sm:pt-0">
+        <button
+          onClick={() => onEdit(e)}
+          className="flex items-center gap-1 text-sm text-ink/50 transition hover:text-brand px-2 py-1 rounded hover:bg-surface"
+          title="Editar Etapa"
+        >
+          <Edit2 className="h-4 w-4" />
+          <span className="sm:hidden">Editar</span>
+        </button>
+        
+        <button
+          onClick={() => onDelete(e.id, e.nome)}
+          disabled={excluindoId === e.id}
+          className="flex items-center gap-1 text-sm text-ink/50 transition hover:text-danger disabled:opacity-50 px-2 py-1 rounded hover:bg-surface"
+          title="Excluir Etapa"
+        >
+          <Trash2 className="h-4 w-4" />
+          <span className="sm:hidden">Excluir</span>
+        </button>
+      </div>
+    </li>
+  );
+}
 
 export function EtapasSection({ token }: { token: string }) {
   const [lista, setLista] = useState<EtapaPadraoResumo[]>([]);
@@ -23,11 +97,50 @@ export function EtapasSection({ token }: { token: string }) {
   
   const [etapaEditando, setEtapaEditando] = useState<EtapaPadraoResumo | null>(null);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const carregar = () => {
-    api.listarEtapasPadrao(token).then(setLista).catch(() => {});
+    api.listarEtapasPadrao(token).then(data => {
+      // Garantir que estao ordenadas pela Ordem
+      const ordenadas = [...data].sort((a, b) => a.ordem - b.ordem);
+      setLista(ordenadas);
+    }).catch(() => {});
   };
 
   useEffect(carregar, [token]);
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setLista((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+        
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        
+        // Agora mapeamos a nova ordem
+        const payload = newItems.map((item, index) => ({
+          id: item.id,
+          ordem: index
+        }));
+
+        // Dispara a chamada de API sem bloquear a interface imediatamente
+        api.reordenarEtapasPadrao(token, payload).catch(err => {
+          setErro("Falha ao salvar a nova ordem. Recarregando...");
+          carregar(); // Recarrega se falhar
+        });
+
+        // Atualiza as ordens locais para renderizar corretamente os nÃºmeros
+        return newItems.map((item, index) => ({...item, ordem: index}));
+      });
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -94,7 +207,7 @@ export function EtapasSection({ token }: { token: string }) {
             Checklist Padrão
           </CardTitle>
           <p className="text-sm text-ink/50">
-            A ordem em que você adiciona as etapas define a ordem exigida no aplicativo do operador.
+            A ordem em que você adiciona as etapas define a ordem exigida no aplicativo do operador. Você pode clicar e arrastar para reordenar.
           </p>
         </CardHeader>
         <CardContent>
@@ -134,46 +247,31 @@ export function EtapasSection({ token }: { token: string }) {
             {lista.length === 0 && (
               <p className="p-6 text-center text-sm text-ink/50">Nenhuma etapa cadastrada ainda.</p>
             )}
-            <ul className="divide-y divide-line">
-              {lista.map((e, i) => (
-                <li key={e.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-4 hover:bg-surface/50">
-                  <div className="flex flex-1 items-center gap-4">
-                    <span className="flex h-7 w-7 items-center justify-center rounded bg-ink text-xs font-bold text-white shadow-sm shrink-0">
-                      {i + 1}
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="font-medium text-ink">{e.nome}</span>
-                      {e.descricao && (
-                        <span className="text-xs text-ink/60 flex items-center gap-1 mt-0.5">
-                          <Info className="h-3 w-3" /> P.O.P configurado
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-end gap-2 sm:mt-0 mt-3 sm:w-auto w-full border-t sm:border-t-0 border-line/50 pt-2 sm:pt-0">
-                    <button
-                      onClick={() => setEtapaEditando(e)}
-                      className="flex items-center gap-1 text-sm text-ink/50 transition hover:text-brand px-2 py-1 rounded hover:bg-surface"
-                      title="Editar Etapa"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                      <span className="sm:hidden">Editar</span>
-                    </button>
-                    
-                    <button
-                      onClick={() => handleExcluir(e.id, e.nome)}
-                      disabled={excluindoId === e.id}
-                      className="flex items-center gap-1 text-sm text-ink/50 transition hover:text-danger disabled:opacity-50 px-2 py-1 rounded hover:bg-surface"
-                      title="Excluir Etapa"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sm:hidden">Excluir</span>
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            
+            <DndContext 
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext 
+                items={lista.map(i => i.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="divide-y divide-line">
+                  {lista.map((e, i) => (
+                    <SortableItem 
+                      key={e.id}
+                      id={e.id}
+                      e={e}
+                      i={i}
+                      onEdit={setEtapaEditando}
+                      onDelete={handleExcluir}
+                      excluindoId={excluindoId}
+                    />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
           </div>
         </CardContent>
       </Card>

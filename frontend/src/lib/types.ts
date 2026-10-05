@@ -23,6 +23,7 @@ export interface EtapaResumo {
   itens: EtapaItemResumo[];
   problemaExtraDescricao?: string | null;
   problemaExtraFotoUrl?: string | null;
+  problemaExtraFotoDuplicadaOriginalPrefixo?: string | null;
 }
 
 export interface EtapaItemResumo {

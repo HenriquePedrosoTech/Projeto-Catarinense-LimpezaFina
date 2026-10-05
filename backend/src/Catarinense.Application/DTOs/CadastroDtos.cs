@@ -14,3 +14,5 @@ public record CadastrarEtapaPadraoRequest(string Nome, int Ordem, string? Descri
 public record EtapaItemPadraoDto(Guid? Id, string Texto, int Ordem, string? Descricao, string? EnquadramentoFoto, bool Obrigatorio);
 public record EtapaPadraoResumoDto(Guid Id, string Nome, string? Descricao, string? LinkVideo, int Ordem, bool Ativo, bool Obrigatoria, IReadOnlyList<EtapaItemPadraoDto>? Itens);
 public record EditarEtapaPadraoRequest(Guid Id, string Nome, int Ordem, string? Descricao, string? LinkVideo, bool Obrigatoria, IReadOnlyList<EtapaItemPadraoDto>? Itens);
+
+public record ReordenarEtapaPadraoRequest(Guid Id, int Ordem);

@@ -195,22 +195,48 @@ export default function AvaliarLimpezaPage() {
                           )}
                         </div>
                       )}
-                      {etapa.fotos.length === 0 && (
-                        <p className="text-sm text-ink/40">Sem fotos registradas.</p>
+                      {(!etapa.itens || etapa.itens.length === 0) && (
+                        <p className="text-sm text-ink/40">Sem itens registrados.</p>
                       )}
-                      {etapa.fotos.map((url) => {
-                        const urlCompleta = resolverUrlFoto(url);
-                        return (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            key={url}
-                            src={urlCompleta}
-                            alt="Evidência"
-                            onClick={() => abrir(urlCompleta)}
-                            className="h-28 w-28 shrink-0 cursor-zoom-in rounded-md border border-line object-cover transition hover:opacity-80"
-                          />
-                        );
-                      })}
+                      
+                      <div className="flex flex-col gap-3 w-full mt-2">
+                        {etapa.itens?.map((item) => (
+                          <div key={item.id} className={`p-3 rounded-lg border ${item.concluida ? 'border-success/20 bg-success/5' : 'border-line bg-surface/30'}`}>
+                            <div className="flex gap-2">
+                              {item.concluida ? (
+                                <Check className="w-4 h-4 text-success mt-0.5 shrink-0" />
+                              ) : (
+                                <div className="w-4 h-4 rounded-sm border-2 border-line mt-0.5 shrink-0" />
+                              )}
+                              <div className="flex-1">
+                                <p className={`text-sm font-medium ${item.concluida ? 'text-ink' : 'text-ink/60'}`}>{item.texto}</p>
+                                
+                                {item.concluida && (item.status || item.funcionalidade || item.relatoProblema) && (
+                                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                    {item.status && item.status !== "N/A" && (
+                                      <div><span className="font-semibold opacity-70">Status:</span> {item.status}</div>
+                                    )}
+                                    {item.funcionalidade && item.funcionalidade !== "N/A" && (
+                                      <div><span className="font-semibold opacity-70">Funcionalidade:</span> {item.funcionalidade}</div>
+                                    )}
+                                    {item.relatoProblema && (
+                                      <div className="col-span-2 text-danger"><span className="font-bold">Problema:</span> {item.relatoProblema}</div>
+                                    )}
+                                  </div>
+                                )}
+                                
+                                {item.concluida && item.fotoUrl && (
+                                  <div className="mt-2">
+                                    <button onClick={() => abrir(resolverUrlFoto(item.fotoUrl!))} className="block cursor-zoom-in">
+                                      <img src={resolverUrlFoto(item.fotoUrl)} alt="Evidência do item" className="h-20 w-20 object-cover rounded border border-line hover:opacity-80 transition" />
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

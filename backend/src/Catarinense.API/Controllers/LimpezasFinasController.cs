@@ -1,3 +1,4 @@
+using Catarinense.Application.UseCases;
 ﻿using System.Security.Claims;
 using Catarinense.API.Contracts;
 using Catarinense.Application.DTOs;
@@ -118,6 +119,17 @@ public class LimpezasFinasController : ControllerBase
     }
 
     [HttpDelete("{id:guid}/etapas/{etapaPadraoId:guid}/foto")]
+    
+    [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}/desmarcar")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> DesmarcarItemExecucao(
+        Guid id, Guid etapaPadraoId, Guid itemId,
+        [FromServices] IDesmarcarItemExecucaoUseCase useCase)
+    {
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, itemId, UsuarioLogadoId(), User.IsInRole("Administrador"));
+        return Ok(resultado);
+    }
+
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> RemoverFotoEtapa(
         Guid id, Guid etapaPadraoId, [FromQuery] string urlArquivo)
     {

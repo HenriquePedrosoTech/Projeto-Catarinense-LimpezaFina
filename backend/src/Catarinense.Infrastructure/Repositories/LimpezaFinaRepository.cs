@@ -39,7 +39,7 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
             query = query.Where(l => l.IniciadaEm >= dataInicio.Value);
 
         if (dataFim.HasValue)
-            query = query.Where(l => l.IniciadaEm <= dataFim.Value);
+            query = query.Where(l => l.IniciadaEm < dataFim.Value.Date.AddDays(1));
 
         if (status.HasValue)
             query = query.Where(l => l.Status == status.Value);

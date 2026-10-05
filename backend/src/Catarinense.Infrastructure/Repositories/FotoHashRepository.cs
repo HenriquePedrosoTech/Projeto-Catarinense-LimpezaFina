@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Catarinense.Domain.Entities;
 using Catarinense.Domain.Interfaces;
 using Catarinense.Infrastructure.Data;
@@ -15,5 +15,10 @@ public class FotoHashRepository : RepositorioBase<FotoHash>, IFotoHashRepository
     public async Task<bool> ExisteHashAsync(string hash)
     {
         return await DbSet.AnyAsync(f => f.Hash == hash);
+    }
+
+    public async Task<FotoHash?> ObterPorHashAsync(string hash)
+    {
+        return await DbSet.FirstOrDefaultAsync(f => f.Hash == hash);
     }
 }

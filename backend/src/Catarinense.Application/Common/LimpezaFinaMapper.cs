@@ -1,4 +1,4 @@
-﻿using Catarinense.Application.DTOs;
+using Catarinense.Application.DTOs;
 using Catarinense.Domain.Entities;
 using Catarinense.Domain.Interfaces;
 using Catarinense.Domain.Enums;
@@ -41,8 +41,8 @@ public static class LimpezaFinaMapper
                         i.Funcionalidade == StatusFuncionalidade.Pendente ? null : (i.Funcionalidade == StatusFuncionalidade.ComDefeito ? "Com Defeito" : "OK / Funcional"),
                         i.RelatoProblema,
                         i.FotoUrl,
-                        i.Concluida, itemPadrao?.Obrigatorio ?? true
-                    );
+                        i.Concluida, itemPadrao?.Obrigatorio ?? true,
+                i.FotoDuplicadaOriginalPrefixo);
                 }).OrderBy(i => i.Ordem).ToList();
 
                 return new EtapaResumoDto(
@@ -53,7 +53,8 @@ public static class LimpezaFinaMapper
                     etapaPadrao?.Ordem ?? 0,
                     e.EstaConcluida(),
                     e.Fotos.Select(f => f.UrlArquivo).ToList(),
-                    itensExecucao, etapaPadrao?.Obrigatoria ?? true, e.ProblemaExtraDescricao, e.ProblemaExtraFotoUrl);
+                    itensExecucao, etapaPadrao?.Obrigatoria ?? true, e.ProblemaExtraDescricao, e.ProblemaExtraFotoUrl,
+                e.ProblemaExtraFotoDuplicadaOriginalPrefixo);
             })
             .ToList();
 

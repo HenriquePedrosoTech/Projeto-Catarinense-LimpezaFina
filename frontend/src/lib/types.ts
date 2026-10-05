@@ -35,6 +35,7 @@ export interface EtapaItemResumo {
   funcionalidade: string | null;
   relatoProblema: string | null;
   fotoUrl: string | null;
+  fotoDuplicadaPrefixo?: string | null;
   concluida: boolean;
   obrigatorio?: boolean;
 }

@@ -51,20 +51,29 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
             throw new DomainException("Funcionalidade do item invalida.");
 
         string? fotoUrlFinal = null;
+        string? fotoDuplicadaOriginalPrefixo = null;
         if (fotoBytes != null && fotoBytes.Length > 0)
         {
             using var sha256 = System.Security.Cryptography.SHA256.Create();
             var hashBytes = sha256.ComputeHash(fotoBytes);
             var hashStr = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
 
-            if (await _fotoHashRepository.ExisteHashAsync(hashStr))
-                throw new DomainException("Esta foto ja foi enviada anteriormente. O reuso de fotos nao e permitido.");
+            var fotoExistente = await _fotoHashRepository.ObterPorHashAsync(hashStr);
 
-            fotoUrlFinal = await _armazenamentoArquivoService.SalvarFotoAsync(new MemoryStream(fotoBytes), fotoNome!, fotoContentType!, "evidencia");
-            await _fotoHashRepository.AdicionarAsync(new Catarinense.Domain.Entities.FotoHash(hashStr, fotoUrlFinal));
+            if (fotoExistente != null)
+            {
+                fotoDuplicadaOriginalPrefixo = fotoExistente.PrefixoOrigem ?? "Desconhecido";
+                fotoUrlFinal = fotoExistente.Url;
+            }
+            else
+            {
+                var onibusOriginal = await _onibusRepository.ObterPorIdAsync(limpeza.OnibusId);
+                fotoUrlFinal = await _armazenamentoArquivoService.SalvarFotoAsync(new MemoryStream(fotoBytes), fotoNome!, fotoContentType!, "evidencia");
+                await _fotoHashRepository.AdicionarAsync(new Catarinense.Domain.Entities.FotoHash(hashStr, fotoUrlFinal, onibusOriginal?.Prefixo));
+            }
         }
 
-        itemExecucao.RegistrarExecucao(statusEnum, funcEnum, relatoProblema, fotoUrlFinal);
+        itemExecucao.RegistrarExecucao(statusEnum, funcEnum, relatoProblema, fotoUrlFinal, fotoDuplicadaOriginalPrefixo);
         etapaExecucao.VerificarConclusao();
 
         _limpezaFinaRepository.Atualizar(limpeza);

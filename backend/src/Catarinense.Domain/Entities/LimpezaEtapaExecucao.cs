@@ -9,6 +9,7 @@ public class LimpezaEtapaExecucao : EntidadeBase
     public DateTime? ConcluidaEm { get; private set; }
     public string? ProblemaExtraDescricao { get; private set; }
     public string? ProblemaExtraFotoUrl { get; private set; }
+    public string? ProblemaExtraFotoDuplicadaOriginalPrefixo { get; private set; }
 
     private readonly List<FotoEtapa> _fotos = new();
     public IReadOnlyCollection<FotoEtapa> Fotos => _fotos.AsReadOnly();
@@ -77,10 +78,11 @@ public class LimpezaEtapaExecucao : EntidadeBase
     }
 
 
-    public void RelatarProblemaExtra(string descricao, string? fotoUrl)
+    public void RelatarProblemaExtra(string descricao, string? fotoUrl, string? fotoDuplicadaOriginalPrefixo = null)
     {
         if (string.IsNullOrWhiteSpace(descricao)) throw new DomainException("A descricao do problema e obrigatoria.");
         ProblemaExtraDescricao = descricao;
         ProblemaExtraFotoUrl = fotoUrl;
+        ProblemaExtraFotoDuplicadaOriginalPrefixo = fotoDuplicadaOriginalPrefixo;
     }
 }

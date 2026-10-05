@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Catarinense.Domain.Entities;
 
 namespace Catarinense.Domain.Interfaces;
@@ -6,4 +6,5 @@ namespace Catarinense.Domain.Interfaces;
 public interface IFotoHashRepository : IRepositorioBase<FotoHash>
 {
     Task<bool> ExisteHashAsync(string hash);
+    Task<FotoHash?> ObterPorHashAsync(string hash);
 }

@@ -1,4 +1,4 @@
-﻿using Catarinense.Domain.Enums;
+using Catarinense.Domain.Enums;
 using Catarinense.Domain.Exceptions;
 
 namespace Catarinense.Domain.Entities;
@@ -20,6 +20,7 @@ public class EtapaItemExecucao : EntidadeBase
     
     public string? RelatoProblema { get; private set; }
     public string? FotoUrl { get; private set; }
+    public string? FotoDuplicadaOriginalPrefixo { get; private set; }
     public bool Concluida { get; private set; }
 
     protected EtapaItemExecucao() { }
@@ -31,7 +32,7 @@ public class EtapaItemExecucao : EntidadeBase
         Obrigatorio = obrigatorio;
     }
 
-    public void RegistrarExecucao(StatusItemChecklist status, StatusFuncionalidade func, string? relato, string? fotoUrl)
+    public void RegistrarExecucao(StatusItemChecklist status, StatusFuncionalidade func, string? relato, string? fotoUrl, string? fotoDuplicadaOriginalPrefixo = null)
     {
         if (status == StatusItemChecklist.Pendente)
             throw new DomainException("Status invalido para registro.");
@@ -51,6 +52,7 @@ public class EtapaItemExecucao : EntidadeBase
         if (!string.IsNullOrWhiteSpace(fotoUrl))
         {
             FotoUrl = fotoUrl;
+            FotoDuplicadaOriginalPrefixo = fotoDuplicadaOriginalPrefixo;
         }
 
         Concluida = true;
@@ -62,6 +64,7 @@ public class EtapaItemExecucao : EntidadeBase
         Funcionalidade = StatusFuncionalidade.Pendente;
         RelatoProblema = null;
         FotoUrl = null;
+        FotoDuplicadaOriginalPrefixo = null;
         Concluida = false;
     }
 }

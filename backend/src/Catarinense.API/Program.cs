@@ -120,6 +120,14 @@ using (var scope = app.Services.CreateScope())
     try {
         await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraFotoUrl VARCHAR(1000) NULL;");
     } catch { /* ignora se a coluna ja existir */ }
+
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraFotoDuplicadaOriginalPrefixo VARCHAR(255) NULL;");
+    } catch { /* ignora se a coluna ja existir */ }
+
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapa_item_execucoes ADD COLUMN FotoDuplicadaOriginalPrefixo VARCHAR(255) NULL;");
+    } catch { /* ignora se a coluna ja existir */ }
 }
 
 // ---------- Seed do primeiro Administrador (só roda se SeedAdmin:Habilitado = true) ----------
@@ -158,7 +166,13 @@ app.Use(async (context, next) =>
 app.UseRateLimiter();
 
 // Serve as fotos salvas em wwwroot/uploads (ArmazenamentoArquivoLocalService) como arquivos estáticos.
-app.UseStaticFiles();
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads", "fotos-limpeza");
+Directory.CreateDirectory(uploadsPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads/fotos-limpeza"
+});
 
 app.UseCors(CorsPolicyFrontend);
 

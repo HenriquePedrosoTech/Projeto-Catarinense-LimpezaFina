@@ -51,14 +51,6 @@ public class EtapasPadraoController : ControllerBase
         return Ok(etapa);
     }
 
-    [HttpPut("reordenar")]
-    [Authorize(Roles = "Administrador")]
-    public async Task<IActionResult> Reordenar([FromBody] List<ReordenarEtapaPadraoRequest> request, [FromServices] IReordenarEtapasPadraoUseCase useCase)
-    {
-        await useCase.ExecutarAsync(request);
-        return NoContent();
-    }
-
     /// <summary>Exclui uma etapa do checklist. Uso: remover dado de teste.</summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Administrador")]

@@ -35,11 +35,7 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
     {
         var query = DbSet.AsQueryable();
 
-        if (dataInicio.HasValue)
-            query = query.Where(l => l.IniciadaEm >= dataInicio.Value);
-
-        if (dataFim.HasValue)
-            query = query.Where(l => l.IniciadaEm < dataFim.Value.Date.AddDays(1));
+        if (dataInicio.HasValue) { var inicioUtc = dataInicio.Value.Date.AddHours(3); query = query.Where(l => l.IniciadaEm >= inicioUtc); } if (dataFim.HasValue) { var fimUtc = dataFim.Value.Date.AddDays(1).AddHours(3); query = query.Where(l => l.IniciadaEm < fimUtc); }
 
         if (status.HasValue)
             query = query.Where(l => l.Status == status.Value);
@@ -51,19 +47,19 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
     }
 
     // Sobrescreve ObterPorIdAsync para sempre trazer as etapas/fotos junto,
-    // já que praticamente todo uso desse agregado precisa dessas coleções carregadas.
+    // jÃ¡ que praticamente todo uso desse agregado precisa dessas coleÃ§Ãµes carregadas.
     public override async Task<LimpezaFina?> ObterPorIdAsync(Guid id) => await ObterComEtapasAsync(id);
 
     /// <summary>
-    /// Além do comportamento padrão (ver RepositorioBase.Atualizar), varre o
-    /// agregado inteiro procurando por fotos que ainda não estão sendo rastreadas
-    /// pelo EF (foram criadas em memória agora, dentro de uma coleção de uma
-    /// entidade que JÁ era rastreada) e marca cada uma explicitamente como
-    /// "Added". Isso é necessário porque o EF Core, ao descobrir sozinho uma
-    /// entidade nova dentro de uma coleção (em vez de via Add() explícito),
-    /// decide Added vs. Modified olhando se a chave já tem valor — e como
+    /// AlÃ©m do comportamento padrÃ£o (ver RepositorioBase.Atualizar), varre o
+    /// agregado inteiro procurando por fotos que ainda nÃ£o estÃ£o sendo rastreadas
+    /// pelo EF (foram criadas em memÃ³ria agora, dentro de uma coleÃ§Ã£o de uma
+    /// entidade que JÃ era rastreada) e marca cada uma explicitamente como
+    /// "Added". Isso Ã© necessÃ¡rio porque o EF Core, ao descobrir sozinho uma
+    /// entidade nova dentro de uma coleÃ§Ã£o (em vez de via Add() explÃ­cito),
+    /// decide Added vs. Modified olhando se a chave jÃ¡ tem valor â€” e como
     /// geramos o Guid no construtor, ele erra e assume Modified. Sendo
-    /// explícitos aqui, eliminamos essa ambiguidade de vez.
+    /// explÃ­citos aqui, eliminamos essa ambiguidade de vez.
     /// </summary>
     public override void Atualizar(LimpezaFina entidade)
     {

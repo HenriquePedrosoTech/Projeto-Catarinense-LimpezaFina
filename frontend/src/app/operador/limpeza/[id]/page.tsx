@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 "use client";
 
 import { useEffect, useState, useRef } from "react";
@@ -479,3 +478,5 @@ export default function ChecklistLimpezaPage() {
     </div>
   );
 }
+
+export const runtime = 'edge';

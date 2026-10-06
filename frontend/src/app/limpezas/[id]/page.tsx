@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 "use client";
 
 import { useEffect, useState } from "react";
@@ -169,3 +168,5 @@ export default function DetalhesPublicosPage() {
     </div>
   );
 }
+
+export const runtime = 'edge';

@@ -95,7 +95,7 @@ export default function OperadorHomePage() {
           {limpezasFiltradas.map((l) => (
             <Link
               key={l.id}
-              href={l.status === "EmAndamento" ? `/operador/limpeza/detalhes?id=${l.id}` : `/limpezas/detalhes?id=${l.id}`}
+              href={l.status === "EmAndamento" ? `/operador/limpeza/${l.id}` : `/limpezas/${l.id}`}
             >
               <Card
                 className={`group transition-all active:scale-[0.98] ${

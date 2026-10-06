@@ -44,7 +44,7 @@ public class EnviarNotificacaoLimpezaUseCase : IEnviarNotificacaoLimpezaUseCase
         if (request.DestinatariosEmail.Count == 0)
             throw new Exceptions.NaoAutorizadoException("Informe ao menos um destinatário para a notificação.");
 
-        var link = $"{request.UrlBaseDetalhes.TrimEnd('/')}/detalhes?id={limpeza.Id}";
+        var link = $"{request.UrlBaseDetalhes.TrimEnd('/')}/{limpeza.Id}";
 
         var corpo = MontarCorpoHtml(onibus.Prefixo, limpeza.NumeroOS, operador.Nome, link);
 

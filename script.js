@@ -1,4 +1,6 @@
-"use client";
+const fs = require('fs');
+
+const content = `"use client";
 
 import { useEffect, useState, type FormEvent } from "react";
 import { api, ApiError } from "@/lib/api";
@@ -61,9 +63,9 @@ function SortableEtapaItem({
     <li
       ref={setNodeRef}
       style={style}
-      className={`flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-4 bg-white ${
+      className={\`flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-4 bg-white \${
         isDragging ? "shadow-lg border-brand relative" : "hover:bg-surface/50 border-b border-line last:border-b-0"
-      }`}
+      }\`}
     >
       <div className="flex flex-1 items-center gap-4">
         <button
@@ -209,7 +211,7 @@ export function EtapasSection({ token }: { token: string }) {
       <ConfirmDialog 
         aberto={confirmDelete.aberto}
         titulo="Excluir Etapa Padrao"
-        mensagem={`Tem certeza que deseja excluir a etapa "${confirmDelete.nomeEtapa}"?`}
+        mensagem={\`Tem certeza que deseja excluir a etapa "\${confirmDelete.nomeEtapa}"?\`}
         tipo="danger"
         textoConfirmar="Excluir"
         onClose={() => setConfirmDelete({ ...confirmDelete, aberto: false })}
@@ -309,3 +311,6 @@ export function EtapasSection({ token }: { token: string }) {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('frontend/src/components/admin/cadastros/EtapasSection.tsx', content, 'utf8');

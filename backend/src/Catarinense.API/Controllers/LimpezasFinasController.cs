@@ -78,27 +78,24 @@ public class LimpezasFinasController : ControllerBase
     [Authorize(Roles = "Operador,Administrador")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> RegistrarItemExecucao(
         Guid id, Guid etapaPadraoId, Guid itemId,
-        [FromForm] string status,
-        [FromForm] string funcionalidade,
-        [FromForm] string? relatoProblema,
-        IFormFile? arquivo,
+        [FromForm] RegistrarItemExecucaoForm form,
         [FromServices] IRegistrarItemExecucaoUseCase useCase)
     {
         byte[]? fotoBytes = null;
         string? fotoNome = null;
         string? fotoContentType = null;
 
-        if (arquivo != null && arquivo.Length > 0)
+        if (form.Arquivo != null && form.Arquivo.Length > 0)
         {
             using var memoryStream = new MemoryStream();
-            await arquivo.CopyToAsync(memoryStream);
+            await form.Arquivo.CopyToAsync(memoryStream);
             fotoBytes = memoryStream.ToArray();
-            fotoNome = arquivo.FileName;
-            fotoContentType = arquivo.ContentType;
+            fotoNome = form.Arquivo.FileName;
+            fotoContentType = form.Arquivo.ContentType;
         }
 
         var resultado = await useCase.ExecutarAsync(
-            id, etapaPadraoId, itemId, status, funcionalidade, relatoProblema, 
+            id, etapaPadraoId, itemId, form.Status, form.Funcionalidade, form.RelatoProblema, 
             fotoBytes, fotoNome, fotoContentType, UsuarioLogadoId(), User.IsInRole("Administrador"));
             
         return Ok(resultado);

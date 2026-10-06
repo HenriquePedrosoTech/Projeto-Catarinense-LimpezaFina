@@ -8,5 +8,11 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5080
  * imagem quebra silenciosamente.
  */
 export function resolverUrlFoto(url: string): string {
-  return url.startsWith("http") ? url : `${API_URL}${url}`;
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  
+  const baseUrl = API_URL.endsWith("/") ? API_URL.slice(0, -1) : API_URL;
+  const path = url.startsWith("/") ? url : `/${url}`;
+  
+  return `${baseUrl}${path}`;
 }

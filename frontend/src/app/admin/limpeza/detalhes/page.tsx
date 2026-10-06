@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
 import { resolverUrlFoto } from "@/lib/fotos";
@@ -15,8 +15,17 @@ import { Check, X, ArrowLeft, Mail, Info, User, Calendar, BusFront, AlertTriangl
 import type { LimpezaFinaDetalhes } from "@/lib/types";
 
 export default function AvaliarLimpezaPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <AvaliarLimpezaPageContent />
+    </Suspense>
+  );
+}
+
+function AvaliarLimpezaPageContent() {
   const { usuario } = useAuth();
-  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") as string;
   const router = useRouter();
 
   const [limpeza, setLimpeza] = useState<LimpezaFinaDetalhes | null>(null);

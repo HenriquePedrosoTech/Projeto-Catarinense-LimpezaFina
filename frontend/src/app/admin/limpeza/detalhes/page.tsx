@@ -401,4 +401,4 @@ export default function AvaliarLimpezaPage() {
     </div>
   );
 }
-export const runtime = 'edge';
+

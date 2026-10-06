@@ -16,7 +16,16 @@ import type { LimpezaFinaDetalhes } from "@/lib/types";
  * O acesso é protegido apenas pela imprevisibilidade do GUID na URL.
  */
 export default function DetalhesPublicosPage() {
-  const { id } = useParams<{ id: string }>();
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <DetalhesPublicosPageContent />
+    </Suspense>
+  );
+}
+
+function DetalhesPublicosPageContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id') as string;
   const [limpeza, setLimpeza] = useState<LimpezaFinaDetalhes | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const { urlAberta, abrir, fechar } = useLightbox();
@@ -169,4 +178,4 @@ export default function DetalhesPublicosPage() {
   );
 }
 
-export const runtime = 'edge';
+

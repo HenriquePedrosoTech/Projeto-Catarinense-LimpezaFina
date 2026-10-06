@@ -31,7 +31,7 @@ export default function NovaLimpezaPage() {
 
     try {
       const limpeza = await api.iniciarLimpeza(usuario.token, prefStr);
-      router.push(`/operador/limpeza/${limpeza.id}`);
+      router.push(`/operador/limpeza/detalhes?id=${limpeza.id}`);
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : "Falha ao iniciar limpeza.");
       setCarregando(false);

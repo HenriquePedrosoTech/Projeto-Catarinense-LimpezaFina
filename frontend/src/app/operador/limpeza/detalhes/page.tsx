@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState, useRef, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { LimpezaFinaDetalhes } from "@/lib/types";
@@ -11,7 +11,16 @@ import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, Info, X, Came
 import { EtapaCard } from "@/components/EtapaCard";
 
 export default function ChecklistLimpezaPage() {
-  const { id } = useParams() as { id: string };
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <ChecklistLimpezaPageContent />
+    </Suspense>
+  );
+}
+
+function ChecklistLimpezaPageContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") as string;
   const { usuario } = useAuth();
   const router = useRouter();
 
@@ -477,6 +486,4 @@ export default function ChecklistLimpezaPage() {
       )}
     </div>
   );
-}
 
-export const runtime = 'edge';

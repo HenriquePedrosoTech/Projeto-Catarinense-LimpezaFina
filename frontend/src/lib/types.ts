@@ -1,4 +1,4 @@
-export type Perfil = "Operador" | "Administrador";
+﻿export type Perfil = "Operador" | "Administrador";
 
 export type StatusLimpeza = "EmAndamento" | "Concluida" | "Aprovada" | "Reprovada";
 
@@ -19,10 +19,12 @@ export interface EtapaResumo {
   linkVideo?: string;
   ordem: number;
   concluida: boolean;
+  fotoDuplicadaPrefixo?: string | null;
   fotos: string[];
   itens: EtapaItemResumo[];
   problemaExtraDescricao?: string | null;
   problemaExtraFotoUrl?: string | null;
+  problemaExtraFotoDuplicadaPrefixo?: string | null;
 }
 
 export interface EtapaItemResumo {
@@ -36,6 +38,7 @@ export interface EtapaItemResumo {
   relatoProblema: string | null;
   fotoUrl: string | null;
   concluida: boolean;
+  fotoDuplicadaPrefixo?: string | null;
   obrigatorio?: boolean;
 }
 

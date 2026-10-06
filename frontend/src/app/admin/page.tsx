@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
       {limpezas && limpezas.length > 0 && (
         <div className="grid gap-3">
           {limpezas.map((l) => (
-            <Link key={l.id} href={`/admin/limpeza/${l.id}`}>
+            <Link key={l.id} href={`/admin/limpeza/detalhes?id=${l.id}`}>
               <Card className="group transition-all hover:border-brand/40 hover:shadow-md">
                 <CardContent className="flex items-center justify-between p-4 sm:p-5">
                   <div className="flex items-center gap-4 sm:gap-6">

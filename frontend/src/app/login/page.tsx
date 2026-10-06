@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,7 @@ import { ApiError } from "@/lib/api";
 import { Logo, LogoJCA } from "@/components/Logo";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const { entrar } = useAuth();
@@ -15,6 +16,7 @@ export default function LoginPage() {
 
   const [matricula, setMatricula] = useState("");
   const [senha, setSenha] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -123,11 +125,20 @@ export default function LoginPage() {
             <Input
               id="senha"
               label="Senha"
-              type="password"
+              type={mostrarSenha ? "text" : "password"}
               required
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               placeholder="••••••••"
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setMostrarSenha(!mostrarSenha)}
+                  className="text-ink/40 hover:text-ink/60 focus:outline-none"
+                >
+                  {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              }
             />
 
             {erro && (

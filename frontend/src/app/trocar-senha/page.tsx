@@ -6,6 +6,7 @@ import { useAuth, useRequireAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function TrocarSenhaPage() {
   const { usuario, carregando } = useRequireAuth(undefined, true);
@@ -14,6 +15,8 @@ export default function TrocarSenhaPage() {
 
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
 
@@ -60,11 +63,21 @@ export default function TrocarSenhaPage() {
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="senha">Nova Senha</label>
             <Input
               id="senha"
-              type="password"
+              type={mostrarSenha ? "text" : "password"}
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               disabled={salvando}
               required
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setMostrarSenha(!mostrarSenha)}
+                  className="text-ink/40 hover:text-ink/60 focus:outline-none"
+                  tabIndex={-1}
+                >
+                  {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              }
             />
           </div>
 
@@ -72,11 +85,21 @@ export default function TrocarSenhaPage() {
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="confirmarSenha">Confirmar Nova Senha</label>
             <Input
               id="confirmarSenha"
-              type="password"
+              type={mostrarConfirmarSenha ? "text" : "password"}
               value={confirmarSenha}
               onChange={(e) => setConfirmarSenha(e.target.value)}
               disabled={salvando}
               required
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                  className="text-ink/40 hover:text-ink/60 focus:outline-none"
+                  tabIndex={-1}
+                >
+                  {mostrarConfirmarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              }
             />
           </div>
 

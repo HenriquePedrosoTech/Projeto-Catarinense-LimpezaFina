@@ -44,7 +44,7 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
     public async Task<LimpezaFinaDetalhesDto> ExecutarAsync(FinalizarLimpezaFinaRequest request)
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(request.LimpezaFinaId)
-            ?? throw new NotFoundException("Registro de limpeza fina não encontrado.");
+            ?? throw new NotFoundException("Registro de limpeza fina nï¿½o encontrado.");
 
         var etapas = await _etapaPadraoRepository.ListarAsync();
         limpeza.Finalizar(etapas);
@@ -69,18 +69,18 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
             
             var link = string.IsNullOrWhiteSpace(request.UrlBaseDetalhes) 
                 ? "" 
-                : $"{request.UrlBaseDetalhes.TrimEnd('/')}/{limpeza.Id}";
+                : $"{request.UrlBaseDetalhes.TrimEnd('/')}/detalhes?id={limpeza.Id}";
 
             var corpoHtml = $@"
-                <h2>Limpeza Fina Concluída</h2>
-                <p>O operador <strong>{nomeOperador}</strong> finalizou a limpeza fina do ônibus <strong>{prefixo}</strong>.</p>
+                <h2>Limpeza Fina Concluï¿½da</h2>
+                <p>O operador <strong>{nomeOperador}</strong> finalizou a limpeza fina do ï¿½nibus <strong>{prefixo}</strong>.</p>
                 <p>Acesse o painel para revisar as fotos e aprovar/reprovar a limpeza.</p>
                 {(string.IsNullOrEmpty(link) ? "" : $"<p><a href='{link}'>Clique aqui para ver os detalhes</a></p>")}
             ";
 
             var msg = new EmailMensagem(
                 emailsAdmins,
-                $"Aviso: Limpeza Fina Concluída - Ônibus {prefixo}",
+                $"Aviso: Limpeza Fina Concluï¿½da - ï¿½nibus {prefixo}",
                 corpoHtml
             );
 
@@ -105,7 +105,7 @@ public class FinalizarLimpezaFinaUseCase : IFinalizarLimpezaFinaUseCase
         }
         else
         {
-            _logger.LogWarning("Nenhum email disparado pois a lista de administradores ativos com e-mail é vazia!");
+            _logger.LogWarning("Nenhum email disparado pois a lista de administradores ativos com e-mail ï¿½ vazia!");
         }
 
         return await _detalhesDtoBuilder.ConstruirAsync(limpeza);

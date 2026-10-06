@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
-    "build": "next build && mkdir -p .vercel/output && cp -r out .vercel/output/static",
+    "build": "next build",
     "start": "next start -H 0.0.0.0",
     "lint": "next lint",
     "cap:add": "cap add android",

@@ -16,18 +16,27 @@ public class CadastrarEtapaPadraoUseCase : ICadastrarEtapaPadraoUseCase
 
     public async Task<EtapaPadraoResumoDto> ExecutarAsync(CadastrarEtapaPadraoRequest request)
     {
-        var etapa = new EtapaPadrao(request.Nome, request.Ordem, request.Descricao, request.LinkVideo, request.Obrigatoria);
+        var etapa = new EtapaPadrao(request.Nome, request.Ordem, request.Descricao, request.LinkVideo, request.Obrigatoria, request.ExigeFoto);
         if (request.Itens != null)
         {
             foreach (var item in request.Itens.OrderBy(i => i.Ordem))
             {
-                etapa.AdicionarItem(item.Texto, item.Ordem, item.Descricao, item.EnquadramentoFoto, item.Obrigatorio);
+                etapa.AdicionarItem(item.Texto, item.Ordem, item.Descricao, item.EnquadramentoFoto, item.Obrigatorio, item.ExigeFoto);
             }
         }
 
         await _etapaPadraoRepository.AdicionarAsync(etapa);
         await _etapaPadraoRepository.SalvarAlteracoesAsync();
 
-        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo, etapa.Obrigatoria, etapa.Itens.Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio)).ToList());
+        return new EtapaPadraoResumoDto(
+            etapa.Id,
+            etapa.Nome,
+            etapa.Descricao,
+            etapa.LinkVideo,
+            etapa.Ordem,
+            etapa.Ativo,
+            etapa.Obrigatoria,
+            etapa.ExigeFoto,
+            etapa.Itens.Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio, i.ExigeFoto)).ToList());
     }
 }

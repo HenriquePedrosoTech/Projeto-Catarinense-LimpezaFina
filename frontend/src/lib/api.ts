@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   EtapaPadraoResumo,
   LimpezaFinaDetalhes,
   LimpezaFinaResumo,
@@ -39,7 +39,7 @@ async function request<T>(
       const corpo = await resposta.json();
       if (corpo?.erro) mensagem = corpo.erro;
     } catch {
-      // corpo sem JSON (ex.: 204 ou erro de rede) â€” mantÃ©m mensagem padrÃ£o
+      // corpo sem JSON (ex.: 204 ou erro de rede) — mantém mensagem padrão
     }
     throw new ApiError(mensagem, resposta.status);
   }
@@ -75,21 +75,26 @@ export const api = {
   desmarcarItemExecucao: (token: string, limpezaId: string, etapaPadraoId: string, itemId: string) =>
     request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/itens/${itemId}/desmarcar`, { method: "POST", token }),
   
+  alternarConclusaoEtapa: (token: string, limpezaId: string, etapaPadraoId: string, concluida: boolean) =>
+    request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/concluir?concluida=${concluida}`, { method: "POST", token }),
+
   registrarProblemaExtraEtapa: (limpezaId: string, etapaPadraoId: string, descricao: string, arquivo: File | null, token: string) => {
     const form = new FormData();
     form.append("descricao", descricao);
     if (arquivo) form.append("arquivo", arquivo);
     return request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/problema-extra`, { method: "POST", token, body: form });
   },
-    enviarItemExecucao: (token: string, limpezaId: string, etapaPadraoId: string, itemId: string, status: string, funcionalidade: string, relatoProblema: string | null, arquivo: File | null) => {
-      const form = new FormData();
-      form.append("status", status);
-      form.append("funcionalidade", funcionalidade);
-      if (relatoProblema) form.append("relatoProblema", relatoProblema);
-      if (arquivo) form.append("arquivo", arquivo);
-      return request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/itens/${itemId}`, { method: "POST", token, body: form });
-    },
-    enviarFotoEtapa: (token: string, limpezaId: string, etapaPadraoId: string, arquivo: File) => {
+
+  enviarItemExecucao: (token: string, limpezaId: string, etapaPadraoId: string, itemId: string, status: string, funcionalidade: string, relatoProblema: string | null, arquivo: File | null) => {
+    const form = new FormData();
+    form.append("status", status);
+    form.append("funcionalidade", funcionalidade);
+    if (relatoProblema) form.append("relatoProblema", relatoProblema);
+    if (arquivo) form.append("arquivo", arquivo);
+    return request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/itens/${itemId}`, { method: "POST", token, body: form });
+  },
+
+  enviarFotoEtapa: (token: string, limpezaId: string, etapaPadraoId: string, arquivo: File) => {
     const form = new FormData();
     form.append("arquivo", arquivo);
     return request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/etapas/${etapaPadraoId}/foto`, {
@@ -111,8 +116,6 @@ export const api = {
       { method: "POST", token }
     ),
 
-    
-  
   finalizarLimpeza: (token: string, limpezaId: string) =>
     request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/finalizar`, { method: "POST", token }),
 
@@ -163,18 +166,18 @@ export const api = {
   listarEtapasPadrao: (token: string) =>
     request<EtapaPadraoResumo[]>("/api/etapas-padrao", { token }),
 
-  cadastrarEtapaPadrao: (token: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria?: boolean, itens?: { texto: string; ordem: number; enquadramentoFoto?: string | null; obrigatorio?: boolean }[]) =>
+  cadastrarEtapaPadrao: (token: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria: boolean = true, exigeFoto: boolean = false, itens?: { texto: string; ordem: number; enquadramentoFoto?: string | null; obrigatorio?: boolean; exigeFoto?: boolean }[]) =>
     request<EtapaPadraoResumo>("/api/etapas-padrao", {
       method: "POST",
       token,
-      body: JSON.stringify({ nome, ordem, descricao, linkVideo, obrigatoria, itens }),
+      body: JSON.stringify({ nome, ordem, descricao, linkVideo, obrigatoria, exigeFoto, itens }),
     }),
 
-  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria?: boolean, itens?: { id?: string; texto: string; ordem: number; descricao?: string | null; enquadramentoFoto?: string | null; obrigatorio?: boolean }[]) =>
+  editarEtapaPadrao: (token: string, etapaId: string, nome: string, ordem: number, descricao?: string, linkVideo?: string, obrigatoria: boolean = true, exigeFoto: boolean = false, itens?: { id?: string; texto: string; ordem: number; descricao?: string | null; enquadramentoFoto?: string | null; obrigatorio?: boolean; exigeFoto?: boolean }[]) =>
     request<EtapaPadraoResumo>(`/api/etapas-padrao/${etapaId}`, {
       method: "PUT",
       token,
-      body: JSON.stringify({ nome, ordem, descricao, linkVideo, obrigatoria, itens }),
+      body: JSON.stringify({ nome, ordem, descricao, linkVideo, obrigatoria, exigeFoto, itens }),
     }),
 
   excluirEtapaPadrao: (token: string, etapaId: string) =>
@@ -227,6 +230,3 @@ export const api = {
   excluirUsuario: (token: string, usuarioId: string) =>
     request<void>(`/api/usuarios/${usuarioId}`, { method: "DELETE", token }),
 };
-
-
-

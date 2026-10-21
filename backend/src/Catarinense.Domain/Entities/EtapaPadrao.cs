@@ -9,6 +9,7 @@ public class EtapaPadrao : EntidadeBase
     public string? LinkVideo { get; private set; }
     public int Ordem { get; private set; }
     public bool Obrigatoria { get; private set; } = true;
+    public bool ExigeFoto { get; private set; } = false;
     public bool Ativo { get; private set; } = true;
 
     private readonly List<EtapaItemPadrao> _itens = new();
@@ -16,7 +17,7 @@ public class EtapaPadrao : EntidadeBase
 
     protected EtapaPadrao() { }
 
-    public EtapaPadrao(string nome, int ordem, string? descricao = null, string? linkVideo = null, bool obrigatoria = true)
+    public EtapaPadrao(string nome, int ordem, string? descricao = null, string? linkVideo = null, bool obrigatoria = true, bool exigeFoto = false)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new DomainException("O nome da etapa e obrigatorio.");
@@ -29,11 +30,12 @@ public class EtapaPadrao : EntidadeBase
         LinkVideo = string.IsNullOrWhiteSpace(linkVideo) ? null : linkVideo.Trim();
         Ordem = ordem;
         Obrigatoria = obrigatoria;
+        ExigeFoto = exigeFoto;
     }
 
     public void Desativar() => Ativo = false;
 
-    public void RenomearOuReordenar(string nome, int ordem, string? descricao = null, string? linkVideo = null, bool obrigatoria = true)
+    public void RenomearOuReordenar(string nome, int ordem, string? descricao = null, string? linkVideo = null, bool obrigatoria = true, bool exigeFoto = false)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new DomainException("O nome da etapa e obrigatorio.");
@@ -43,14 +45,15 @@ public class EtapaPadrao : EntidadeBase
         LinkVideo = string.IsNullOrWhiteSpace(linkVideo) ? null : linkVideo.Trim();
         Ordem = ordem;
         Obrigatoria = obrigatoria;
+        ExigeFoto = exigeFoto;
     }
 
-    public void AdicionarItem(string texto, int ordem, string? descricao = null, string? enquadramentoFoto = null, bool obrigatorio = true)
+    public void AdicionarItem(string texto, int ordem, string? descricao = null, string? enquadramentoFoto = null, bool obrigatorio = true, bool exigeFoto = false)
     {
-        _itens.Add(new EtapaItemPadrao(Id, texto, ordem, descricao, enquadramentoFoto, obrigatorio));
+        _itens.Add(new EtapaItemPadrao(Id, texto, ordem, descricao, enquadramentoFoto, obrigatorio, exigeFoto));
     }
 
-    public void SincronizarItens(IEnumerable<(Guid? Id, string Texto, int Ordem, string? Descricao, string? EnquadramentoFoto, bool Obrigatorio)> novosItens)
+    public void SincronizarItens(IEnumerable<(Guid? Id, string Texto, int Ordem, string? Descricao, string? EnquadramentoFoto, bool Obrigatorio, bool ExigeFoto)> novosItens)
     {
         var idsParaManter = novosItens.Where(x => x.Id.HasValue && x.Id.Value != Guid.Empty).Select(x => x.Id).ToHashSet();
 
@@ -66,12 +69,12 @@ public class EtapaPadrao : EntidadeBase
                 var existente = _itens.FirstOrDefault(i => i.Id == novo.Id.Value);
                 if (existente != null)
                 {
-                    existente.Atualizar(novo.Texto, novo.Ordem, novo.Descricao, novo.EnquadramentoFoto, novo.Obrigatorio);
+                    existente.Atualizar(novo.Texto, novo.Ordem, novo.Descricao, novo.EnquadramentoFoto, novo.Obrigatorio, novo.ExigeFoto);
                 }
             }
             else
             {
-                AdicionarItem(novo.Texto, novo.Ordem, novo.Descricao, novo.EnquadramentoFoto, novo.Obrigatorio);
+                AdicionarItem(novo.Texto, novo.Ordem, novo.Descricao, novo.EnquadramentoFoto, novo.Obrigatorio, novo.ExigeFoto);
             }
         }
     }

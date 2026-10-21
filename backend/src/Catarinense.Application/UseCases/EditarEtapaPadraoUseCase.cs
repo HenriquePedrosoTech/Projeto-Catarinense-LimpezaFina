@@ -19,16 +19,25 @@ public class EditarEtapaPadraoUseCase : IEditarEtapaPadraoUseCase
         var etapa = await _etapaPadraoRepository.ObterPorIdAsync(request.Id)
             ?? throw new NotFoundException("Etapa padrao nao encontrada.");
 
-        etapa.RenomearOuReordenar(request.Nome, request.Ordem, request.Descricao, request.LinkVideo, request.Obrigatoria);
+        etapa.RenomearOuReordenar(request.Nome, request.Ordem, request.Descricao, request.LinkVideo, request.Obrigatoria, request.ExigeFoto);
         if (request.Itens != null)
         {
-            var tuplas = request.Itens.Select(i => (i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio)).ToList();
+            var tuplas = request.Itens.Select(i => (i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio, i.ExigeFoto)).ToList();
             etapa.SincronizarItens(tuplas);
         }
 
         _etapaPadraoRepository.Atualizar(etapa);
         await _etapaPadraoRepository.SalvarAlteracoesAsync();
 
-        return new EtapaPadraoResumoDto(etapa.Id, etapa.Nome, etapa.Descricao, etapa.LinkVideo, etapa.Ordem, etapa.Ativo, etapa.Obrigatoria, etapa.Itens.Where(i => i.Ativo).Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio)).ToList());
+        return new EtapaPadraoResumoDto(
+            etapa.Id,
+            etapa.Nome,
+            etapa.Descricao,
+            etapa.LinkVideo,
+            etapa.Ordem,
+            etapa.Ativo,
+            etapa.Obrigatoria,
+            etapa.ExigeFoto,
+            etapa.Itens.Where(i => i.Ativo).Select(i => new EtapaItemPadraoDto(i.Id, i.Texto, i.Ordem, i.Descricao, i.EnquadramentoFoto, i.Obrigatorio, i.ExigeFoto)).ToList());
     }
 }

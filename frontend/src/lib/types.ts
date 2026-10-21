@@ -1,4 +1,4 @@
-﻿export type Perfil = "Operador" | "Administrador";
+export type Perfil = "Operador" | "Administrador";
 
 export type StatusLimpeza = "EmAndamento" | "Concluida" | "Aprovada" | "Reprovada";
 
@@ -13,6 +13,7 @@ export interface Usuario {
 
 export interface EtapaResumo {
   obrigatoria?: boolean;
+  exigeFoto?: boolean;
   etapaPadraoId: string;
   nome: string;
   descricao: string | null;
@@ -40,6 +41,7 @@ export interface EtapaItemResumo {
   concluida: boolean;
   fotoDuplicadaPrefixo?: string | null;
   obrigatorio?: boolean;
+  exigeFoto?: boolean;
 }
 
 export interface LimpezaFinaDetalhes {
@@ -79,6 +81,7 @@ export interface OnibusResumo {
 export interface EtapaItemPadraoResumo {
   id?: string;
   obrigatorio?: boolean;
+  exigeFoto?: boolean;
   texto: string;
   ordem: number;
   descricao?: string;
@@ -88,6 +91,7 @@ export interface EtapaItemPadraoResumo {
 export interface EtapaPadraoResumo {
   itens?: EtapaItemPadraoResumo[];
   obrigatoria?: boolean;
+  exigeFoto?: boolean;
   id: string;
   nome: string;
   descricao: string | null;

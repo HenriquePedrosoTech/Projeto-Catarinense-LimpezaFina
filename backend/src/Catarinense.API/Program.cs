@@ -20,8 +20,6 @@ builder.Services.AddControllers();
 // ---------- CORS (libera o frontend Next.js) ----------
 const string CorsPolicyFrontend = "FrontendPolicy";
 
-    
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyFrontend, policy =>
@@ -58,10 +56,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // ---------- Rate limiting no login (anti força-bruta) ----------
-// Limita tentativas de login por IP: 10 requisições por minuto, sem fila (a 11ª
-// requisição no mesmo minuto recebe 429 imediatamente). Isso é uma camada A MAIS
-// do bloqueio por conta que já existe no AutenticarUsuarioUseCase — aqui protege
-// contra tentar matrículas diferentes rapidamente; lá protege uma conta específica.
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -128,6 +122,14 @@ using (var scope = app.Services.CreateScope())
     try {
         await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_execucao ADD COLUMN FotoDuplicadaOriginalPrefixo VARCHAR(100) NULL;");
     } catch { /* ignora se a coluna ja existir */ }
+
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;");
+    } catch { /* ignora se a coluna ja existir */ }
+
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;");
+    } catch { /* ignora se a coluna ja existir */ }
 }
 
 // ---------- Seed do primeiro Administrador (só roda se SeedAdmin:Habilitado = true) ----------
@@ -176,5 +178,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-

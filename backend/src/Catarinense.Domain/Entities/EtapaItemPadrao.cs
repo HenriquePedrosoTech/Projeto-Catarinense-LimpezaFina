@@ -12,11 +12,12 @@ public class EtapaItemPadrao : EntidadeBase
     public string? Descricao { get; private set; }
     public string? EnquadramentoFoto { get; private set; }
     public bool Obrigatorio { get; private set; } = true;
+    public bool ExigeFoto { get; private set; } = false;
     public bool Ativo { get; private set; } = true;
 
     protected EtapaItemPadrao() { }
 
-    public EtapaItemPadrao(Guid etapaPadraoId, string texto, int ordem, string? descricao = null, string? enquadramentoFoto = null, bool obrigatorio = true)
+    public EtapaItemPadrao(Guid etapaPadraoId, string texto, int ordem, string? descricao = null, string? enquadramentoFoto = null, bool obrigatorio = true, bool exigeFoto = false)
     {
         if (etapaPadraoId == Guid.Empty) throw new DomainException("Id da etapa padrao invalido.");
         if (string.IsNullOrWhiteSpace(texto)) throw new DomainException("O texto do item e obrigatorio.");
@@ -27,11 +28,12 @@ public class EtapaItemPadrao : EntidadeBase
         Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim();
         EnquadramentoFoto = string.IsNullOrWhiteSpace(enquadramentoFoto) ? null : enquadramentoFoto.Trim();
         Obrigatorio = obrigatorio;
+        ExigeFoto = exigeFoto;
     }
 
     public void Desativar() => Ativo = false;
 
-    public void Atualizar(string texto, int ordem, string? descricao, string? enquadramentoFoto, bool obrigatorio = true)
+    public void Atualizar(string texto, int ordem, string? descricao, string? enquadramentoFoto, bool obrigatorio = true, bool exigeFoto = false)
     {
         if (string.IsNullOrWhiteSpace(texto)) throw new DomainException("O texto do item e obrigatorio.");
         
@@ -40,5 +42,6 @@ public class EtapaItemPadrao : EntidadeBase
         Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim();
         EnquadramentoFoto = string.IsNullOrWhiteSpace(enquadramentoFoto) ? null : enquadramentoFoto.Trim();
         Obrigatorio = obrigatorio;
+        ExigeFoto = exigeFoto;
     }
 }

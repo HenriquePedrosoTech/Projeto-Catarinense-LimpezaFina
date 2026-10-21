@@ -37,12 +37,14 @@ public static class LimpezaFinaMapper
                         itemPadrao?.Descricao,
                         itemPadrao?.EnquadramentoFoto,
                         itemPadrao?.Ordem ?? 0,
-                        i.Status == StatusItemChecklist.Pendente ? null : (i.Status == StatusItemChecklist.NaoConforme ? "NÃ£o Conforme" : (i.Status == StatusItemChecklist.Conforme ? "Conforme" : "N/A")),
+                        i.Status == StatusItemChecklist.Pendente ? null : (i.Status == StatusItemChecklist.NaoConforme ? "Não Conforme" : (i.Status == StatusItemChecklist.Conforme ? "Conforme" : "N/A")),
                         i.Funcionalidade == StatusFuncionalidade.Pendente ? null : (i.Funcionalidade == StatusFuncionalidade.ComDefeito ? "Com Defeito" : "OK / Funcional"),
                         i.RelatoProblema,
                         i.FotoUrl,
-                        i.Concluida, itemPadrao?.Obrigatorio ?? true,
-                i.FotoDuplicadaOriginalPrefixo);
+                        i.Concluida,
+                        itemPadrao?.Obrigatorio ?? true,
+                        itemPadrao?.ExigeFoto ?? false,
+                        i.FotoDuplicadaOriginalPrefixo);
                 }).OrderBy(i => i.Ordem).ToList();
 
                 return new EtapaResumoDto(
@@ -53,8 +55,12 @@ public static class LimpezaFinaMapper
                     etapaPadrao?.Ordem ?? 0,
                     e.EstaConcluida(),
                     e.Fotos.Select(f => f.UrlArquivo).ToList(),
-                    itensExecucao, etapaPadrao?.Obrigatoria ?? true, e.ProblemaExtraDescricao, e.ProblemaExtraFotoUrl,
-                e.ProblemaExtraFotoDuplicadaOriginalPrefixo);
+                    itensExecucao,
+                    etapaPadrao?.Obrigatoria ?? true,
+                    etapaPadrao?.ExigeFoto ?? false,
+                    e.ProblemaExtraDescricao,
+                    e.ProblemaExtraFotoUrl,
+                    e.ProblemaExtraFotoDuplicadaOriginalPrefixo);
             })
             .ToList();
 
@@ -87,4 +93,3 @@ public static class LimpezaFinaMapper
             limpeza.CortinasRetiradas
         );
 }
-

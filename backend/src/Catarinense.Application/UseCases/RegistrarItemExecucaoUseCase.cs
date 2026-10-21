@@ -50,6 +50,9 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
         if (!Enum.TryParse<StatusFuncionalidade>(funcEnumStr, out var funcEnum))
             throw new DomainException("Funcionalidade do item invalida.");
 
+        var etapaPadrao = await _etapaPadraoRepository.ObterPorIdAsync(etapaPadraoId);
+        var itemPadrao = etapaPadrao?.Itens.FirstOrDefault(i => i.Id == itemExecucao.EtapaItemPadraoId);
+
         string? fotoUrlFinal = null;
         string? fotoDuplicadaOriginalPrefixo = null;
         if (fotoBytes != null && fotoBytes.Length > 0)
@@ -73,6 +76,11 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
             }
         }
 
+        if ((itemPadrao?.ExigeFoto ?? false) && string.IsNullOrWhiteSpace(fotoUrlFinal) && string.IsNullOrWhiteSpace(itemExecucao.FotoUrl))
+        {
+            throw new DomainException("Este item exige o envio de uma foto de evidência.");
+        }
+
         itemExecucao.RegistrarExecucao(statusEnum, funcEnum, relatoProblema, fotoUrlFinal, fotoDuplicadaOriginalPrefixo);
         etapaExecucao.VerificarConclusao();
 
@@ -86,4 +94,3 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
         return LimpezaFinaMapper.ParaDetalhesDto(limpeza, onibus!, operador!, etapasPadraoDict);
     }
 }
-

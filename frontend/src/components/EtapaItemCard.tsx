@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, useEffect } from "react";
 import type { EtapaItemResumo } from "@/lib/types";
@@ -47,7 +47,7 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarIte
   async function handleMarcarConcluido() {
     if (desabilitado || isEnviando) return;
     
-    // Se j est concludo, vamos desmarcar
+    // Se já está concluído, vamos desmarcar
     if (item.concluida) {
       if (!onDesmarcarItem) return;
       setEnviandoNormal(true);
@@ -64,16 +64,16 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarIte
 
     if (!onEnviarItem) return;
     
-    // Se h uma instruo de foto (enquadramentoFoto)  porque a foto  obrigatria mesmo no fluxo normal
-    if (item.enquadramentoFoto && !arquivo && !item.fotoUrl) {
-      setErro(" necessrio anexar a foto solicitada acima antes de marcar como concludo.");
+    // Só exige foto se o administrador tiver marcado como obrigatória para este item
+    if (item.exigeFoto && !arquivo && !item.fotoUrl) {
+      setErro("É necessário anexar a foto solicitada acima antes de marcar como concluído.");
       return;
     }
 
     setErro(null);
     setEnviandoNormal(true);
     try {
-      // Quando marca pelo checkbox normal,  porque est tudo OK.
+      // Quando marca pelo checkbox normal, é porque está tudo OK.
       await onEnviarItem(item.id, "Conforme", "OK / Funcional", null, arquivo);
     } catch (err: any) {
       setErro(err.message || "Erro ao salvar item.");
@@ -92,7 +92,7 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarIte
       return;
     }
 
-    if (!arquivo && !item.fotoUrl) {
+    if (item.exigeFoto && !arquivo && !item.fotoUrl) {
       setErro("É obrigatório enviar uma foto evidenciando o problema.");
       return;
     }
@@ -151,10 +151,13 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarIte
             </div>
           )}
           
-          {item.enquadramentoFoto && !item.concluida && (
+          {(item.enquadramentoFoto || item.exigeFoto) && !item.concluida && (
             <p className="text-xs text-ink/60 mt-1.5 flex items-start gap-1.5 bg-surface/50 p-2 rounded-md border border-line">
               <Camera className="w-3.5 h-3.5 shrink-0 mt-0.5" /> 
-              <span><strong>Foto necessária:</strong> {item.enquadramentoFoto}</span>
+              <span>
+                <strong>{item.exigeFoto ? "Foto obrigatória:" : "Instrução de foto (opcional):"}</strong>{" "}
+                {item.enquadramentoFoto || "Anexe uma foto de evidência para este item."}
+              </span>
             </p>
           )}
         </div>
@@ -174,44 +177,62 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarIte
       {!item.concluida && !mostrarAvaria && !desabilitado && (
         <div className="mt-3 ml-9 flex flex-col gap-3">
           
-          {/* Se a etapa exige foto para o fluxo normal, exibe o upload aqui */}
-          {item.enquadramentoFoto && (
-             <div className="flex flex-col gap-2">
-              {arquivoPreview ? (
-                <div className="relative inline-block w-24 h-24 rounded-lg overflow-hidden border border-line">
-                  <img src={arquivoPreview} alt="Preview" className="w-full h-full object-cover" />
-                  <button 
-                    type="button" 
-                    onClick={() => { setArquivo(null); setArquivoPreview(null); }} 
-                    className="absolute top-1 right-1 bg-danger text-white rounded-full p-1 shadow-md hover:bg-danger/80"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
+          {/* Permite enviar foto sempre (obrigatória ou opcional) */}
+          <div className="flex flex-col gap-2">
+            {arquivoPreview ? (
+              <div className="relative inline-block w-24 h-24 rounded-lg overflow-hidden border border-line">
+                <img src={arquivoPreview} alt="Preview" className="w-full h-full object-cover" />
+                <button 
+                  type="button" 
+                  onClick={() => { setArquivo(null); setArquivoPreview(null); }} 
+                  className="absolute top-1 right-1 bg-danger text-white rounded-full p-1 shadow-md hover:bg-danger/80"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
                 <button 
                   type="button" 
                   onClick={() => window.innerWidth >= 640 ? inputGaleriaRef.current?.click() : setMostrarOpcoesFoto(true)}
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 rounded-lg border border-line text-ink hover:bg-surface transition-colors text-xs font-semibold"
+                  className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg border transition-colors text-xs font-semibold ${
+                    item.exigeFoto
+                      ? "border-brand text-brand bg-brand/5 hover:bg-brand/10"
+                      : "border-line text-ink/70 hover:bg-surface"
+                  }`}
                 >
-                  <Camera className="w-3.5 h-3.5" /> Anexar Foto
+                  <Camera className="w-3.5 h-3.5" /> {item.exigeFoto ? "Anexar Foto (Obrigatória)" : "Anexar Foto (Opcional)"}
                 </button>
-              )}
-             </div>
-          )}
 
-          <div className="flex items-center">
-            <button 
-              type="button" 
-              onClick={() => {
-                setMostrarAvaria(true);
-                if (status === "Conforme") setStatus("Não Conforme");
-                if (funcionalidade === "OK / Funcional") setFuncionalidade("Com Defeito");
-              }}
-              className="flex items-center gap-1.5 text-xs font-semibold text-danger/80 hover:text-danger bg-danger/5 hover:bg-danger/10 px-3 py-1.5 rounded-lg transition-colors"
-            >
-              <AlertTriangle className="w-3.5 h-3.5" /> Relatar Problema
-            </button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setMostrarAvaria(true);
+                    if (status === "Conforme") setStatus("Não Conforme");
+                    if (funcionalidade === "OK / Funcional") setFuncionalidade("Com Defeito");
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-danger/80 hover:text-danger bg-danger/5 hover:bg-danger/10 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" /> Relatar Problema
+                </button>
+              </div>
+            )}
+
+            {arquivoPreview && (
+              <div className="flex items-center">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setMostrarAvaria(true);
+                    if (status === "Conforme") setStatus("Não Conforme");
+                    if (funcionalidade === "OK / Funcional") setFuncionalidade("Com Defeito");
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-danger/80 hover:text-danger bg-danger/5 hover:bg-danger/10 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" /> Relatar Problema
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -286,7 +307,9 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarIte
           {/* Área da Foto na Avaria */}
           {!item.concluida && (
             <div className="flex flex-col gap-2 mt-1">
-              <label className="text-[11px] font-semibold text-danger/80 uppercase">Evidência Fotográfica *</label>
+              <label className="text-[11px] font-semibold text-danger/80 uppercase">
+                Evidência Fotográfica {item.exigeFoto ? "*" : "(Opcional)"}
+              </label>
               {arquivoPreview ? (
                 <div className="relative inline-block w-24 h-24 rounded-lg overflow-hidden border-2 border-danger/30">
                   <img src={arquivoPreview} alt="Preview" className="w-full h-full object-cover" />
@@ -304,7 +327,7 @@ export function EtapaItemCard({ item, desabilitado, onEnviarItem, onDesmarcarIte
                   onClick={() => window.innerWidth >= 640 ? inputGaleriaRef.current?.click() : setMostrarOpcoesFoto(true)}
                   className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2.5 rounded-lg border-2 border-dashed border-danger/30 text-danger hover:bg-danger hover:text-white transition-colors text-sm font-semibold"
                 >
-                  <Camera className="w-4 h-4" /> Adicionar Foto do Problema
+                  <Camera className="w-4 h-4" /> Adicionar Foto do Problema {item.exigeFoto ? "" : "(Opcional)"}
                 </button>
               )}
             </div>

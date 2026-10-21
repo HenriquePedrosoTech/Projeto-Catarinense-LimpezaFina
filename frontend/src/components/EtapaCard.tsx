@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import type { EtapaResumo } from "@/lib/types";
 import { resolverUrlFoto } from "@/lib/fotos";
 import { Lightbox, useLightbox } from "./Lightbox";
-import { Camera, Check, Loader2, ImagePlus, Info, Upload, AlertTriangle } from "lucide-react";
+import { Camera, Check, Loader2, Info, Upload, AlertTriangle } from "lucide-react";
 import { EtapaItemCard } from "./EtapaItemCard";
 
 interface Props {
@@ -12,16 +12,26 @@ interface Props {
   desabilitado: boolean;
   onEnviarFoto: (arquivo: File) => Promise<void>;
   onRemoverFoto?: (url: string) => Promise<void>;
+  onAlternarConclusaoEtapa?: (concluida: boolean) => Promise<void>;
   onEnviarItem?: (itemId: string, status: string, funcionalidade: string, relato: string | null, arquivo: File | null) => Promise<void>;
   onDesmarcarItem?: (itemId: string) => Promise<void>;
 }
 
-export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, onEnviarItem, onDesmarcarItem }: Props) {
+export function EtapaCard({
+  etapa,
+  desabilitado,
+  onEnviarFoto,
+  onRemoverFoto,
+  onAlternarConclusaoEtapa,
+  onEnviarItem,
+  onDesmarcarItem,
+}: Props) {
   const inputCameraRef = useRef<HTMLInputElement>(null);
   const inputGaleriaRef = useRef<HTMLInputElement>(null);
 
   const [mostrarOpcoesFoto, setMostrarOpcoesFoto] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [alternandoConclusao, setAlternandoConclusao] = useState(false);
   const [removendo, setRemovendo] = useState<string | null>(null);
   const [mostrarDesc, setMostrarDesc] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -43,6 +53,23 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
     }
   }
 
+  async function handleToggleConcluida() {
+    if (desabilitado || alternandoConclusao || !onAlternarConclusaoEtapa) return;
+    if (!etapa.concluida && etapa.exigeFoto && (!etapa.fotos || etapa.fotos.length === 0)) {
+      setErro("Esta etapa exige o envio de pelo menos uma foto antes de marcar como concluída.");
+      return;
+    }
+    setAlternandoConclusao(true);
+    setErro(null);
+    try {
+      await onAlternarConclusaoEtapa(!etapa.concluida);
+    } catch (err: any) {
+      setErro(err.message || "Erro ao atualizar etapa");
+    } finally {
+      setAlternandoConclusao(false);
+    }
+  }
+
   const possuiItens = etapa.itens && etapa.itens.length > 0;
 
   return (
@@ -51,7 +78,7 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
         <div className="flex-1">
           <div className="flex items-center gap-3">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface text-sm font-bold text-ink/50">
-              {etapa.ordem}
+              {etapa.ordem + 1}
             </span>
             <h3 className="text-base font-bold uppercase text-ink sm:text-lg">{etapa.nome}</h3>
             
@@ -60,7 +87,7 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
                 type="button" 
                 onClick={() => setMostrarDesc(!mostrarDesc)}
                 className="text-ink/40 hover:text-brand transition-colors"
-                title="Ver instru��o"
+                title="Ver instrução"
               >
                 <Info className="h-5 w-5" />
               </button>
@@ -73,30 +100,52 @@ export function EtapaCard({ etapa, desabilitado, onEnviarFoto, onRemoverFoto, on
               rel="noreferrer"
               className="mt-0.5 text-xs font-semibold text-brand hover:underline"
             >
-              Ver instru��o
+              Ver instrução em vídeo
             </a>
           )}
         </div>
 
         {!possuiItens && (
-          <div className="flex shrink-0 items-center">
-            {enviando && <Loader2 className="h-5 w-5 animate-spin text-brand" />}
+          <div className="flex shrink-0 items-center gap-2">
+            {(enviando || alternandoConclusao) && <Loader2 className="h-5 w-5 animate-spin text-brand" />}
             
-            {!etapa.concluida && !desabilitado && !enviando && (
+            {!desabilitado && !enviando && (
               <div className="relative">
                 <input ref={inputCameraRef} type="file" accept="image/*" capture="environment" onChange={handleArquivo} className="hidden" />
                 <input ref={inputGaleriaRef} type="file" accept="image/*" onChange={handleArquivo} className="hidden" />
                 <button
                   type="button"
                   onClick={() => window.innerWidth >= 640 ? inputGaleriaRef.current?.click() : setMostrarOpcoesFoto(true)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-ink/40 hover:bg-brand/10 hover:text-brand transition-colors"
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-colors ${
+                    etapa.exigeFoto && (!etapa.fotos || etapa.fotos.length === 0)
+                      ? "border-brand text-brand bg-brand/5 hover:bg-brand/10"
+                      : "bg-surface text-ink/70 border-line hover:bg-brand/10 hover:text-brand"
+                  }`}
+                  title={etapa.exigeFoto ? "Foto obrigatória" : "Adicionar foto (opcional)"}
                 >
-                  <Camera className="h-5 w-5" />
+                  <Camera className="h-4 w-4" />
+                  <span>{etapa.exigeFoto ? "Foto *" : "Foto"}</span>
                 </button>
               </div>
             )}
 
-            {etapa.concluida && (
+            {!etapa.exigeFoto && onAlternarConclusaoEtapa && (
+              <button
+                type="button"
+                onClick={handleToggleConcluida}
+                disabled={desabilitado || alternandoConclusao}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
+                  etapa.concluida
+                    ? "bg-success text-white border-success shadow-sm"
+                    : "bg-white text-ink border-line hover:border-brand"
+                } ${desabilitado ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+              >
+                <Check className="h-4 w-4" />
+                <span>{etapa.concluida ? "Concluída" : "Marcar Concluída"}</span>
+              </button>
+            )}
+
+            {etapa.exigeFoto && etapa.concluida && (
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/10 text-success">
                 <Check className="h-5 w-5" />
               </div>

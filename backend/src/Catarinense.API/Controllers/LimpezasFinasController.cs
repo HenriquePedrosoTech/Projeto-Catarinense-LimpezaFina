@@ -1,5 +1,5 @@
 using Catarinense.Application.UseCases;
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Catarinense.API.Contracts;
 using Catarinense.Application.DTOs;
 using Catarinense.Application.Interfaces.UseCases;
@@ -115,8 +115,16 @@ public class LimpezasFinasController : ControllerBase
         return Ok(resultado);
     }
 
-    [HttpDelete("{id:guid}/etapas/{etapaPadraoId:guid}/foto")]
-    
+    [HttpPost("{id:guid}/etapas/{etapaPadraoId:guid}/concluir")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> AlternarConclusaoEtapa(
+        Guid id, Guid etapaPadraoId, [FromQuery] bool concluida,
+        [FromServices] IAlternarConclusaoEtapaUseCase useCase)
+    {
+        var resultado = await useCase.ExecutarAsync(id, etapaPadraoId, concluida, UsuarioLogadoId(), User.IsInRole("Administrador"));
+        return Ok(resultado);
+    }
+
     [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}/desmarcar")]
     [Authorize(Roles = "Operador,Administrador")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> DesmarcarItemExecucao(
@@ -127,6 +135,7 @@ public class LimpezasFinasController : ControllerBase
         return Ok(resultado);
     }
 
+    [HttpDelete("{id:guid}/etapas/{etapaPadraoId:guid}/foto")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> RemoverFotoEtapa(
         Guid id, Guid etapaPadraoId, [FromQuery] string urlArquivo)
     {
@@ -148,7 +157,7 @@ public class LimpezasFinasController : ControllerBase
         return Ok(resultado);
     }
 
-    /// <summary>Operador finaliza o registro (só permite se todas as etapas tiverem foto).</summary>
+    /// <summary>Operador finaliza o registro (só permite se todas as etapas obrigatórias estiverem concluídas).</summary>
     [HttpPost("{id:guid}/finalizar")]
     public async Task<ActionResult<LimpezaFinaDetalhesDto>> Finalizar(Guid id)
     {
@@ -248,6 +257,3 @@ public class LimpezasFinasController : ControllerBase
 
 public record IniciarLimpezaFinaBody(string PrefixoOnibus);
 public record DefinirNumeroOSBody(string NumeroOS);
-
-
-

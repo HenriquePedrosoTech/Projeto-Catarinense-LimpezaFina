@@ -5,9 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { LimpezaFinaDetalhes } from "@/lib/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, Info, X, Camera, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, X, Camera, ArrowRight } from "lucide-react";
 import { EtapaCard } from "@/components/EtapaCard";
 
 export default function ChecklistLimpezaPage() {
@@ -69,6 +69,12 @@ function ChecklistLimpezaPageContent() {
     }
   }
 
+  async function handleAlternarConclusaoEtapa(etapaPadraoId: string, concluida: boolean) {
+    if (!usuario || !limpeza) return;
+    const data = await api.alternarConclusaoEtapa(usuario.token, limpeza.id, etapaPadraoId, concluida);
+    setLimpeza(data);
+  }
+
   const handleRegistrarProblemaExtra = async (etapaId: string, descricao: string, foto: File | null) => {
     if (!usuario || !limpeza) return;
     try {
@@ -106,7 +112,6 @@ function ChecklistLimpezaPageContent() {
     }
   }
 
-  
   async function handleDesmarcarItem(etapaPadraoId: string, itemId: string) {
     try {
       if (!usuario) return;
@@ -125,7 +130,7 @@ function ChecklistLimpezaPageContent() {
       const faltantes = etapasObrigatorias.filter(e => !e.concluida).map(e => e.nome).join(", ");
       setAlerta({
         titulo: "Checklist incompleto!",
-        mensagem: `Você não anexou as fotos exigidas nas seguintes etapas: ${faltantes}.`
+        mensagem: `Conclua os itens/etapas obrigatórios antes de finalizar: ${faltantes}.`
       });
       return;
     }
@@ -154,7 +159,6 @@ function ChecklistLimpezaPageContent() {
     }
   }
 
-  
   const indexAtual = limpeza?.etapas.findIndex(e => e.etapaPadraoId === etapaAtivaId) ?? -1;
   const temProxima = indexAtual >= 0 && indexAtual < (limpeza?.etapas.length ?? 0) - 1;
   
@@ -300,9 +304,9 @@ function ChecklistLimpezaPageContent() {
                   desabilitado={!emAndamento}
                   onEnviarFoto={(arquivo) => handleEnviarFoto(etapa.etapaPadraoId, arquivo)}
                   onRemoverFoto={(url) => handleRemoverFoto(etapa.etapaPadraoId, url)}
+                  onAlternarConclusaoEtapa={(concluida) => handleAlternarConclusaoEtapa(etapa.etapaPadraoId, concluida)}
                   onDesmarcarItem={(itemId) => handleDesmarcarItem(etapa.etapaPadraoId, itemId)}
-                    onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
-                  
+                  onEnviarItem={(itemId, status, funcionalidade, relato, arquivo) => handleEnviarItemExecucao(etapa.etapaPadraoId, itemId, status, funcionalidade, relato, arquivo)}
                 />
               </div>
             ))}
@@ -486,6 +490,4 @@ function ChecklistLimpezaPageContent() {
       )}
     </div>
   );
-
-
 }

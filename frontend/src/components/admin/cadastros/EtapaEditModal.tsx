@@ -1,5 +1,5 @@
 import { useState, type FormEvent, useEffect } from "react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, Camera } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -18,10 +18,11 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
   const [descricao, setDescricao] = useState("");
   const [linkVideo, setLinkVideo] = useState("");
   const [obrigatoria, setObrigatoria] = useState(true);
+  const [exigeFoto, setExigeFoto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   
-  const [itens, setItens] = useState<{ id?: string, texto: string, descricao: string, enquadramentoFoto: string, ordem: number, obrigatorio: boolean }[]>([]);
+  const [itens, setItens] = useState<{ id?: string, texto: string, descricao: string, enquadramentoFoto: string, ordem: number, obrigatorio: boolean, exigeFoto: boolean }[]>([]);
 
   useEffect(() => {
     if (etapa) {
@@ -29,6 +30,7 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
       setDescricao(etapa.descricao || "");
       setLinkVideo(etapa.linkVideo || "");
       setObrigatoria(etapa.obrigatoria ?? true);
+      setExigeFoto(etapa.exigeFoto ?? false);
       setItens(
         (etapa.itens || []).map((i) => ({
           id: i.id,
@@ -37,6 +39,7 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
           enquadramentoFoto: i.enquadramentoFoto || "",
           ordem: i.ordem,
           obrigatorio: i.obrigatorio ?? true,
+          exigeFoto: i.exigeFoto ?? false,
         }))
       );
       setErro(null);
@@ -57,13 +60,15 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
         descricao || undefined,
         linkVideo || undefined,
         obrigatoria,
+        exigeFoto,
         itens.map(i => ({
           id: i.id,
           texto: i.texto,
           descricao: i.descricao || undefined,
           enquadramentoFoto: i.enquadramentoFoto || undefined,
           ordem: i.ordem,
-          obrigatorio: i.obrigatorio
+          obrigatorio: i.obrigatorio,
+          exigeFoto: i.exigeFoto,
         }))
       );
       onSuccess();
@@ -75,14 +80,14 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
   }
 
   function adicionarItem() {
-    setItens([...itens, { texto: "", descricao: "", enquadramentoFoto: "", ordem: itens.length, obrigatorio: true }]);
+    setItens([...itens, { texto: "", descricao: "", enquadramentoFoto: "", ordem: itens.length, obrigatorio: true, exigeFoto: false }]);
   }
 
   function removerItem(index: number) {
     setItens(itens.filter((_, i) => i !== index));
   }
 
-  function atualizarItem(index: number, campo: "texto" | "descricao" | "enquadramentoFoto" | "obrigatorio", valor: any) {
+  function atualizarItem(index: number, campo: "texto" | "descricao" | "enquadramentoFoto" | "obrigatorio" | "exigeFoto", valor: any) {
     const novos = [...itens];
     (novos[index] as any)[campo] = valor;
     setItens(novos);
@@ -133,15 +138,34 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
             />
           </div>
 
-          <div className="flex items-center gap-2 mt-2">
-            <input 
-              type="checkbox" 
-              id="obrigatoria" 
-              checked={obrigatoria} 
-              onChange={(e) => setObrigatoria(e.target.checked)} 
-              className="h-4 w-4 rounded border-line text-brand focus:ring-brand" 
-            />
-            <label htmlFor="obrigatoria" className="text-sm font-medium text-ink">Esta etapa é obrigatória para finalizar a limpeza</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-1 bg-surface/40 p-3 rounded-lg border border-line">
+            <div className="flex items-center gap-2">
+              <input 
+                type="checkbox" 
+                id="obrigatoria" 
+                checked={obrigatoria} 
+                onChange={(e) => setObrigatoria(e.target.checked)} 
+                className="h-4 w-4 rounded border-line text-brand focus:ring-brand cursor-pointer" 
+              />
+              <label htmlFor="obrigatoria" className="text-sm font-medium text-ink cursor-pointer">
+                Etapa obrigatória para finalizar
+              </label>
+            </div>
+
+            {itens.length === 0 && (
+              <div className="flex items-center gap-2">
+                <input 
+                  type="checkbox" 
+                  id="exigeFotoEtapa" 
+                  checked={exigeFoto} 
+                  onChange={(e) => setExigeFoto(e.target.checked)} 
+                  className="h-4 w-4 rounded border-line text-brand focus:ring-brand cursor-pointer" 
+                />
+                <label htmlFor="exigeFotoEtapa" className="text-sm font-medium text-ink flex items-center gap-1 cursor-pointer">
+                  <Camera className="h-3.5 w-3.5 text-ink/60" /> Exigir foto obrigatória nesta etapa
+                </label>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-line pt-4 mt-2">
@@ -170,10 +194,30 @@ export function EtapaEditModal({ token, etapa, onClose, onSuccess }: EtapaEditMo
                           required 
                         />
                         <Input placeholder="Descrição / Passo a passo do item" value={item.descricao} onChange={(e) => atualizarItem(index, "descricao", e.target.value)} />
-                        <Input placeholder="Instrução da Foto (ex: Foto pegando da poltrona para trás)" 
+                        <Input placeholder="Instrução de Foto (opcional, ex: Foto pegando da poltrona para trás)" 
                           value={item.enquadramentoFoto} 
                           onChange={(e) => atualizarItem(index, "enquadramentoFoto", e.target.value)} 
                         />
+                        <div className="flex flex-wrap items-center gap-4 pt-1">
+                          <label className="flex items-center gap-1.5 text-xs font-medium text-ink/80 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={item.obrigatorio}
+                              onChange={(e) => atualizarItem(index, "obrigatorio", e.target.checked)}
+                              className="h-3.5 w-3.5 rounded border-line text-brand focus:ring-brand cursor-pointer"
+                            />
+                            Item obrigatório
+                          </label>
+                          <label className="flex items-center gap-1.5 text-xs font-medium text-ink/80 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={item.exigeFoto}
+                              onChange={(e) => atualizarItem(index, "exigeFoto", e.target.checked)}
+                              className="h-3.5 w-3.5 rounded border-line text-brand focus:ring-brand cursor-pointer"
+                            />
+                            <Camera className="h-3.5 w-3.5 text-ink/60" /> Foto obrigatória
+                          </label>
+                        </div>
                       </div>
                       <button
                         type="button"

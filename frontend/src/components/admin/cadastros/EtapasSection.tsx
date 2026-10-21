@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog, AlertDialog } from "@/components/ui/Dialogs";
 import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { ListChecks, Trash2, Edit2, Info, GripVertical } from "lucide-react";
+import { ListChecks, Trash2, Edit2, Info, GripVertical, Camera } from "lucide-react";
 import type { EtapaPadraoResumo } from "@/lib/types";
 import { EtapaEditModal } from "./EtapaEditModal";
 
@@ -80,7 +80,14 @@ function SortableEtapaItem({
           {index + 1}
         </span>
         <div className="flex flex-col">
-          <span className="font-medium text-ink">{etapa.nome}</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-medium text-ink">{etapa.nome}</span>
+            {etapa.exigeFoto && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-bold text-brand uppercase">
+                <Camera className="h-3 w-3" /> Foto Obrigatória
+              </span>
+            )}
+          </div>
           {etapa.descricao && (
             <span className="text-xs text-ink/60 flex items-center gap-1 mt-0.5">
               <Info className="h-3 w-3" /> P.O.P configurado
@@ -118,6 +125,7 @@ export function EtapasSection({ token }: { token: string }) {
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [linkVideo, setLinkVideo] = useState("");
+  const [exigeFoto, setExigeFoto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [excluindoId, setExcluindoId] = useState<string | null>(null);
@@ -149,11 +157,14 @@ export function EtapasSection({ token }: { token: string }) {
         nome.trim(), 
         lista.length, 
         descricao.trim() || undefined, 
-        linkVideo.trim() || undefined
+        linkVideo.trim() || undefined,
+        true,
+        exigeFoto
       );
       setNome("");
       setDescricao("");
       setLinkVideo("");
+      setExigeFoto(false);
       carregar();
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : "Falha ao cadastrar.");
@@ -229,7 +240,7 @@ export function EtapasSection({ token }: { token: string }) {
             Checklist Padrão
           </CardTitle>
           <p className="text-sm text-ink/50">
-            A ordem em que você adiciona as etapas define a ordem exigida no aplicativo do operador. Você também pode arrastar e soltar as etapas para reordená-las.
+            A ordem em que você adiciona as etapas define a ordem exigida no aplicativo do operador. Por padrão, fotos são opcionais (você pode torná-las obrigatórias editando a etapa ou item).
           </p>
         </CardHeader>
         <CardContent>
@@ -261,6 +272,15 @@ export function EtapasSection({ token }: { token: string }) {
               value={linkVideo}
               onChange={(e) => setLinkVideo(e.target.value)}
             />
+            <label className="flex items-center gap-2 text-sm text-ink/80 cursor-pointer pt-1">
+              <input
+                type="checkbox"
+                checked={exigeFoto}
+                onChange={(e) => setExigeFoto(e.target.checked)}
+                className="h-4 w-4 rounded border-line text-brand focus:ring-brand cursor-pointer"
+              />
+              <Camera className="h-4 w-4 text-ink/60" /> Exigir foto obrigatória nesta etapa
+            </label>
           </form>
 
           {erro && <p className="mb-4 rounded-md bg-danger/10 p-3 text-sm text-danger">{erro}</p>}

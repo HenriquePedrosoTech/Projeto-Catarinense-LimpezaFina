@@ -59,12 +59,20 @@ public class LimpezaEtapaExecucao : EntidadeBase
     {
         if (EstaConcluida())
         {
-            ConcluidaEm = DateTime.UtcNow;
+            ConcluidaEm ??= DateTime.UtcNow;
         }
         else
         {
             ConcluidaEm = null;
         }
+    }
+
+    public void AlternarConclusaoManual(bool concluida, bool exigeFoto)
+    {
+        if (concluida && exigeFoto && _fotos.Count == 0)
+            throw new DomainException("Esta etapa exige pelo menos uma foto para ser concluída.");
+
+        ConcluidaEm = concluida ? DateTime.UtcNow : null;
     }
 
     public bool EstaConcluida() 
@@ -74,7 +82,7 @@ public class LimpezaEtapaExecucao : EntidadeBase
             return _itens.Where(i => i.Obrigatorio).All(i => i.Concluida);
         }
         
-        return _fotos.Count > 0;
+        return ConcluidaEm.HasValue || _fotos.Count > 0;
     }
 
 

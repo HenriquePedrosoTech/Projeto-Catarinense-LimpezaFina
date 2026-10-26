@@ -42,12 +42,24 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
         var itemExecucao = etapaExecucao.Itens.FirstOrDefault(i => i.Id == itemId)
             ?? throw new NotFoundException("Item de checklist nao encontrado nesta etapa.");
 
-        if (!Enum.TryParse<StatusItemChecklist>(status, out var statusEnum))
+        var statusNorm = status?.Trim() switch
+        {
+            "Não Conforme" or "Nao Conforme" or "NÃ£o Conforme" => "NaoConforme",
+            "N/A" => "NA",
+            _ => status?.Trim() ?? ""
+        };
+
+        if (!Enum.TryParse<StatusItemChecklist>(statusNorm, true, out var statusEnum))
             throw new DomainException("Status do item invalido.");
             
-        var funcEnumStr = funcionalidade == "Com Defeito" ? "ComDefeito" : (funcionalidade == "OK / Funcional" || funcionalidade == "OK" ? "Ok" : funcionalidade);
+        var funcEnumStr = funcionalidade?.Trim() switch
+        {
+            "Com Defeito" => "ComDefeito",
+            "OK / Funcional" or "OK" => "Ok",
+            _ => funcionalidade?.Trim() ?? ""
+        };
 
-        if (!Enum.TryParse<StatusFuncionalidade>(funcEnumStr, out var funcEnum))
+        if (!Enum.TryParse<StatusFuncionalidade>(funcEnumStr, true, out var funcEnum))
             throw new DomainException("Funcionalidade do item invalida.");
 
         var etapaPadrao = await _etapaPadraoRepository.ObterPorIdAsync(etapaPadraoId);

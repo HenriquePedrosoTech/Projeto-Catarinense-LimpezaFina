@@ -27,7 +27,7 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
             .OrderByDescending(l => l.IniciadaEm)
             .FirstOrDefaultAsync(l =>
                 l.OnibusId == onibusId &&
-                l.Status == StatusLimpeza.EmAndamento &&
+                (l.Status == StatusLimpeza.EmAndamento || l.Status == StatusLimpeza.Reprovada) &&
                 l.IniciadaEm >= inicioHojeUtc);
     }
 
@@ -39,13 +39,10 @@ public class LimpezaFinaRepository : RepositorioBase<LimpezaFina>, ILimpezaFinaR
     public async Task<IReadOnlyList<LimpezaFina>> ListarPorOperadorAsync(Guid operadorId)
     {
         var idStr = operadorId.ToString();
-        var hojeBrasil = DateTime.UtcNow.AddHours(-3).Date;
-        var inicioHojeUtc = hojeBrasil.AddHours(3);
 
         return await DbSet.Where(l =>
                 l.OperadorId == operadorId ||
-                (l.ColaboradoresIds != null && l.ColaboradoresIds.Contains(idStr)) ||
-                (l.Status == StatusLimpeza.EmAndamento && l.IniciadaEm >= inicioHojeUtc))
+                (l.ColaboradoresIds != null && l.ColaboradoresIds.Contains(idStr)))
             .OrderByDescending(l => l.IniciadaEm)
             .ToListAsync();
     }

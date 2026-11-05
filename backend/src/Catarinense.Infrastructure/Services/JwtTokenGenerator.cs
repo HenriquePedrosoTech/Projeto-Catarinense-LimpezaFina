@@ -20,13 +20,18 @@ public class JwtTokenGenerator : IJwtTokenGenerator
 
     public string GerarToken(Usuario usuario)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
             new Claim("matricula", usuario.Matricula),
             new Claim(ClaimTypes.Name, usuario.Nome),
             new Claim(ClaimTypes.Role, usuario.Perfil.ToString())
         };
+
+        if (usuario.EhMaster())
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "AdminMaster"));
+        }
 
         var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_opcoes.Chave));
         var credenciais = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);

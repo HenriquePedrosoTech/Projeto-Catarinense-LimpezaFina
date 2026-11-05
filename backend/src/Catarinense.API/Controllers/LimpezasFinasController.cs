@@ -237,9 +237,9 @@ public class LimpezasFinasController : ControllerBase
         return Ok(resultado);
     }
 
-    /// <summary>Exclui um registro de limpeza fina (e suas fotos). Uso: remover dados de teste.</summary>
+    /// <summary>Exclui um registro de limpeza fina (e suas fotos). Somente Administrador Master.</summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<IActionResult> Excluir(Guid id)
     {
         await _excluirUseCase.ExecutarAsync(id);

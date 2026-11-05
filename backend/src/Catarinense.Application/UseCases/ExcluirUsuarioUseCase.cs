@@ -22,6 +22,9 @@ public class ExcluirUsuarioUseCase : IExcluirUsuarioUseCase
         var usuario = await _usuarioRepository.ObterPorIdAsync(usuarioId)
             ?? throw new NotFoundException("Usuário não encontrado.");
 
+        if (usuario.EhMaster())
+            throw new DomainException("O Administrador Master não pode ser excluído.");
+
         if (usuario.EhAdministrador())
         {
             var todos = await _usuarioRepository.ListarAsync();

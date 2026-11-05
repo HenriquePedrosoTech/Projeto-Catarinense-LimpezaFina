@@ -31,9 +31,9 @@ public class OnibusController : ControllerBase
         _consultarLimpezaFinaUseCase = consultarLimpezaFinaUseCase;
     }
 
-    /// <summary>Cadastra um ônibus na frota. Somente administradores.</summary>
+    /// <summary>Cadastra um ônibus na frota. Somente Administrador Master.</summary>
     [HttpPost]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<ActionResult<OnibusResumoDto>> Cadastrar([FromBody] CadastrarOnibusRequest request)
     {
         var onibus = await _cadastrarOnibusUseCase.ExecutarAsync(request);
@@ -47,7 +47,7 @@ public class OnibusController : ControllerBase
     /// Prefixos já cadastrados são apenas relatados; o restante do arquivo continua sendo processado.
     /// </summary>
     [HttpPost("importar")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "AdminMaster")]
     [RequestSizeLimit(10_000_000)]
     public async Task<ActionResult<ResultadoImportacaoOnibus>> Importar(IFormFile arquivo)
     {
@@ -79,9 +79,9 @@ public class OnibusController : ControllerBase
         return Ok(historico);
     }
 
-    /// <summary>Exclui um ônibus. Bloqueia se houver limpeza fina vinculada. Uso: remover dado de teste.</summary>
+    /// <summary>Exclui um ônibus. Bloqueia se houver limpeza fina vinculada. Somente Administrador Master.</summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<IActionResult> Excluir(Guid id)
     {
         await _excluirOnibusUseCase.ExecutarAsync(id);

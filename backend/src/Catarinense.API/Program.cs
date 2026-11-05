@@ -51,6 +51,21 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtOptions.Audiencia,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Chave))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var matricula = context.Principal?.FindFirst("matricula")?.Value;
+            if (string.Equals(matricula?.Trim(), Catarinense.Domain.Entities.Usuario.MatriculaMaster, StringComparison.OrdinalIgnoreCase) &&
+                context.Principal?.Identity is System.Security.Claims.ClaimsIdentity identity &&
+                !identity.HasClaim(System.Security.Claims.ClaimTypes.Role, "AdminMaster"))
+            {
+                identity.AddClaim(new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "AdminMaster"));
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();

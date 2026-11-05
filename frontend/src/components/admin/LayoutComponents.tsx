@@ -3,17 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, FileText, Database, Settings, LogOut, Menu } from "lucide-react";
-import { useAuth } from "@/lib/auth";
+import { useAuth, isAdminMaster } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
 
 export function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
   const pathname = usePathname();
-  const { sair } = useAuth();
+  const { usuario, sair } = useAuth();
+  const master = isAdminMaster(usuario);
 
   const links = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/relatorio", label: "Relatórios", icon: FileText },
-    { href: "/admin/cadastros", label: "Cadastros Base", icon: Database },
+    ...(master ? [{ href: "/admin/cadastros", label: "Cadastros Base", icon: Database }] : []),
   ];
 
   const sidebarContent = (
@@ -107,7 +108,9 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu?: () => void }) {
         <div className="flex items-center gap-3">
           <div className="hidden text-right sm:block">
             <p className="text-sm font-semibold text-ink">{usuario.nome}</p>
-            <p className="text-xs text-ink/50">{usuario.perfil}</p>
+            <p className="text-xs text-ink/50">
+              {isAdminMaster(usuario) ? "Administrador Master" : "Avaliador / Admin"}
+            </p>
           </div>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10 font-bold text-brand">
             {usuario.nome.charAt(0).toUpperCase()}

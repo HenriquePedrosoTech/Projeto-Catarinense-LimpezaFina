@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth";
+import { useAuth, isAdminMaster } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmDialog } from "@/components/ui/Dialogs";
@@ -166,14 +166,16 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={(e) => handleExcluir(e, l.id, l.prefixo)}
-                    disabled={excluindoId === l.id}
-                    className="ml-4 rounded-md p-2 text-ink/30 transition-colors hover:bg-danger/10 hover:text-danger disabled:opacity-50"
-                    title="Excluir registro"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
+                  {isAdminMaster(usuario) && (
+                    <button
+                      onClick={(e) => handleExcluir(e, l.id, l.prefixo)}
+                      disabled={excluindoId === l.id}
+                      className="ml-4 rounded-md p-2 text-ink/30 transition-colors hover:bg-danger/10 hover:text-danger disabled:opacity-50"
+                      title="Excluir registro"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  )}
                 </CardContent>
               </Card>
             </Link>

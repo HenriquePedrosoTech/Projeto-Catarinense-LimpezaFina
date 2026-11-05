@@ -65,6 +65,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+export const MATRICULA_ADMIN_MASTER = "347134";
+
+export function isAdminMaster(usuario?: Usuario | null): boolean {
+  return usuario?.matricula?.trim() === MATRICULA_ADMIN_MASTER;
+}
+
 export function useAuth() {
   const contexto = useContext(AuthContext);
   if (!contexto) throw new Error("useAuth precisa estar dentro de <AuthProvider>");

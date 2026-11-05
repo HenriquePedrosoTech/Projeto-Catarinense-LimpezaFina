@@ -61,7 +61,11 @@ public class Usuario : EntidadeBase
 
     public void Ativar() => Ativo = true;
 
+    public const string MatriculaMaster = "347134";
+
     public bool EhAdministrador() => Perfil == PerfilUsuario.Administrador;
+
+    public bool EhMaster() => string.Equals(Matricula?.Trim(), MatriculaMaster, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Verdadeiro enquanto o bloqueio temporário por tentativas erradas ainda estiver valendo.</summary>
     public bool EstaBloqueado() => BloqueadoAte is not null && BloqueadoAte > DateTime.UtcNow;

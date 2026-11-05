@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useAuth } from "@/lib/auth";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth, isAdminMaster } from "@/lib/auth";
 import { OnibusSection } from "@/components/admin/cadastros/OnibusSection";
 import { EtapasSection } from "@/components/admin/cadastros/EtapasSection";
 import { UsuariosSection } from "@/components/admin/cadastros/UsuariosSection";
@@ -17,9 +18,17 @@ const ABAS = [
 
 export default function CadastrosPage() {
   const { usuario } = useAuth();
+  const router = useRouter();
   const [aba, setAba] = useState<Aba>("onibus");
+  const master = isAdminMaster(usuario);
 
-  if (!usuario) return null;
+  useEffect(() => {
+    if (usuario && !master) {
+      router.replace("/admin");
+    }
+  }, [usuario, master, router]);
+
+  if (!usuario || !master) return null;
 
   return (
     <div className="mx-auto max-w-6xl">

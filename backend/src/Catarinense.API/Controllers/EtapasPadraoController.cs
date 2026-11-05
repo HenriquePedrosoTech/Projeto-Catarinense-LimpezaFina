@@ -24,9 +24,9 @@ public class EtapasPadraoController : ControllerBase
         _consultarDadosMestresUseCase = consultarDadosMestresUseCase;
     }
 
-    /// <summary>Cadastra uma etapa do checklist de limpeza fina (ex.: "Bancos", "Piso"). Somente administradores.</summary>
+    /// <summary>Cadastra uma etapa do checklist de limpeza fina (ex.: "Bancos", "Piso"). Somente Administrador Master.</summary>
     [HttpPost]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<ActionResult<EtapaPadraoResumoDto>> Cadastrar([FromBody] CadastrarEtapaPadraoRequest request)
     {
         var etapa = await _cadastrarEtapaPadraoUseCase.ExecutarAsync(request);
@@ -40,9 +40,9 @@ public class EtapasPadraoController : ControllerBase
         return Ok(etapas);
     }
 
-    /// <summary>Edita uma etapa existente. Somente administradores.</summary>
+    /// <summary>Edita uma etapa existente. Somente Administrador Master.</summary>
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<ActionResult<EtapaPadraoResumoDto>> Editar(Guid id, [FromBody] CadastrarEtapaPadraoRequest request)
     {
         var useCase = HttpContext.RequestServices.GetRequiredService<IEditarEtapaPadraoUseCase>();
@@ -51,9 +51,9 @@ public class EtapasPadraoController : ControllerBase
         return Ok(etapa);
     }
 
-    /// <summary>Exclui uma etapa do checklist. Uso: remover dado de teste.</summary>
+    /// <summary>Exclui uma etapa do checklist. Somente Administrador Master.</summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<IActionResult> Excluir(Guid id)
     {
         await _excluirEtapaPadraoUseCase.ExecutarAsync(id);

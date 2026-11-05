@@ -26,8 +26,9 @@ public class UsuariosController : ControllerBase
         _consultarDadosMestresUseCase = consultarDadosMestresUseCase;
     }
 
-    /// <summary>Cadastra um novo operador ou administrador. Somente administradores.</summary>
+    /// <summary>Cadastra um novo operador ou administrador. Somente Administrador Master.</summary>
     [HttpPost]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<ActionResult<UsuarioResumoDto>> Cadastrar([FromBody] CadastrarUsuarioRequest request)
     {
         var usuario = await _cadastrarUsuarioUseCase.ExecutarAsync(request);
@@ -41,8 +42,9 @@ public class UsuariosController : ControllerBase
         return Ok(usuarios);
     }
 
-    /// <summary>Exclui um usuário. Bloqueia se for o único admin ou se tiver limpeza vinculada. Uso: remover dado de teste.</summary>
+    /// <summary>Edita ou exclui um usuário. Somente Administrador Master.</summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<ActionResult<UsuarioResumoDto>> Editar(Guid id, [FromBody] EditarUsuarioRequest request)
     {
         if (id != request.Id) return BadRequest("ID da rota difere do corpo.");
@@ -51,6 +53,7 @@ public class UsuariosController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "AdminMaster")]
     public async Task<IActionResult> Excluir(Guid id)
     {
         await _excluirUsuarioUseCase.ExecutarAsync(id);

@@ -116,7 +116,7 @@ export function UsuariosSection({ token }: { token: string }) {
                     className="flex h-10 w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand focus:ring-offset-1"
                   >
                     <option value="Operador">Operador</option>
-                    <option value="Administrador">Admin</option>
+                    <option value="Administrador">Avaliador / Admin</option>
                   </select>
                 </div>
               </div>
@@ -167,24 +167,34 @@ export function UsuariosSection({ token }: { token: string }) {
                       </div>
                       <div>
                         <p className="font-bold text-ink leading-tight">{u.nome}</p>
-                        <p className="text-xs font-medium text-ink/50">{u.perfil}</p>
+                        <p className="text-xs font-medium text-ink/50">
+                          {u.matricula === "347134"
+                            ? "Administrador Master"
+                            : u.perfil === "Administrador"
+                            ? "Avaliador / Admin"
+                            : "Operador"}
+                        </p>
                       </div>
                     </div>
-                    <button
-                      onClick={() => setEditandoUsuario(u)}
-                      className="p-1 text-ink/40 hover:text-brand hover:bg-brand/10 rounded transition-colors mr-2"
-                      title="Editar Usuário"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleExcluir(u.id, u.nome)}
-                      disabled={excluindoId === u.id}
-                      className="text-ink/30 hover:text-danger disabled:opacity-50"
-                      title="Excluir"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => setEditandoUsuario(u)}
+                        className="p-1 text-ink/40 hover:text-brand hover:bg-brand/10 rounded transition-colors mr-2"
+                        title="Editar Usuário"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
+                      {u.matricula !== "347134" && (
+                        <button
+                          onClick={() => handleExcluir(u.id, u.nome)}
+                          disabled={excluindoId === u.id}
+                          className="text-ink/30 hover:text-danger disabled:opacity-50"
+                          title="Excluir"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="text-sm text-ink/60">
                     <p>Matrícula: {u.matricula}</p>

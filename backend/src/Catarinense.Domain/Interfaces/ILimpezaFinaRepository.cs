@@ -10,6 +10,7 @@ public interface ILimpezaFinaRepository : IRepositorioBase<LimpezaFina>
     /// pois as regras de negócio da entidade dependem dessas coleções.
     /// </summary>
     Task<LimpezaFina?> ObterComEtapasAsync(Guid id);
+    Task<LimpezaFina?> ObterEmAndamentoDoDiaPorOnibusAsync(Guid onibusId);
 
     Task<IReadOnlyList<LimpezaFina>> ListarPorOnibusAsync(Guid onibusId);
     Task<IReadOnlyList<LimpezaFina>> ListarPorOperadorAsync(Guid operadorId);

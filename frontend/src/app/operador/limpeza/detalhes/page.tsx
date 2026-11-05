@@ -43,6 +43,18 @@ function ChecklistLimpezaPageContent() {
       .catch((err) => setErro(err instanceof ApiError ? err.message : "Falha ao carregar o registro.")).finally(() => setCarregando(false));
   }, [usuario, id]);
 
+  // Sincronização automática (a cada 5s) para permitir que dois ou mais operadores
+  // trabalhem juntos nas etapas do mesmo ônibus simultaneamente em celulares diferentes.
+  useEffect(() => {
+    if (!usuario || !id || limpeza?.status !== "EmAndamento") return;
+    const interval = setInterval(() => {
+      api.obterDetalhesLimpeza(id, usuario.token)
+        .then((data) => setLimpeza(data))
+        .catch(() => { /* ignora falha momentânea de rede no polling */ });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [usuario, id, limpeza?.status]);
+
   const etapasObrigatorias = limpeza?.etapas.filter(e => {
     if (e.obrigatoria === false) return false;
     if (e.nome.toUpperCase().includes("CORTINA") && !limpeza.cortinasRetiradas) return false;
@@ -227,8 +239,8 @@ function ChecklistLimpezaPageContent() {
 
             <div className="flex items-center gap-6 rounded-xl bg-surface/50 p-3 text-sm font-medium text-ink/80">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-ink/40" />
-                <span className="truncate max-w-[120px]">Op: {limpeza.nomeOperador}</span>
+                <User className="h-4 w-4 text-ink/40 shrink-0" />
+                <span className="truncate max-w-[220px]" title={limpeza.nomeOperador}>Op: {limpeza.nomeOperador}</span>
               </div>
               <div className="h-4 w-px bg-line/50"></div>
               <div className="flex items-center gap-2">

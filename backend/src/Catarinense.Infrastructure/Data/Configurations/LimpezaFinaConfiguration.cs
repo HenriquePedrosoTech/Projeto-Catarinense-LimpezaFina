@@ -23,6 +23,8 @@ public class LimpezaFinaConfiguration : IEntityTypeConfiguration<LimpezaFina>
         builder.Property(l => l.AvaliadorId);
         builder.Property(l => l.ObservacaoAvaliacao).HasMaxLength(500);
         builder.Property(l => l.NotificacaoEnviada);
+        builder.Property(l => l.ColaboradoresIds).HasMaxLength(1000);
+        builder.Property(l => l.ColaboradoresNomes).HasMaxLength(1000);
         builder.Property(l => l.CriadoEm);
 
         // A entidade expõe "Etapas" como IReadOnlyCollection, mas o EF acessa

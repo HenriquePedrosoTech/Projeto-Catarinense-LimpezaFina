@@ -49,7 +49,7 @@ export default function NovaLimpezaPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-ink">Nova Limpeza</h1>
           <p className="mt-1 text-sm text-ink/60">
-            Informe o prefixo do veículo que será limpo.
+            Informe o prefixo do veículo. Se outro operador já abriu este ônibus hoje, você entrará no mesmo checklist para ajudar nas etapas.
           </p>
         </div>
 

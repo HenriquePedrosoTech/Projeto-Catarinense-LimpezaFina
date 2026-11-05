@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Catarinense.Application.Common;
 using Catarinense.Application.DTOs;
 using Catarinense.Application.Exceptions;
@@ -12,17 +12,20 @@ public class RegistrarFotoEtapaUseCase : IRegistrarFotoEtapaUseCase
 {
     private readonly ILimpezaFinaRepository _limpezaFinaRepository;
     private readonly IOnibusRepository _onibusRepository;
+    private readonly IUsuarioRepository _usuarioRepository;
     private readonly IArmazenamentoArquivoService _armazenamentoArquivoService;
     private readonly DetalhesDtoBuilder _detalhesDtoBuilder;
 
     public RegistrarFotoEtapaUseCase(
         ILimpezaFinaRepository limpezaFinaRepository,
         IOnibusRepository onibusRepository,
+        IUsuarioRepository usuarioRepository,
         IArmazenamentoArquivoService armazenamentoArquivoService,
         DetalhesDtoBuilder detalhesDtoBuilder)
     {
         _limpezaFinaRepository = limpezaFinaRepository;
         _onibusRepository = onibusRepository;
+        _usuarioRepository = usuarioRepository;
         _armazenamentoArquivoService = armazenamentoArquivoService;
         _detalhesDtoBuilder = detalhesDtoBuilder;
     }
@@ -31,6 +34,15 @@ public class RegistrarFotoEtapaUseCase : IRegistrarFotoEtapaUseCase
     {
         var limpeza = await _limpezaFinaRepository.ObterComEtapasAsync(request.LimpezaFinaId)
             ?? throw new NotFoundException("Registro de limpeza fina nao encontrado.");
+
+        if (!request.IsAdministrador && request.UsuarioLogadoId != limpeza.OperadorId)
+        {
+            var colaborador = await _usuarioRepository.ObterPorIdAsync(request.UsuarioLogadoId);
+            if (colaborador != null)
+            {
+                limpeza.AdicionarColaborador(colaborador.Id, colaborador.Nome);
+            }
+        }
 
         var onibus = await _onibusRepository.ObterPorIdAsync(limpeza.OnibusId);
         var prefixo = onibus?.Prefixo ?? "desconhecido";

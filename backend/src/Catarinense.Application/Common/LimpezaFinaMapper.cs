@@ -64,12 +64,16 @@ public static class LimpezaFinaMapper
             })
             .ToList();
 
+        var nomeOperadorCompleto = string.IsNullOrWhiteSpace(limpeza.ColaboradoresNomes)
+            ? operador.Nome
+            : $"{operador.Nome} + {limpeza.ColaboradoresNomes}";
+
         return new LimpezaFinaDetalhesDto(
             limpeza.Id,
             onibus.Prefixo,
             limpeza.NumeroOS,
             limpeza.Status.ToString(),
-            operador.Nome,
+            nomeOperadorCompleto,
             limpeza.IniciadaEm,
             limpeza.FinalizadaEm,
             limpeza.AvaliadaEm,
@@ -80,16 +84,22 @@ public static class LimpezaFinaMapper
         );
     }
 
-    public static LimpezaFinaResumoDto ParaResumoDto(LimpezaFina limpeza, Onibus onibus, Usuario operador) =>
-        new(
+    public static LimpezaFinaResumoDto ParaResumoDto(LimpezaFina limpeza, Onibus onibus, Usuario operador)
+    {
+        var nomeOperadorCompleto = string.IsNullOrWhiteSpace(limpeza.ColaboradoresNomes)
+            ? operador.Nome
+            : $"{operador.Nome} + {limpeza.ColaboradoresNomes}";
+
+        return new(
             limpeza.Id,
             onibus.Prefixo,
             limpeza.NumeroOS,
             limpeza.Status.ToString(),
-            operador.Nome,
+            nomeOperadorCompleto,
             limpeza.IniciadaEm,
             limpeza.FinalizadaEm,
             limpeza.NotificacaoEnviada,
             limpeza.CortinasRetiradas
         );
+    }
 }

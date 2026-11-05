@@ -38,6 +38,23 @@ public class IniciarLimpezaFinaUseCase : IIniciarLimpezaFinaUseCase
         var operador = await _usuarioRepository.ObterPorIdAsync(request.OperadorId)
             ?? throw new NotFoundException("Operador não encontrado.");
 
+        // Se já existir uma limpeza Em Andamento para este ônibus no mesmo dia,
+        // conecta o segundo operador na mesma limpeza (trabalho em dupla/equipe).
+        var limpezaExistente = await _limpezaFinaRepository.ObterEmAndamentoDoDiaPorOnibusAsync(onibus.Id);
+        if (limpezaExistente != null)
+        {
+            if (limpezaExistente.OperadorId != operador.Id)
+            {
+                limpezaExistente.AdicionarColaborador(operador.Id, operador.Nome);
+                _limpezaFinaRepository.Atualizar(limpezaExistente);
+                await _limpezaFinaRepository.SalvarAlteracoesAsync();
+            }
+
+            var operadorPrincipal = await _usuarioRepository.ObterPorIdAsync(limpezaExistente.OperadorId) ?? operador;
+            var etapasDictExistente = await LimpezaFinaMapper.CarregarEtapasPadraoAsync(_etapaPadraoRepository, limpezaExistente);
+            return LimpezaFinaMapper.ParaDetalhesDto(limpezaExistente, onibus, operadorPrincipal, etapasDictExistente);
+        }
+
         var etapasAtivas = await _etapaPadraoRepository.ListarAtivasAsync();
 
         var limpeza = new LimpezaFina(

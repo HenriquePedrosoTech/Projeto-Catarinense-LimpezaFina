@@ -21,6 +21,8 @@ public class LimpezaFina : EntidadeBase
     public string? ObservacaoAvaliacao { get; private set; }
     public bool NotificacaoEnviada { get; private set; }
     public bool CortinasRetiradas { get; private set; }
+    public string? ColaboradoresIds { get; private set; }
+    public string? ColaboradoresNomes { get; private set; }
 
     private readonly List<LimpezaEtapaExecucao> _etapas = new();
     public IReadOnlyCollection<LimpezaEtapaExecucao> Etapas => _etapas.AsReadOnly();
@@ -109,6 +111,30 @@ public class LimpezaFina : EntidadeBase
     {
         GarantirEmAndamento();
         CortinasRetiradas = retiradas;
+    }
+
+    public void AdicionarColaborador(Guid operadorId, string nomeOperador)
+    {
+        if (operadorId == Guid.Empty || operadorId == OperadorId || string.IsNullOrWhiteSpace(nomeOperador))
+            return;
+
+        var idStr = operadorId.ToString();
+        var idsAtuais = (ColaboradoresIds ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+
+        if (idsAtuais.Any(id => string.Equals(id, idStr, StringComparison.OrdinalIgnoreCase)))
+            return;
+
+        idsAtuais.Add(idStr);
+        ColaboradoresIds = string.Join(",", idsAtuais);
+
+        var nomesAtuais = (ColaboradoresNomes ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+
+        nomesAtuais.Add(nomeOperador.Trim());
+        ColaboradoresNomes = string.Join(", ", nomesAtuais);
     }
 
     /// <summary>

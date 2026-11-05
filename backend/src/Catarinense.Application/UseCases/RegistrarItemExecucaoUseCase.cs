@@ -93,6 +93,15 @@ public class RegistrarItemExecucaoUseCase : IRegistrarItemExecucaoUseCase
             throw new DomainException("Este item exige o envio de uma foto de evidência.");
         }
 
+        if (!isAdministrador && usuarioLogadoId != limpeza.OperadorId)
+        {
+            var colaborador = await _usuarioRepository.ObterPorIdAsync(usuarioLogadoId);
+            if (colaborador != null)
+            {
+                limpeza.AdicionarColaborador(colaborador.Id, colaborador.Nome);
+            }
+        }
+
         itemExecucao.RegistrarExecucao(statusEnum, funcEnum, relatoProblema, fotoUrlFinal, fotoDuplicadaOriginalPrefixo);
         etapaExecucao.VerificarConclusao();
 

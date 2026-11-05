@@ -15,15 +15,18 @@ public class AlternarConclusaoEtapaUseCase : IAlternarConclusaoEtapaUseCase
 {
     private readonly ILimpezaFinaRepository _limpezaFinaRepository;
     private readonly IEtapaPadraoRepository _etapaPadraoRepository;
+    private readonly IUsuarioRepository _usuarioRepository;
     private readonly DetalhesDtoBuilder _detalhesDtoBuilder;
 
     public AlternarConclusaoEtapaUseCase(
         ILimpezaFinaRepository limpezaFinaRepository,
         IEtapaPadraoRepository etapaPadraoRepository,
+        IUsuarioRepository usuarioRepository,
         DetalhesDtoBuilder detalhesDtoBuilder)
     {
         _limpezaFinaRepository = limpezaFinaRepository;
         _etapaPadraoRepository = etapaPadraoRepository;
+        _usuarioRepository = usuarioRepository;
         _detalhesDtoBuilder = detalhesDtoBuilder;
     }
 
@@ -37,6 +40,15 @@ public class AlternarConclusaoEtapaUseCase : IAlternarConclusaoEtapaUseCase
 
         var etapaPadrao = await _etapaPadraoRepository.ObterPorIdAsync(etapaPadraoId);
         bool exigeFoto = etapaPadrao?.ExigeFoto ?? false;
+
+        if (!isAdministrador && usuarioLogadoId != limpeza.OperadorId)
+        {
+            var colaborador = await _usuarioRepository.ObterPorIdAsync(usuarioLogadoId);
+            if (colaborador != null)
+            {
+                limpeza.AdicionarColaborador(colaborador.Id, colaborador.Nome);
+            }
+        }
 
         etapaExecucao.AlternarConclusaoManual(concluida, exigeFoto);
 

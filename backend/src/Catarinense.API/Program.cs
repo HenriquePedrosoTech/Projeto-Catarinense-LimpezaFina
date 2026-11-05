@@ -130,6 +130,14 @@ using (var scope = app.Services.CreateScope())
     try {
         await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;");
     } catch { /* ignora se a coluna ja existir */ }
+
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresIds VARCHAR(1000) NULL;");
+    } catch { /* ignora se a coluna ja existir */ }
+
+    try {
+        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresNomes VARCHAR(1000) NULL;");
+    } catch { /* ignora se a coluna ja existir */ }
 }
 
 // ---------- Seed do primeiro Administrador (só roda se SeedAdmin:Habilitado = true) ----------

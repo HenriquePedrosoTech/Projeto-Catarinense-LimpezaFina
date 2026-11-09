@@ -5,4 +5,5 @@ namespace Catarinense.Domain.Interfaces;
 public interface IUsuarioRepository : IRepositorioBase<Usuario>
 {
     Task<Usuario?> ObterPorMatriculaAsync(string matricula);
+    Task<IReadOnlyList<Usuario>> BuscarPorMatriculaOuNomeAsync(string identificador);
 }

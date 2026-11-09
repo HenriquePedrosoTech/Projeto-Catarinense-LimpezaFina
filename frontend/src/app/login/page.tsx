@@ -112,20 +112,20 @@ export default function LoginPage() {
           <div className="mb-8">
             <h1 className="text-2xl font-bold tracking-tight text-ink">Entrar no sistema</h1>
             <p className="mt-1 text-sm text-ink/60">
-              Use sua matrícula e senha para acessar.
+              Use seu nome ou matrícula e sua senha para acessar.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <Input
               id="matricula"
-              label="Matrícula"
+              label="Nome ou Matrícula"
               type="text"
               required
               autoFocus
               value={matricula}
               onChange={(e) => setMatricula(e.target.value)}
-              placeholder="Ex.: 00123"
+              placeholder="Ex.: João ou 00123"
             />
 
             <Input

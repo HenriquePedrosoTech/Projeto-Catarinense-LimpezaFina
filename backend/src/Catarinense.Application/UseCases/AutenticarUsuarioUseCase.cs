@@ -7,8 +7,7 @@ using Catarinense.Domain.Interfaces;
 namespace Catarinense.Application.UseCases;
 
 /// <summary>
-/// Valida matrícula + senha e retorna um token de acesso.
-/// Depende só de abstrações (repositório, hasher, gerador de token) — nunca de EF Core ou JWT diretamente.
+/// Valida matrícula (ou nome de usuário) + senha e retorna um token de acesso.
 /// </summary>
 public class AutenticarUsuarioUseCase : IAutenticarUsuarioUseCase
 {
@@ -28,28 +27,39 @@ public class AutenticarUsuarioUseCase : IAutenticarUsuarioUseCase
 
     public async Task<LoginResponse> ExecutarAsync(LoginRequest request)
     {
-        var usuario = await _usuarioRepository.ObterPorMatriculaAsync(request.Matricula)
-            ?? throw new NaoAutorizadoException("Matrícula ou senha inválida.");
+        var candidatos = await _usuarioRepository.BuscarPorMatriculaOuNomeAsync(request.Matricula);
+        if (candidatos.Count == 0)
+            throw new NaoAutorizadoException("Nome/matrícula ou senha inválida.");
 
-        if (usuario.EstaBloqueado())
-            throw new NaoAutorizadoException("Conta temporariamente bloqueada por muitas tentativas incorretas. Tente novamente em alguns minutos.");
+        // Se houver mais de um candidato (ex: dois operadores com o mesmo primeiro nome),
+        // prioriza o que está ativo e cuja senha confere.
+        var usuarioAutenticado = candidatos.FirstOrDefault(u =>
+            u.Ativo && !u.EstaBloqueado() && _passwordHasher.Verificar(request.Senha, u.SenhaHash));
 
-        if (!usuario.Ativo || !_passwordHasher.Verificar(request.Senha, usuario.SenhaHash))
+        if (usuarioAutenticado is null)
         {
-            // Mesma mensagem genérica em ambos os casos (matrícula errada ou senha errada),
-            // pra não dar dica pra quem está tentando adivinhar matrículas válidas.
-            usuario.RegistrarTentativaFalha();
-            _usuarioRepository.Atualizar(usuario);
+            var primeiro = candidatos[0];
+            if (primeiro.EstaBloqueado())
+                throw new NaoAutorizadoException("Conta temporariamente bloqueada por muitas tentativas incorretas. Tente novamente em alguns minutos.");
+
+            primeiro.RegistrarTentativaFalha();
+            _usuarioRepository.Atualizar(primeiro);
             await _usuarioRepository.SalvarAlteracoesAsync();
-            throw new NaoAutorizadoException("Matrícula ou senha inválida.");
+            throw new NaoAutorizadoException("Nome/matrícula ou senha inválida.");
         }
 
-        usuario.RegistrarLoginComSucesso();
-        _usuarioRepository.Atualizar(usuario);
+        usuarioAutenticado.RegistrarLoginComSucesso();
+        _usuarioRepository.Atualizar(usuarioAutenticado);
         await _usuarioRepository.SalvarAlteracoesAsync();
 
-        var token = _jwtTokenGenerator.GerarToken(usuario);
+        var token = _jwtTokenGenerator.GerarToken(usuarioAutenticado);
 
-        return new LoginResponse(usuario.Id, usuario.Nome, usuario.Matricula, usuario.Perfil.ToString(), token, usuario.PrecisaTrocarSenha);
+        return new LoginResponse(
+            usuarioAutenticado.Id,
+            usuarioAutenticado.Nome,
+            usuarioAutenticado.Matricula,
+            usuarioAutenticado.Perfil.ToString(),
+            token,
+            usuarioAutenticado.PrecisaTrocarSenha);
     }
 }

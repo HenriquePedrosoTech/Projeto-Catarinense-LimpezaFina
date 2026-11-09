@@ -129,7 +129,10 @@ _ = Task.Run(async () =>
             "ALTER TABLE etapas_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;",
             "ALTER TABLE etapas_itens_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;",
             "ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresIds VARCHAR(1000) NULL;",
-            "ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresNomes VARCHAR(1000) NULL;"
+            "ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresNomes VARCHAR(1000) NULL;",
+            "ALTER TABLE usuarios ADD COLUMN IsMaster TINYINT(1) NOT NULL DEFAULT 0;",
+            "UPDATE usuarios SET IsMaster = 1 WHERE Matricula = '347134';",
+            "ALTER TABLE usuarios MODIFY COLUMN Matricula VARCHAR(100) NOT NULL;"
         };
 
         foreach (var sql in sqlComandos)

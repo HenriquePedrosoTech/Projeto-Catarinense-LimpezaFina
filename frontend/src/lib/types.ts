@@ -9,6 +9,7 @@ export interface Usuario {
   perfil: Perfil;
   token: string;
   precisaTrocarSenha: boolean;
+  isMaster?: boolean;
 }
 
 export interface EtapaResumo {
@@ -107,6 +108,7 @@ export interface UsuarioResumo {
   email: string | null;
   perfil: Perfil;
   ativo: boolean;
+  isMaster?: boolean;
 }
 
 export interface ItemImportacaoErro {

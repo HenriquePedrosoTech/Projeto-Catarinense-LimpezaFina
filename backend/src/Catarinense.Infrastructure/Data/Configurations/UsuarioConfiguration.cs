@@ -14,7 +14,7 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.Id).ValueGeneratedNever(); // Guid gerado pela aplicação (Domain), nunca pelo banco
 
         builder.Property(u => u.Matricula)
-            .HasMaxLength(20)
+            .HasMaxLength(100)
             .IsRequired();
         builder.HasIndex(u => u.Matricula).IsUnique();
 
@@ -23,6 +23,7 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.SenhaHash).HasMaxLength(200).IsRequired();
         builder.Property(u => u.Perfil).HasConversion<string>().HasMaxLength(30);
         builder.Property(u => u.Ativo);
+        builder.Property(u => u.IsMaster);
         builder.Property(u => u.TentativasFalhasLogin);
         builder.Property(u => u.BloqueadoAte);
         builder.Property(u => u.CriadoEm);

@@ -36,6 +36,6 @@ public class CadastrarUsuarioUseCase : ICadastrarUsuarioUseCase
         await _usuarioRepository.AdicionarAsync(usuario);
         await _usuarioRepository.SalvarAlteracoesAsync();
 
-        return new UsuarioResumoDto(usuario.Id, usuario.Matricula, usuario.Nome, usuario.Email, usuario.Perfil.ToString(), usuario.Ativo);
+        return new UsuarioResumoDto(usuario.Id, usuario.Matricula, usuario.Nome, usuario.Email, usuario.Perfil.ToString(), usuario.Ativo, usuario.EhMaster());
     }
 }

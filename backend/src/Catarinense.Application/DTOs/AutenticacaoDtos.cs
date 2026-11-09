@@ -2,5 +2,5 @@ namespace Catarinense.Application.DTOs;
 
 public record LoginRequest(string Matricula, string Senha);
 
-public record LoginResponse(Guid UsuarioId, string Nome, string Matricula, string Perfil, string Token, bool PrecisaTrocarSenha);
+public record LoginResponse(Guid UsuarioId, string Nome, string Matricula, string Perfil, string Token, bool PrecisaTrocarSenha, bool IsMaster = false);
 public record TrocarSenhaRequest(string NovaSenha);

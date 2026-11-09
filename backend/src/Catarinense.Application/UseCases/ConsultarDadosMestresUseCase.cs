@@ -23,7 +23,7 @@ public class ConsultarDadosMestresUseCase : IConsultarDadosMestresUseCase
     public async Task<IReadOnlyList<UsuarioResumoDto>> ListarUsuariosAsync()
     {
         var usuarios = await _usuarioRepository.ListarAsync();
-        return usuarios.Select(u => new UsuarioResumoDto(u.Id, u.Matricula, u.Nome, u.Email, u.Perfil.ToString(), u.Ativo)).ToList();
+        return usuarios.Select(u => new UsuarioResumoDto(u.Id, u.Matricula, u.Nome, u.Email, u.Perfil.ToString(), u.Ativo, u.EhMaster())).ToList();
     }
 
     public async Task<IReadOnlyList<OnibusResumoDto>> ListarOnibusAsync()

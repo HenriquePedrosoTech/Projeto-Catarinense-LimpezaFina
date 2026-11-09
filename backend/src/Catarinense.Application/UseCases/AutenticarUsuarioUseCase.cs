@@ -60,6 +60,7 @@ public class AutenticarUsuarioUseCase : IAutenticarUsuarioUseCase
             usuarioAutenticado.Matricula,
             usuarioAutenticado.Perfil.ToString(),
             token,
-            usuarioAutenticado.PrecisaTrocarSenha);
+            usuarioAutenticado.PrecisaTrocarSenha,
+            usuarioAutenticado.EhMaster());
     }
 }

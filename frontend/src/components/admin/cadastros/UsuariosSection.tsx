@@ -168,7 +168,7 @@ export function UsuariosSection({ token }: { token: string }) {
                       <div>
                         <p className="font-bold text-ink leading-tight">{u.nome}</p>
                         <p className="text-xs font-medium text-ink/50">
-                          {u.matricula === "347134"
+                          {u.isMaster || u.matricula === "347134"
                             ? "Administrador Master"
                             : u.perfil === "Administrador"
                             ? "Avaliador / Admin"
@@ -184,7 +184,7 @@ export function UsuariosSection({ token }: { token: string }) {
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
-                      {u.matricula !== "347134" && (
+                      {!u.isMaster && u.matricula !== "347134" && (
                         <button
                           onClick={() => handleExcluir(u.id, u.nome)}
                           disabled={excluindoId === u.id}

@@ -15,6 +15,7 @@ public class Usuario : EntidadeBase
     public PerfilUsuario Perfil { get; private set; }
     public bool PrecisaTrocarSenha { get; private set; } = true;
     public bool Ativo { get; private set; } = true;
+    public bool IsMaster { get; private set; }
     public int TentativasFalhasLogin { get; private set; }
     public DateTime? BloqueadoAte { get; private set; }
 
@@ -39,6 +40,7 @@ public class Usuario : EntidadeBase
         SenhaHash = senhaHash;
         Perfil = perfil;
         Email = email?.Trim();
+        IsMaster = string.Equals(Matricula, MatriculaMaster, StringComparison.OrdinalIgnoreCase);
     }
 
     
@@ -48,10 +50,16 @@ public class Usuario : EntidadeBase
         PrecisaTrocarSenha = false;
     }
 
-    public void Atualizar(string nome, string? email, string? senhaHash = null)
+    public void Atualizar(string nome, string? email, string? senhaHash = null, string? novaMatricula = null)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new DomainException("O nome e obrigatorio.");
+        if (!string.IsNullOrWhiteSpace(novaMatricula))
+        {
+            if (string.Equals(Matricula, MatriculaMaster, StringComparison.OrdinalIgnoreCase))
+                IsMaster = true;
+            Matricula = novaMatricula.Trim();
+        }
         Nome = nome.Trim();
         Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
         if (!string.IsNullOrWhiteSpace(senhaHash))
@@ -65,7 +73,7 @@ public class Usuario : EntidadeBase
 
     public bool EhAdministrador() => Perfil == PerfilUsuario.Administrador;
 
-    public bool EhMaster() => string.Equals(Matricula?.Trim(), MatriculaMaster, StringComparison.OrdinalIgnoreCase);
+    public bool EhMaster() => IsMaster || string.Equals(Matricula?.Trim(), MatriculaMaster, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Verdadeiro enquanto o bloqueio temporário por tentativas erradas ainda estiver valendo.</summary>
     public bool EstaBloqueado() => BloqueadoAte is not null && BloqueadoAte > DateTime.UtcNow;

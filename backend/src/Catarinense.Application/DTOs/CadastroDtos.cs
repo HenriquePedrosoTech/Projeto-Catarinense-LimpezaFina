@@ -1,7 +1,7 @@
 namespace Catarinense.Application.DTOs;
 
 public record CadastrarUsuarioRequest(string Matricula, string Nome, string Senha, string Perfil, string? Email);
-public record UsuarioResumoDto(Guid Id, string Matricula, string Nome, string? Email, string Perfil, bool Ativo);
+public record UsuarioResumoDto(Guid Id, string Matricula, string Nome, string? Email, string Perfil, bool Ativo, bool IsMaster = false);
 
 public record CadastrarOnibusRequest(string Prefixo, string? Placa);
 public record OnibusResumoDto(Guid Id, string Prefixo, string? Placa, bool Ativo);

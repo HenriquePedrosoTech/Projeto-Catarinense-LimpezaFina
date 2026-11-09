@@ -22,8 +22,9 @@ public static class InfrastructureServiceCollectionExtensions
         var connectionString = configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("Connection string 'MySql' não configurada em appsettings.json.");
 
+        var serverVersion = new MySqlServerVersion(new Version(8, 0, 11));
         services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            options.UseMySql(connectionString, serverVersion));
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));

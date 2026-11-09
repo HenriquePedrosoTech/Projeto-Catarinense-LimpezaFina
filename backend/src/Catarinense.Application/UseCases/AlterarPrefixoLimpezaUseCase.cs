@@ -48,3 +48,4 @@ public class AlterarPrefixoLimpezaUseCase : IAlterarPrefixoLimpezaUseCase
         return await _detalhesDtoBuilder.ConstruirAsync(limpeza);
     }
 }
+

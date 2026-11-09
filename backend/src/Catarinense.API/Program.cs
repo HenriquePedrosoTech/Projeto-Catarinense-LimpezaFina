@@ -112,54 +112,39 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// ---------- Apply EF Core Migrations ----------
-using (var scope = app.Services.CreateScope())
+// ---------- Inicialização de Schema e Seeds em Background (não trava o boot do Kestrel) ----------
+_ = Task.Run(async () =>
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<Catarinense.Infrastructure.Data.AppDbContext>();
-    // EF Core Migrations estao desativadas no Render porque o historico de migrations foi perdido e isso causava erro de Table Already Exists.
-    // Aplicaremos apenas as alteracoes necessarias via SQL raw para nao quebrar:
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_padrao ADD COLUMN Descricao LONGTEXT NULL;");
-    } catch { /* ignora se a coluna ja existir */ }
-    
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraDescricao LONGTEXT NULL;");
-    } catch { /* ignora se a coluna ja existir */ }
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<Catarinense.Infrastructure.Data.AppDbContext>();
+        var sqlComandos = new[]
+        {
+            "ALTER TABLE etapas_itens_padrao ADD COLUMN Descricao LONGTEXT NULL;",
+            "ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraDescricao LONGTEXT NULL;",
+            "ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraFotoUrl VARCHAR(1000) NULL;",
+            "ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraFotoDuplicadaOriginalPrefixo VARCHAR(100) NULL;",
+            "ALTER TABLE etapas_itens_execucao ADD COLUMN FotoDuplicadaOriginalPrefixo VARCHAR(100) NULL;",
+            "ALTER TABLE etapas_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;",
+            "ALTER TABLE etapas_itens_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;",
+            "ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresIds VARCHAR(1000) NULL;",
+            "ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresNomes VARCHAR(1000) NULL;"
+        };
 
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraFotoUrl VARCHAR(1000) NULL;");
-    } catch { /* ignora se a coluna ja existir */ }
+        foreach (var sql in sqlComandos)
+        {
+            try { await dbContext.Database.ExecuteSqlRawAsync(sql); } catch { /* coluna já existe */ }
+        }
 
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpeza_etapa_execucoes ADD COLUMN ProblemaExtraFotoDuplicadaOriginalPrefixo VARCHAR(100) NULL;");
-    } catch { /* ignora se a coluna ja existir */ }
-
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_execucao ADD COLUMN FotoDuplicadaOriginalPrefixo VARCHAR(100) NULL;");
-    } catch { /* ignora se a coluna ja existir */ }
-
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;");
-    } catch { /* ignora se a coluna ja existir */ }
-
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE etapas_itens_padrao ADD COLUMN ExigeFoto TINYINT(1) NOT NULL DEFAULT 0;");
-    } catch { /* ignora se a coluna ja existir */ }
-
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresIds VARCHAR(1000) NULL;");
-    } catch { /* ignora se a coluna ja existir */ }
-
-    try {
-        await dbContext.Database.ExecuteSqlRawAsync("ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresNomes VARCHAR(1000) NULL;");
-    } catch { /* ignora se a coluna ja existir */ }
-}
-
-// ---------- Seed do primeiro Administrador (só roda se SeedAdmin:Habilitado = true) ----------
-await SeedAdministradorInicial.ExecutarAsync(app.Services, app.Configuration, app.Logger);
-
-// ---------- Seed das etapas padrão do checklist (roda sempre que a tabela estiver vazia) ----------
-await SeedEtapasPadraoIniciais.ExecutarAsync(app.Services, app.Logger);
+        await SeedAdministradorInicial.ExecutarAsync(app.Services, app.Configuration, app.Logger);
+        await SeedEtapasPadraoIniciais.ExecutarAsync(app.Services, app.Logger);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Erro não crítico na verificação inicial de schema/seed.");
+    }
+});
 
 // ---------- Pipeline ----------
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -198,6 +183,7 @@ app.UseCors(CorsPolicyFrontend);
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }));
 app.MapControllers();
 
 app.Run();

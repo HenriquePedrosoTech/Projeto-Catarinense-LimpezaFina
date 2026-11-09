@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Catarinense.Application.DTOs;
 using Catarinense.Application.Exceptions;
@@ -41,7 +41,7 @@ public class EditarUsuarioUseCase : IEditarUsuarioUseCase
             hash = _passwordHasher.Hash(request.Senha);
         }
 
-        usuario.Atualizar(request.Nome, request.Email, hash, request.Matricula);
+        usuario.Atualizar(request.Nome, request.Email, hash, request.Matricula, request.LoginAcesso);
 
         _usuarioRepository.Atualizar(usuario);
         await _usuarioRepository.SalvarAlteracoesAsync();
@@ -53,7 +53,8 @@ public class EditarUsuarioUseCase : IEditarUsuarioUseCase
             usuario.Email,
             usuario.Perfil.ToString(),
             usuario.Ativo,
-            usuario.EhMaster()
+            usuario.EhMaster(),
+            usuario.LoginAcesso
         );
     }
 }

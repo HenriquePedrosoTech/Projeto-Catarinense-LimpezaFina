@@ -13,6 +13,7 @@ import type { UsuarioResumo } from "@/lib/types";
 export function UsuariosSection({ token }: { token: string }) {
   const [lista, setLista] = useState<UsuarioResumo[]>([]);
   const [matricula, setMatricula] = useState("");
+  const [loginAcesso, setLoginAcesso] = useState("");
   const [nome, setNome] = useState("");
   const [senha, setSenha] = useState("");
   const [email, setEmail] = useState("");
@@ -35,8 +36,9 @@ export function UsuariosSection({ token }: { token: string }) {
     setErro(null);
     setEnviando(true);
     try {
-      await api.cadastrarUsuario(token, matricula.trim(), nome.trim(), senha, perfil, email.trim());
+      await api.cadastrarUsuario(token, matricula.trim(), nome.trim(), senha, perfil, email.trim(), loginAcesso.trim());
       setMatricula("");
+      setLoginAcesso("");
       setNome("");
       setSenha("");
       setEmail("");
@@ -121,6 +123,12 @@ export function UsuariosSection({ token }: { token: string }) {
                 </div>
               </div>
               <Input
+                label="Nome de Login (Opcional)"
+                placeholder="Ex.: joao.silva"
+                value={loginAcesso}
+                onChange={(e) => setLoginAcesso(e.target.value)}
+              />
+              <Input
                 label="Nome Completo"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
@@ -198,6 +206,7 @@ export function UsuariosSection({ token }: { token: string }) {
                   </div>
                   <div className="text-sm text-ink/60">
                     <p>Matrícula: {u.matricula}</p>
+                    {u.loginAcesso && <p>Login: {u.loginAcesso}</p>}
                     {u.email && <p className="truncate">E-mail: {u.email}</p>}
                   </div>
                 </div>

@@ -132,7 +132,8 @@ _ = Task.Run(async () =>
             "ALTER TABLE limpezas_finas ADD COLUMN ColaboradoresNomes VARCHAR(1000) NULL;",
             "ALTER TABLE usuarios ADD COLUMN IsMaster TINYINT(1) NOT NULL DEFAULT 0;",
             "UPDATE usuarios SET IsMaster = 1 WHERE Matricula = '347134';",
-            "ALTER TABLE usuarios MODIFY COLUMN Matricula VARCHAR(100) NOT NULL;"
+            "ALTER TABLE usuarios MODIFY COLUMN Matricula VARCHAR(100) NOT NULL;",
+            "ALTER TABLE usuarios ADD COLUMN LoginAcesso VARCHAR(100) NULL;"
         };
 
         foreach (var sql in sqlComandos)

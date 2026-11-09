@@ -1,4 +1,4 @@
-﻿import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { X, Check, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -17,6 +17,7 @@ interface UsuarioEditModalProps {
 export function UsuarioEditModal({ aberto, usuario, onClose, onSuccess, token }: UsuarioEditModalProps) {
   const { usuario: usuarioLogado, atualizarUsuario } = useAuth();
   const [matricula, setMatricula] = useState("");
+  const [loginAcesso, setLoginAcesso] = useState("");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -27,6 +28,7 @@ export function UsuarioEditModal({ aberto, usuario, onClose, onSuccess, token }:
   useEffect(() => {
     if (usuario && aberto) {
       setMatricula(usuario.matricula);
+      setLoginAcesso(usuario.loginAcesso || "");
       setNome(usuario.nome);
       setEmail(usuario.email || "");
       setSenha("");
@@ -46,6 +48,7 @@ export function UsuarioEditModal({ aberto, usuario, onClose, onSuccess, token }:
       const response = await api.editarUsuario(token, usuario!.id, {
         id: usuario!.id,
         matricula: matricula.trim(),
+        loginAcesso: loginAcesso.trim() || null,
         nome: nome.trim(),
         email: email.trim() || null,
         senha: senha || null
@@ -89,19 +92,32 @@ export function UsuarioEditModal({ aberto, usuario, onClose, onSuccess, token }:
           )}
 
           <form id="edit-user-form" onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-ink/70 mb-1">Login / Matrícula de Acesso</label>
-              <Input
-                value={matricula}
-                onChange={(e) => setMatricula(e.target.value)}
-                placeholder="Ex.: 00123 ou joao.silva"
-                required
-              />
-              <p className="text-xs text-ink/50 mt-1">Pode ser um número de matrícula ou um login personalizado.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-ink/70 mb-1">Nº da Matrícula</label>
+                <Input
+                  value={matricula}
+                  onChange={(e) => setMatricula(e.target.value)}
+                  placeholder="Ex.: 00123"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-ink/70 mb-1">Nome de Login (Acesso)</label>
+                <Input
+                  value={loginAcesso}
+                  onChange={(e) => setLoginAcesso(e.target.value)}
+                  placeholder="Ex.: joao.silva"
+                />
+              </div>
             </div>
+            <p className="text-xs text-ink/50 -mt-2">
+              O usuário poderá entrar no sistema usando tanto o <strong>Nº da Matrícula</strong> quanto o <strong>Nome de Login</strong>.
+            </p>
 
             <div>
-              <label className="block text-sm font-medium text-ink/70 mb-1">Nome de Usuário (também válido para login)</label>
+              <label className="block text-sm font-medium text-ink/70 mb-1">Nome Completo</label>
               <Input
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}

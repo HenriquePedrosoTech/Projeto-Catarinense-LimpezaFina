@@ -18,6 +18,7 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
             .IsRequired();
         builder.HasIndex(u => u.Matricula).IsUnique();
 
+        builder.Property(u => u.LoginAcesso).HasMaxLength(100);
         builder.Property(u => u.Nome).HasMaxLength(150).IsRequired();
         builder.Property(u => u.Email).HasMaxLength(150);
         builder.Property(u => u.SenhaHash).HasMaxLength(200).IsRequired();

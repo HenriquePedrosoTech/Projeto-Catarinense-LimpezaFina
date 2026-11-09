@@ -9,6 +9,7 @@ namespace Catarinense.Domain.Entities;
 public class Usuario : EntidadeBase
 {
     public string Matricula { get; private set; } = string.Empty;
+    public string? LoginAcesso { get; private set; }
     public string Nome { get; private set; } = string.Empty;
     public string? Email { get; private set; }
     public string SenhaHash { get; private set; } = string.Empty;
@@ -24,7 +25,7 @@ public class Usuario : EntidadeBase
 
     protected Usuario() { } // uso por ORM
 
-    public Usuario(string matricula, string nome, string senhaHash, PerfilUsuario perfil, string? email = null)
+    public Usuario(string matricula, string nome, string senhaHash, PerfilUsuario perfil, string? email = null, string? loginAcesso = null)
     {
         if (string.IsNullOrWhiteSpace(matricula))
             throw new DomainException("A matrícula é obrigatória.");
@@ -36,6 +37,7 @@ public class Usuario : EntidadeBase
             throw new DomainException("A senha é obrigatória.");
 
         Matricula = matricula.Trim();
+        LoginAcesso = string.IsNullOrWhiteSpace(loginAcesso) ? null : loginAcesso.Trim();
         Nome = nome.Trim();
         SenhaHash = senhaHash;
         Perfil = perfil;
@@ -50,7 +52,7 @@ public class Usuario : EntidadeBase
         PrecisaTrocarSenha = false;
     }
 
-    public void Atualizar(string nome, string? email, string? senhaHash = null, string? novaMatricula = null)
+    public void Atualizar(string nome, string? email, string? senhaHash = null, string? novaMatricula = null, string? loginAcesso = null)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new DomainException("O nome e obrigatorio.");
@@ -60,6 +62,7 @@ public class Usuario : EntidadeBase
                 IsMaster = true;
             Matricula = novaMatricula.Trim();
         }
+        LoginAcesso = string.IsNullOrWhiteSpace(loginAcesso) ? null : loginAcesso.Trim();
         Nome = nome.Trim();
         Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
         if (!string.IsNullOrWhiteSpace(senhaHash))

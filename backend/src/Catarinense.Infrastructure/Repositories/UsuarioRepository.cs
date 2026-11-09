@@ -33,16 +33,22 @@ public class UsuarioRepository : RepositorioBase<Usuario>, IUsuarioRepository
         var candidatos = todos
             .Select(u =>
             {
+                var matriculaNorm = Normalizar(u.Matricula);
+                var loginNorm = Normalizar(u.LoginAcesso ?? "");
                 var nomeNorm = Normalizar(u.Nome);
                 var primeiroNomeNorm = nomeNorm.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
 
                 int prioridade = 99;
-                if (string.Equals(Normalizar(u.Matricula), termoNorm, StringComparison.Ordinal))
+                if (string.Equals(matriculaNorm, termoNorm, StringComparison.Ordinal))
+                    prioridade = 1;
+                else if (!string.IsNullOrEmpty(loginNorm) && string.Equals(loginNorm, termoNorm, StringComparison.Ordinal))
                     prioridade = 1;
                 else if (string.Equals(nomeNorm, termoNorm, StringComparison.Ordinal))
                     prioridade = 2;
                 else if (string.Equals(primeiroNomeNorm, termoNorm, StringComparison.Ordinal))
                     prioridade = 3;
+                else if (!string.IsNullOrEmpty(loginNorm) && loginNorm.StartsWith(termoNorm, StringComparison.Ordinal))
+                    prioridade = 4;
                 else if (nomeNorm.StartsWith(termoNorm, StringComparison.Ordinal))
                     prioridade = 4;
                 else if (nomeNorm.Contains(termoNorm, StringComparison.Ordinal))

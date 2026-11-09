@@ -31,11 +31,11 @@ public class CadastrarUsuarioUseCase : ICadastrarUsuarioUseCase
             throw new DomainException("A senha precisa ter no mínimo 8 caracteres.");
 
         var senhaHash = _passwordHasher.Hash(request.Senha);
-        var usuario = new Usuario(request.Matricula, request.Nome, senhaHash, perfil, request.Email);
+        var usuario = new Usuario(request.Matricula, request.Nome, senhaHash, perfil, request.Email, request.LoginAcesso);
 
         await _usuarioRepository.AdicionarAsync(usuario);
         await _usuarioRepository.SalvarAlteracoesAsync();
 
-        return new UsuarioResumoDto(usuario.Id, usuario.Matricula, usuario.Nome, usuario.Email, usuario.Perfil.ToString(), usuario.Ativo, usuario.EhMaster());
+        return new UsuarioResumoDto(usuario.Id, usuario.Matricula, usuario.Nome, usuario.Email, usuario.Perfil.ToString(), usuario.Ativo, usuario.EhMaster(), usuario.LoginAcesso);
     }
 }

@@ -104,6 +104,7 @@ export interface EtapaPadraoResumo {
 export interface UsuarioResumo {
   id: string;
   matricula: string;
+  loginAcesso?: string | null;
   nome: string;
   email: string | null;
   perfil: Perfil;

@@ -223,12 +223,20 @@ export const api = {
     nome: string,
     senha: string,
     perfil: "Operador" | "Administrador",
-    email: string
+    email: string,
+    loginAcesso?: string
   ) =>
     request<UsuarioResumo>("/api/usuarios", {
       method: "POST",
       token,
-      body: JSON.stringify({ matricula, nome, senha, perfil, email: email || null }),
+      body: JSON.stringify({
+        matricula,
+        nome,
+        senha,
+        perfil,
+        email: email || null,
+        loginAcesso: loginAcesso?.trim() || null,
+      }),
     }),
 
   editarUsuario: (token: string, usuarioId: string, dados: any) =>

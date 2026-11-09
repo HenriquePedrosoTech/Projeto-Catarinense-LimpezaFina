@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 import type { LimpezaFinaDetalhes } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, X, Camera, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle, AlertTriangle, Bus, User, Calendar, X, Camera, ArrowRight, Edit2, Check } from "lucide-react";
 import { EtapaCard } from "@/components/EtapaCard";
 
 export default function ChecklistLimpezaPage() {
@@ -35,6 +35,9 @@ function ChecklistLimpezaPageContent() {
   const [enviandoProblema, setEnviandoProblema] = useState(false);
   const inputFotoExtraRef = useRef<HTMLInputElement>(null);
   const [etapaAtivaId, setEtapaAtivaId] = useState<string | null>(null);
+  const [editandoPrefixo, setEditandoPrefixo] = useState(false);
+  const [novoPrefixoInput, setNovoPrefixoInput] = useState("");
+  const [salvandoPrefixo, setSalvandoPrefixo] = useState(false);
 
   useEffect(() => {
     if (!usuario) return;
@@ -171,6 +174,28 @@ function ChecklistLimpezaPageContent() {
     }
   }
 
+  async function handleSalvarPrefixo() {
+    if (!usuario || !limpeza) return;
+    const prefLimpo = novoPrefixoInput.trim().toUpperCase();
+    if (!prefLimpo || prefLimpo === limpeza.prefixo) {
+      setEditandoPrefixo(false);
+      return;
+    }
+    setSalvandoPrefixo(true);
+    try {
+      const atualizado = await api.alterarPrefixoLimpeza(usuario.token, limpeza.id, prefLimpo);
+      setLimpeza(atualizado);
+      setEditandoPrefixo(false);
+    } catch (err) {
+      setAlerta({
+        titulo: "Erro ao alterar prefixo",
+        mensagem: err instanceof ApiError ? err.message : "Não foi possível alterar o prefixo do ônibus."
+      });
+    } finally {
+      setSalvandoPrefixo(false);
+    }
+  }
+
   const indexAtual = limpeza?.etapas.findIndex(e => e.etapaPadraoId === etapaAtivaId) ?? -1;
   const temProxima = indexAtual >= 0 && indexAtual < (limpeza?.etapas.length ?? 0) - 1;
   
@@ -226,7 +251,54 @@ function ChecklistLimpezaPageContent() {
                   <Bus className="h-6 w-6" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-ink">Prefixo {limpeza.prefixo}</h1>
+                  {editandoPrefixo ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={novoPrefixoInput}
+                        onChange={(e) => setNovoPrefixoInput(e.target.value.toUpperCase())}
+                        placeholder="Ex: 3719"
+                        className="w-28 rounded-lg border border-brand bg-surface px-2.5 py-1 text-base font-bold uppercase text-ink focus:outline-none focus:ring-2 focus:ring-brand"
+                        autoFocus
+                        disabled={salvandoPrefixo}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSalvarPrefixo}
+                        disabled={salvandoPrefixo}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-success text-white hover:bg-success/90 disabled:opacity-50"
+                        title="Salvar prefixo"
+                      >
+                        {salvandoPrefixo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditandoPrefixo(false)}
+                        disabled={salvandoPrefixo}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface text-ink/60 hover:bg-line/50"
+                        title="Cancelar"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-xl font-bold text-ink">Prefixo {limpeza.prefixo}</h1>
+                      {emAndamento && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNovoPrefixoInput(limpeza.prefixo);
+                            setEditandoPrefixo(true);
+                          }}
+                          className="rounded-lg p-1.5 text-ink/40 hover:bg-surface hover:text-brand transition-colors"
+                          title="Editar prefixo do ônibus"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  )}
                   <p className="text-sm font-medium text-ink/50">
                     {limpeza.numeroOS ? `O.S. ${limpeza.numeroOS}` : "O.S. Pendente"}
                   </p>

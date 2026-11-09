@@ -113,6 +113,17 @@ public class LimpezaFina : EntidadeBase
         CortinasRetiradas = retiradas;
     }
 
+    public void AlterarOnibus(Guid novoOnibusId)
+    {
+        if (novoOnibusId == Guid.Empty)
+            throw new DomainException("O ônibus informado é inválido.");
+
+        if (Status == StatusLimpeza.Aprovada)
+            throw new DomainException("Não é possível alterar o prefixo de uma limpeza já aprovada.");
+
+        OnibusId = novoOnibusId;
+    }
+
     public void AdicionarColaborador(Guid operadorId, string nomeOperador)
     {
         if (operadorId == Guid.Empty || operadorId == OperadorId || string.IsNullOrWhiteSpace(nomeOperador))

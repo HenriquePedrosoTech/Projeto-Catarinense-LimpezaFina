@@ -71,6 +71,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<Catarinense.Application.Interfaces.UseCases.ITrocarSenhaUsuarioUseCase, Catarinense.Application.UseCases.TrocarSenhaUsuarioUseCase>();
         services.AddScoped<IIniciarLimpezaFinaUseCase, Catarinense.Application.UseCases.IniciarLimpezaFinaUseCase>();
         services.AddScoped<IDefinirNumeroOSUseCase, Catarinense.Application.UseCases.DefinirNumeroOSUseCase>();
+        services.AddScoped<Catarinense.Application.UseCases.IAlterarPrefixoLimpezaUseCase, Catarinense.Application.UseCases.AlterarPrefixoLimpezaUseCase>();
         services.AddScoped<IRegistrarFotoEtapaUseCase, Catarinense.Application.UseCases.RegistrarFotoEtapaUseCase>();
         services.AddScoped<IRemoverFotoEtapaUseCase, Catarinense.Application.UseCases.RemoverFotoEtapaUseCase>();
         services.AddScoped<Catarinense.Application.UseCases.ISinalizarCortinasUseCase, Catarinense.Application.UseCases.SinalizarCortinasUseCase>();

@@ -70,6 +70,13 @@ export const api = {
       body: JSON.stringify({ numeroOS }),
     }),
 
+  alterarPrefixoLimpeza: (token: string, limpezaId: string, novoPrefixo: string) =>
+    request<LimpezaFinaDetalhes>(`/api/limpezas-finas/${limpezaId}/prefixo`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ novoPrefixo }),
+    }),
+
   trocarSenha: (token: string, novaSenha: string) => request<void>("/api/auth/trocar-senha", { method: "POST", token, body: JSON.stringify({ novaSenha }) }),
 
   desmarcarItemExecucao: (token: string, limpezaId: string, etapaPadraoId: string, itemId: string) =>

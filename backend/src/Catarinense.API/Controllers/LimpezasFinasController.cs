@@ -73,6 +73,20 @@ public class LimpezasFinasController : ControllerBase
         return Ok(resultado);
     }
 
+    /// <summary>
+    /// Permite corrigir o prefixo do ônibus caso o operador tenha digitado errado na abertura.
+    /// </summary>
+    [HttpPut("{id:guid}/prefixo")]
+    [Authorize(Roles = "Operador,Administrador")]
+    public async Task<ActionResult<LimpezaFinaDetalhesDto>> AlterarPrefixo(
+        Guid id,
+        [FromBody] AlterarPrefixoLimpezaBody body,
+        [FromServices] IAlterarPrefixoLimpezaUseCase useCase)
+    {
+        var resultado = await useCase.ExecutarAsync(id, body.NovoPrefixo);
+        return Ok(resultado);
+    }
+
     /// <summary>Envia a foto de evidência de uma etapa (multipart/form-data).</summary>
     [HttpPost("{id}/etapas/{etapaPadraoId}/itens/{itemId}")]
     [Authorize(Roles = "Operador,Administrador")]
@@ -257,3 +271,4 @@ public class LimpezasFinasController : ControllerBase
 
 public record IniciarLimpezaFinaBody(string PrefixoOnibus);
 public record DefinirNumeroOSBody(string NumeroOS);
+public record AlterarPrefixoLimpezaBody(string NovoPrefixo);
